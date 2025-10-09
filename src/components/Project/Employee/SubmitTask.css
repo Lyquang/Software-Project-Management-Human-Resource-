@@ -1,0 +1,281 @@
+/* Container */
+.tasks-container {
+    padding: 30px;
+    max-width: 1200px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+.tasks-title {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 32px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+/* Grid Layout */
+.tasks-grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Task Card */
+.task-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Card Header with Dynamic Status Colors */
+.task-card-header {
+    padding: 15px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* Status-based Header Colors */
+.task-completed .task-card-header {
+    background-color: #27ae60; /* Green for Completed */
+}
+
+.task-overdue .task-card-header {
+    background-color: #e74c3c; /* Red for Overdue */
+}
+
+.task-cancelled .task-card-header {
+    background-color: #f1c40f; /* Yellow for Cancelled */
+}
+
+/* Card Body */
+.task-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.task-description {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.task-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.icon {
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+/* Upload Button */
+.file-upload {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-button {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.upload-button:hover {
+    background-color: #2c82c9;
+}
+
+.uploaded-file {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    font-style: italic;
+}
+
+.uploaded-files {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+}
+
+.uploaded-file {
+    margin: 3px 0;
+    color: #555;
+    font-style: italic;
+}
+
+/* SubmitTask.css */
+
+.upload-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    text-align: center;
+    min-width: 100px;
+}
+
+.upload-button, .send-button, .delete-button {
+    margin: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.upload-button {
+    background-color: #4caf50; 
+}
+
+.send-button {
+    background-color: #2196f3; 
+}
+
+.delete-button {
+    background-color: #5c5252; 
+}
+
+.upload-button:hover {
+    background-color: #45a049;
+}
+
+.send-button:hover {
+    background-color: #1976d2;
+}
+
+.delete-button:hover {
+    background-color:#423838;
+}
+
+.done-button {
+    background-color: #4caf50; 
+    cursor: not-allowed; 
+}
+
+.done-button:hover {
+    background-color: #4caf50; 
+}
+
+.card-in-progress {
+  background-color: #f2eaa2; /* dark gray */
+  color: black;
+}
+
+.card-completed {
+  background-color: #bbf1c6; /* indigo-900 */
+  color: black;
+}
+
+.card-overdue {
+  background-color: #ffc107; /* warning yellow */
+  color: #212529;
+}
+
+.card-default {
+  background-color: #ffffff;
+  color: #000;
+}
+
+.card {
+  background-color: #fffdfc;
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h5 {
+  font-size: 1.125rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.6em;
+  border-radius: 8px;
+}
+
+.upload-box {
+  height: 250px;
+  width: 100%;
+  max-width: 300px;
+  border: 2px dashed #9ec5fe;
+  background-color: #f8fbff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin: 0 auto;
+}
+
+.upload-box:hover {
+  background-color: #e9f3ff;
+  border-color: #4f9efc;
+  box-shadow: 0 6px 14px rgba(79, 158, 252, 0.2);
+}
+
+.upload-content {
+  text-align: center;
+  color: #4a4a4a;
+}
+
+.icon-upload-task {
+  font-size: 4rem;
+  color: #4f9efc;
+  margin-bottom: 10px;
+}
+
+
+
+
+

@@ -1,0 +1,22 @@
+.home-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.home-links a:hover {
+  background-color: #0056b3; /* Darker shade of primary on hover */
+}
+
+.home-employee {
+  background-color: #007bff; /* Bootstrap primary color */
+}
+
+.home-manager {
+  background-color: #6c757d; /* Bootstrap secondary color */
+}
+
+.home-hr {
+  background-color: #28a745; /* Bootstrap success color */
+}

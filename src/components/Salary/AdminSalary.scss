@@ -1,0 +1,48 @@
+.title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.salary-table {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      font-size: 16px;   // Font size nhỏ hơn
+
+    }
+
+    tr {
+      height: auto; // Đảm bảo chiều cao tự động dựa theo nội dung
+    }
+  }
+}
+
+
+.btn-adjust-rate {
+  position: flex;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+.filters {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  align-items: center;
+}

@@ -1,0 +1,18 @@
+.divider:after,
+.divider:before {
+  content: "";
+  flex: 1;
+  height: 0.0625rem; /* 1px -> 0.0625rem */
+  background: #eee;
+}
+
+.signup-heading {
+  font-size: 1.5rem; /* 24px -> 1.5rem */
+  font-weight: bold;
+  margin-bottom: 1rem; /* 16px -> 1rem */
+}
+
+.error-message {
+  font-size: 0.875rem; /* 14px -> 0.875rem */
+  margin-bottom: 1rem; /* 16px -> 1rem */
+}

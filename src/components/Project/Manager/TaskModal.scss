@@ -1,0 +1,39 @@
+.fixed-height {
+    height: 38px;
+    display: flex;
+
+    /* Căn giữa nội dung theo chiều dọc */
+}
+
+/* TaskModal.scss */
+.small-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+    min-width: 30px;
+    height: 25px;
+    line-height: 1.2;
+}
+
+.task-modal {
+    position: fixed;
+    top: 10%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 1000;
+
+    width: 500px;
+}
+
+// .task-overlay {
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     width: 100%;
+//     height: 100%;
+//     background: rgba(0, 0, 0, 0.5);
+//     /* Màu nền mờ */
+//     z-index: 999;
+//     /* Đảm bảo overlay nằm dưới modal */
+// }
