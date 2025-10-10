@@ -47,7 +47,7 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:8080/api/departments/create",
+        "http://localhost:8080/ems/departments/create",
         payload,
         {
           headers: { "Content-Type": "application/json" },

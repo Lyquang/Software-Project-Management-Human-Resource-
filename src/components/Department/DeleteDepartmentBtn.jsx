@@ -21,7 +21,7 @@ export const DeleteDepartmentBtn = ({ departmentId, children }) => {
 
         // B1: Xóa trưởng phòng
         const removeManagerRes = await axios.post(
-          "http://localhost:8080/api/managers/remove",
+          "http://localhost:8080/ems/managers/remove",
           null,
           { params: { deptId: departmentId } }
         );
@@ -31,7 +31,7 @@ export const DeleteDepartmentBtn = ({ departmentId, children }) => {
 
           // B2: Xóa phòng ban
           const removeDepartmentRes = await axios.delete(
-            "http://localhost:8080/api/departments/delete",
+            "http://localhost:8080/ems/departments/delete",
             { params: { id: departmentId } }
           );
 

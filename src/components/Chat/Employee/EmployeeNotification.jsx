@@ -30,7 +30,7 @@ const EmployeeNotification = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:8080/api/notifications/my-notification`,
+        `http://localhost:8080/ems/notifications/my-notification`,
         {
           params: { personnelId: personelCode },
           headers: {

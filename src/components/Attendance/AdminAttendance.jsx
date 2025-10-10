@@ -19,7 +19,7 @@ const AdminAttendance = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/attendance/month-year`,
+        `http://localhost:8080/ems/attendance/month-year`,
         {
           params: { month, year },
         }
@@ -61,7 +61,7 @@ const AdminAttendance = () => {
   const handleDateClick = async (employeeCode, date) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/attendance/date`,
+        `http://localhost:8080/ems/attendance/date`,
         {
           params: { code: employeeCode, date },
         }

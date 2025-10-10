@@ -21,7 +21,7 @@ const TaskModal = ({ projectId, onClose }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:8080/api/tasks/project?id=${projectId}`
+          `http://localhost:8080/ems/tasks/project?id=${projectId}`
         );
         if (response.data.code === 1000) {
           setTasks(response.data.result || []);
@@ -38,7 +38,7 @@ const TaskModal = ({ projectId, onClose }) => {
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/projects/employees?code=${projectId}`
+          `http://localhost:8080/ems/projects/employees?code=${projectId}`
         );
         if (
           response.data.code === 1000 &&
@@ -81,7 +81,7 @@ const TaskModal = ({ projectId, onClose }) => {
 
   const updateStatus = async (taskId, status) => {
     try {
-      const url = `http://localhost:8080/api/tasks/status-update?id=${taskId}&status=${status}`;
+      const url = `http://localhost:8080/ems/tasks/status-update?id=${taskId}&status=${status}`;
       const response = await axios.patch(url); // Sử dụng PATCH để cập nhật trạng thái trên server
       if (response.data.code === 1000) {
         alert("Cập nhật trạng thái thành công!");
@@ -96,7 +96,7 @@ const TaskModal = ({ projectId, onClose }) => {
 
   const assignEmployee = async (taskId, employeeId) => {
     try {
-      const url = `http://localhost:8080/api/tasks/assign?taskId=${taskId}&employeeId=${employeeId}`;
+      const url = `http://localhost:8080/ems/tasks/assign?taskId=${taskId}&employeeId=${employeeId}`;
       const response = await axios.patch(url);
       alert("Gán nhân viên thành công!");
     } catch (error) {
@@ -107,7 +107,7 @@ const TaskModal = ({ projectId, onClose }) => {
 
   const deleteTask = async (taskId, index) => {
     try {
-      const url = `http://localhost:8080/api/tasks/${taskId}`; // URL API xóa task
+      const url = `http://localhost:8080/ems/tasks/${taskId}`; // URL API xóa task
       const response = await axios.delete(url); // Gọi API DELETE
       if (response.status === 200 && response.data.code === 1000) {
         // Kiểm tra phản hồi từ server
@@ -140,7 +140,7 @@ const TaskModal = ({ projectId, onClose }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/tasks/create",
+        "http://localhost:8080/ems/tasks/create",
         {
           title: newTask.title,
           description: newTask.description,
@@ -299,7 +299,7 @@ const TaskModal = ({ projectId, onClose }) => {
             
             
             
-            {/* api  http://localhost:8080/api/tasks/create   create Task                     */}
+            {/* api  http://localhost:8080/ems/tasks/create   create Task                     */}
             {showCreateTaskForm && (
               <div className="create-task-form border rounded p-3 mt-3">
                 <h5>Create new Task</h5>

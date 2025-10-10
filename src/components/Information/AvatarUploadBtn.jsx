@@ -19,7 +19,7 @@ export const AvatarUploadBtn = ({ setProfile,children }) => {
     formData.append("image", file);
 
     try {
-      const response = await fetch("http://localhost:8080/api/images/upload", {
+      const response = await fetch("http://localhost:8080/ems/images/upload", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

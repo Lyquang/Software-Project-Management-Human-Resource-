@@ -7,7 +7,7 @@ import axios from "axios";
 export const CheckOutBtn = ({ employeeCode, onSuccess }) => {
   const handleCheckOut = async () => {
     try {
-      await axios.post(`http://localhost:8080/api/attendance/checkOut`, null, {
+      await axios.post(`http://localhost:8080/ems/attendance/checkOut`, null, {
         params: { code: employeeCode },
       });
       toast.success("You have successfully checked out!");

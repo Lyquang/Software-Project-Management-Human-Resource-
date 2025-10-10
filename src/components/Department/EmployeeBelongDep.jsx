@@ -11,7 +11,7 @@ export const EmployeeBelongDep = ({ departmentId, children }) => {
 
   const handleShow = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/employee/department", {
+      const response = await axios.get("http://localhost:8080/ems/employee/department", {
         params: { id: departmentId },
       });
 

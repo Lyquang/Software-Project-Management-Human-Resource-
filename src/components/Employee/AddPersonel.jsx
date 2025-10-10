@@ -49,7 +49,7 @@ export const AddPersonel = ({children}) => {
 
     try {
       // 1. Create account
-      const accountRes = await axios.post('http://localhost:8080/api/account/create', {
+      const accountRes = await axios.post('http://localhost:8080/ems/account/create', {
         username: formData.username,
         password: formData.password
       });
@@ -58,7 +58,7 @@ export const AddPersonel = ({children}) => {
         const accountId = accountRes.data.result.id;
 
         // 2. Send personal info (replace URL if different)
-        const personRes = await axios.post('http://localhost:8080/api/employee/create', {
+        const personRes = await axios.post('http://localhost:8080/ems/employee/create', {
           accountId,
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -89,7 +89,7 @@ export const AddPersonel = ({children}) => {
         const accountId = accountRes.data.result.id;
 
         // 2. Send personal info (replace URL if different)
-        const personRes = await axios.post('http://localhost:8080/api/managers/create', {
+        const personRes = await axios.post('http://localhost:8080/ems/managers/create', {
           accountId,
           firstName: formData.firstName,
           lastName: formData.lastName,

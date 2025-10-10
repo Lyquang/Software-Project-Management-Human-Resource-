@@ -26,7 +26,7 @@ const EmployeeAttendance = () => {
 
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/attendance/all/employee",
+        "http://localhost:8080/ems/attendance/all/employee",
         {
           params: { code: employeeCode },
         }

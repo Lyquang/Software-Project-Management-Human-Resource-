@@ -18,7 +18,7 @@ const EditProject = ({ onClose, onSave }) => {
     useEffect(() => {
         const fetchDepartments = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/departments/all');
+                const response = await axios.get('http://localhost:8080/ems/departments/all');
                 if (response.data && response.data.code === 1000 && Array.isArray(response.data.result)) {
                     setDepartments(response.data.result);
                 } else {
@@ -49,7 +49,7 @@ const EditProject = ({ onClose, onSave }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/projects/create', {
+            const response = await axios.post('http://localhost:8080/ems/projects/create', {
                 projectName: project.name,
                 projectDescription: project.description,
                 departmentId: project.departmentId

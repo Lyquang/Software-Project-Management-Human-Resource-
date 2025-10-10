@@ -53,24 +53,24 @@ const deletePersonel = (code) => {
 
 // Department APIs
 const postCreateNewDepartment = (payload) => {
-    return axios.post("http://localhost:8080/api/departments/create", payload, {
+    return axios.post("http://localhost:8080/ems/departments/create", payload, {
         headers: { "Content-Type": "application/json" },
     });
 };
 
 const getAllDepartment = () => {
-    return axios.get("http://localhost:8080/api/departments/all");
+    return axios.get("http://localhost:8080/ems/departments/all");
 };
 
 
 //project API
 const getAllProjects = () => {
-    return axios.get("http://localhost:8080/api/projects/all");
+    return axios.get("http://localhost:8080/ems/projects/all");
 };
 
 // New API for assigning projects
 const postAssignProject = (payload) => {
-    return axios.post("http://localhost:8080/api/projects/assign", payload, {
+    return axios.post("http://localhost:8080/ems/projects/assign", payload, {
         headers: { "Content-Type": "application/json" },
     });
 };

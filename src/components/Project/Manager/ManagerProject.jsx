@@ -15,8 +15,8 @@ const ManagerProject = () => {
       setIsLoading(true);
       try {
         const [projectResponse, taskResponse] = await Promise.all([
-          axios.get("http://localhost:8080/api/projects/all"),
-          axios.get("http://localhost:8080/api/tasks/all"),
+          axios.get("http://localhost:8080/ems/projects/all"),
+          axios.get("http://localhost:8080/ems/tasks/all"),
         ]);
 
         if (projectResponse.data.code === 1000) {

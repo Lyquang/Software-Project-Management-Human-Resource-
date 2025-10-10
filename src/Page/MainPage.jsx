@@ -47,7 +47,7 @@ const MainPage = () => {
   return (
     <ThemeProvider>
       <ToastContainer />
-      <div className="d-flex vh-100 bg-red-600" style={{ zIndex: 0 }}>
+      <div className="d-flex vh-10" style={{ zIndex: 0 }}>
         {/* Sidebar */}
         <div className="main-sidebar">
           <MainSideBar
@@ -58,7 +58,7 @@ const MainPage = () => {
         </div>
 
         {/* Main content */}
-        <div className="flex-grow-1 p-1  w-50 bg-">
+        <div className="flex-grow-1 p-1 w-50">
           <Outlet context={{ tokenData }} />
         </div>
 

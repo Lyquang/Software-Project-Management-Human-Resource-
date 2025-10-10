@@ -15,7 +15,7 @@
 //   const fetchTasks = async () => {
 //     try {
 //       const response = await axios.get(
-//         "http://localhost:8080/api/tasks/employee",
+//         "http://localhost:8080/ems/tasks/employee",
 //         {
 //           params: { code: personelCode },
 //         }
@@ -151,7 +151,7 @@ export const TaskCard = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/tasks/employee",
+        "http://localhost:8080/ems/tasks/employee",
         {
           params: { code: personelCode },
         }

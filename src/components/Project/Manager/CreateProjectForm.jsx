@@ -16,7 +16,7 @@ const CreateProjectForm = ({ onClose, onSave }) => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/api/projects/create', newProject);
+            const response = await axios.post('http://localhost:8080/ems/projects/create', newProject);
             if (response.data && response.data.code === 1000) {
                 // Call the onSave function passed from the parent to update the project list
                 onSave(response.data.result);

@@ -7,7 +7,7 @@ import axios from "axios";
 export const CheckInBtn = ({ employeeCode, onSuccess }) => {
   const handleCheckIn = async () => {
     try {
-      await axios.post(`http://localhost:8080/api/attendance/checkIn`, null, {
+      await axios.post(`http://localhost:8080/ems/attendance/checkIn`, null, {
         params: { code: employeeCode },
       });
       toast.success("You have successfully checked in!");

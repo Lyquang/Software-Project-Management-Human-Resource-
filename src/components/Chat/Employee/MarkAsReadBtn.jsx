@@ -16,7 +16,7 @@ export const MarkAsReadBtn = ({ notificationId, fetchNotifications ,setNotificat
       }
 
       await axios.post(
-        `http://localhost:8080/api/notifications/${notificationId}/mark`,
+        `http://localhost:8080/ems/notifications/${notificationId}/mark`,
         null,
         {
           params: { personnelId: personelCode },

@@ -26,7 +26,7 @@ const ManagerNotification = () => {
     const personelCode = localStorage.getItem("personelCode");
 
     const response = await axios.get(
-      `http://localhost:8080/api/notifications/my-sent?managerCode=${personelCode}`,
+      `http://localhost:8080/ems/notifications/my-sent?managerCode=${personelCode}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const ManagerNotification = () => {
           : [],
       };
       const response = await axios.post(
-        "http://localhost:8080/api/notifications/send",
+        "http://localhost:8080/ems/notifications/send",
         formattedNotification
       );
       if (response.data.code === 1000) {

@@ -33,7 +33,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
 
         try {
             const response = await axios.patch(
-                `http://localhost:8080/api/salary/bonus-penalty?id=${record.id}&bonus=${formData.bonus}&penalty=${formData.penalty}`
+                `http://localhost:8080/ems/salary/bonus-penalty?id=${record.id}&bonus=${formData.bonus}&penalty=${formData.penalty}`
             );
 
             if (response.data.code === 1000) {

@@ -28,7 +28,7 @@ const EditMemberModal = ({ onClose, onSave, projectDetails }) => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/api/employee/all");
+            const response = await axios.get("http://localhost:8080/ems/employee/all");
             if (response && response.data.code === 1000) {
                 setEmployees(response.data.result);
             } else {
@@ -49,7 +49,7 @@ const EditMemberModal = ({ onClose, onSave, projectDetails }) => {
                 return;
             } else {
                 try {
-                    const response = await axios.post("http://localhost:8080/api/projects/assign", {
+                    const response = await axios.post("http://localhost:8080/ems/projects/assign", {
                         employeeId: newMember.personelCode,
                         projectId: projectDetails.projectId,
                     });
@@ -79,7 +79,7 @@ const EditMemberModal = ({ onClose, onSave, projectDetails }) => {
 
     const handleRemoveMember = async (employeeId) => {
         try {
-            const response = await axios.post("http://localhost:8080/api/projects/remove", {
+            const response = await axios.post("http://localhost:8080/ems/projects/remove", {
                 employeeId,
                 projectId: projectDetails.projectId,
             });

@@ -1,119 +1,118 @@
 import React from "react";
-import { Trash, User } from "react-feather";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Settings2Icon } from "lucide-react";
-import DefaultPhoto from "../assets/default_ava2.webp"; // Adjust the path as necessary
-import "../../index.css";
-import "./AllEmployee.css";
-import { IoIosInformationCircle } from "react-icons/io";
-import  ModalOfEachEmployee  from "./ModalOfEachEmployee";
-import { useState } from "react";
-const getRoleColor = (role) => (role === "EMPLOYEE" ? "#0004fc" : "#fc0000");
+import DefaultPhoto from "../assets/default_ava2.webp";
+import { Eye, Edit, Trash2 } from "lucide-react";
 
-const EmployeeCard = ({ employee, index, onSettingClick }) => {
+const statusColorMap = {
+  Active: "bg-green-100 text-green-800 border border-green-300",
+  Paused: "bg-pink-100 text-pink-800 border border-pink-300",
+  Vacation: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+  Default: "bg-gray-100 text-gray-700 border border-gray-300",
+};
 
-  const [showModal, setShowModal] = useState(false);
-  return (
-    <div className="col" style={{ animationDelay: `${index * 0.2}s` }}>
-      <div className="profile-card card ">
-        <div className="row no-gutters employee-list-row">
-          {/* HEADER */}
-          <div className=" card-ava col-3 d-flex flex-column align-items-center">
-            <img
-              src={employee.avatar || DefaultPhoto}
-              className="card-img rounded-circle mt-2"
-              alt="Avatar"
-            />
-          </div>
-
-          {/* BODY */}
-          <div className="col-9 ">
-            <div className="card-body d-flex flex-column mt-2">
-              {/* Phần tên chiếm 1/5 */}
-              <div className="d-flex align-items-center justify-content-between">
-                <h5 className="card-title mb-0">
-                {employee.lastName} {employee.firstName}
-                </h5>
-
-                <IoIosInformationCircle
-                  style={{ cursor: "pointer", color: "blue", fontSize: "1.5rem" }}
-                  onClick={() => setShowModal(true)}
-                />
-              </div>
-
-              {/* Phần chức vụ chiếm 1/5, chỉ tô màu nền trong phạm vi chữ */}
-              <div className="d-flex align-items-center mt-4 ">
-                {/* Position tag */}
-                <h6 className="card-subtitle mb-0 custom-ml">
-                  <span
-                    style={{
-                      backgroundColor: getRoleColor(employee.position),
-                      color: "white",
-                      borderRadius: "4px",
-                      padding: "2px 8px",
-                    }}
-                  >
-                    {employee.position}
-                  </span>
-                </h6>
-
-                {/* Department tag */}
-                <h6 className="card-subtitle mb-0 custom-ml">
-                  <span
-                    style={{
-                      marginLeft: "15px",
-                      backgroundColor: "green",
-                      color: "white",
-                      borderRadius: "4px",
-                      padding: "2px 8px",
-                    }}
-                  >
-                    {employee.departmentName || "Not found"}
-                  </span>
-                </h6>
-              </div>
-
-              {/* Phần mô tả công việc chiếm 2/5 */}
-              <div className="d-flex" style={{ flex: "2" }}>
-                <p className="card-text">{employee.job}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
+  if (!employees || employees.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-500">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4076/4076505.png"
+          alt="No employees"
+          className="w-24 h-24 mb-4 opacity-70"
+        />
+        <p className="text-lg font-medium">No employees found</p>
       </div>
-       <ModalOfEachEmployee
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        employee={employee}
-      />
+    );
+  }
+
+  return (
+    <div className="p-6 bg-white text-gray-800 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg">
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table className="min-w-full border-collapse">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left font-semibold">NAME</th>
+              <th className="px-4 py-3 text-left font-semibold">ROLE</th>
+              <th className="px-4 py-3 text-left font-semibold">STATUS</th>
+              <th className="px-4 py-3 text-left font-semibold">ACTIONS</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-gray-200">
+            {employees.map((emp, index) => {
+              const statusClass =
+                statusColorMap[emp.status] || statusColorMap.Default;
+              return (
+                <tr
+                  key={emp.code || index}
+                  className="hover:bg-gray-50 transition-colors duration-200"
+                >
+                  {/* NAME */}
+                  <td className=" py-3 flex items-center gap-3">
+                    <img
+                      src={emp.avatarUrl || DefaultPhoto}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    />
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {emp.firstName} {emp.lastName}
+                      </p>
+                      <p className="text-sm text-gray-500">{emp.email}</p>
+                    </div>
+                  </td>
+
+                  {/* ROLE */}
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-gray-800">
+                      {emp.role || "Employee"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {emp.department || "—"}
+                    </p>
+                  </td>
+
+                  {/* STATUS */}
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
+                    >
+                      {emp.status || "Active"}
+                    </span>
+                  </td>
+
+                  {/* ACTIONS */}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => onViewDetail?.(emp)}
+                        className="text-gray-500 hover:text-blue-600 transition"
+                        title="View details"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button
+                        onClick={() => onEdit?.(emp)}
+                        className="text-gray-500 hover:text-yellow-600 transition"
+                        title="Edit"
+                      >
+                        <Edit size={18} />
+                      </button>
+                      <button
+                        onClick={() => onDelete?.(emp)}
+                        className="text-gray-500 hover:text-red-600 transition"
+                        title="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
-    
   );
 };
 
 export default EmployeeCard;
-
-
-            // "personelCode": 7,
-            // "firstName": "Quang",
-            // "lastName": "2212737-Ly Thanh Nhat",
-            // "email": "quang.ly2004bkhcm@hcmut.edu.vn",
-            // "phone": "0856141590",
-            // "city": " Bình Thuận",
-            // "street": "Hương Sơ",
-            // "role": null,
-            // "avatar": "http://res.cloudinary.com/dkamugos5/image/upload/v1743590761/vf2zd1bw5hpah8ebmr45.png",
-            // "gender": "MALE",
-            // "position": "EMPLOYEE",
-            // "departmentName": "Phòng Kinh Doanh",
-            // "taskList": [],
-            // "tasksCompleteNumber": 0,
-            // "projectList": [],
-            // "projectInvolved": 0
-            // "projectInvolved": 0
-            // "skills": [SoftWare, Mobile, Friendly,...]
-            // "decription": " toi toi day de tim kiem thu thach moi, luong cao, on dinh"
-            // "Facebook": "https://www.facebook.com/nhan.phunghoanghuu"
-            // "Ins": "https://www.facebook.com/nhan.phunghoanghuu"
-            // "Github": "https://www.facebook.com/nhan.phunghoanghuu"
-            // "Linkedin": "https://www.facebook.com/nhan.phunghoanghuu"

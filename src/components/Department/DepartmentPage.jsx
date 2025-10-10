@@ -30,12 +30,15 @@ useEffect(() => {
         },
       });
 
-      console.log("API Response:", response.data);
+
 
       if (response.data && Array.isArray(response.data.result)) {
         setDepartments(response.data.result);
+        console.log("all department", response.data.result)
+        console.log("API Response all department:", departments);
       } else {
         setError("Invalid API response format.");
+     
       }
     } catch (err) {
       setError("Failed to fetch departments. Please try again later.");
@@ -82,7 +85,7 @@ useEffect(() => {
           <div className="row">
             {currentDepartment.map((department) => (
               <DepartmentCard
-                key={department.departmentId}
+                key={department.department_id}
                 department={department}
               />
             ))}

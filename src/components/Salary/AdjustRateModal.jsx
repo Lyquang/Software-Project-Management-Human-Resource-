@@ -22,7 +22,7 @@ const AdjustRateModal = ({ show, handleClose, rates, handleSave }) => {
         try {
             // Call API to update rates
             const response = await axios.patch(
-                `http://localhost:8080/api/salary/payrate-edit`,
+                `http://localhost:8080/ems/salary/payrate-edit`,
                 null,
                 {
                     params: {

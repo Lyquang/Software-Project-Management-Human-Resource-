@@ -18,7 +18,7 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
   const fetchProjectDetails = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/projects?id=${id}`
+        `http://localhost:8080/ems/projects?id=${id}`
       );
       if (response.data && response.data.code === 1000) {
         setCurrentProjectDetails(response.data.result);

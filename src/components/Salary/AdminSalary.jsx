@@ -28,7 +28,7 @@ const AdminSalary = () => {
       setError("");
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/salary/all"
+          "http://localhost:8080/ems/salary/all"
         );
         const data = response.data?.result || [];
         setSalary(data);

@@ -53,7 +53,7 @@ export const PersonelInforCard = () => {
         }
         console.log("accountId at manager infor >>>> ", accountId);
         const Empresponse = await fetch(
-          `http://localhost:8080/api/employee/account?id=${accountId}`,
+          `http://localhost:8080/ems/employee/account?id=${accountId}`,
           {
             method: "GET",
             headers: {
@@ -62,9 +62,9 @@ export const PersonelInforCard = () => {
             },
           }
         );
-        // http://localhost:8080/api/managers/account?id=028b31fa-6ed0-42fb-8ae1-a4fd6f32ca21
+        // http://localhost:8080/ems/managers/account?id=028b31fa-6ed0-42fb-8ae1-a4fd6f32ca21
         const ManaResponse = await fetch(
-          `http://localhost:8080/api/managers/account?id=${accountId}`,
+          `http://localhost:8080/ems/managers/account?id=${accountId}`,
           {
             method: "GET",
             headers: {

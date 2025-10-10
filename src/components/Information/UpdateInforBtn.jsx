@@ -34,7 +34,7 @@ const UpdateInforBtn = ({ profile, setProfile, children }) => {
       };
 
       const response = await fetch(
-        `http://localhost:8080/api/employee/update?personnel_code=${personnelCode}`,
+        `http://localhost:8080/ems/employee/update?personnel_code=${personnelCode}`,
         {
           method: "PATCH",
           headers: {

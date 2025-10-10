@@ -40,7 +40,7 @@ export const AssignEmployeeBtn = ({ refresh, children }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/employee/assign-to-department`,
+        `http://localhost:8080/ems/employee/assign-to-department`,
         {}, // body is empty, since params are in URL
         {
           params: {
