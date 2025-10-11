@@ -37,11 +37,6 @@ useEffect(() => {
       console.log("Fetched departments with managers:", response.data);
 
 
-
-
-
-
-
       if (response.data && Array.isArray(response.data.result)) {
         setDepartments(response.data.result);
         console.log("all department", response.data.result)

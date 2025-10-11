@@ -11,79 +11,67 @@ import { PiNotePencilDuotone } from "react-icons/pi";
 import { BiLogOut, BiChat } from "react-icons/bi";
 import { IoMdCloudUpload } from "react-icons/io";
 import { jwtDecode } from "jwt-decode";
-import Defaut_Profile from "../components/assets/defaut_pho.png";
+import DefaultProfile from "../components/assets/defaut_pho.png";
+// phần này Dựa vào role trong token để hiển thị các link tương ứng
+// Roles: EMPLOYEE, MANAGER, ADMIN
 
 function MainSideBar() {
   const [expanded, setExpanded] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [profile, setProfile] = useState({});
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
+  // ✅ Get role from JWT token
   useEffect(() => {
-    const fetchPersonnelData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("Authentication token not found");
-          setLoading(false);
-          return;
-        }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/"); // Redirect to login if no token
+      return;
+    }
 
-        const decoded = jwtDecode(token);
-        const userRole = decoded.scope;
-        setRole(userRole);
+    try {
+      const decoded = jwtDecode(token);
+      const userRole = decoded.scope || decoded.role;
+      setRole(userRole);
+    } catch (error) {
+      console.error("Invalid token:", error);
+      navigate("/");
+    }
+  }, [navigate]);
 
-        if (userRole === "ADMIN") {
-          setLoading(false);
-          return;
-        }
-
-        const apiUrl = "http://localhost:8080/ems/personnels/myInfo";
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch personnel data");
-
-        const data = await response.json();
-
-        setProfile({
-          personelCode: data.personelCode,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          name: `${data.lastName} ${data.firstName}`,
-          email: data.email,
-          phone: data.phone,
-          department: data.departmentName,
-          position: data.position,
-          profileImage: data.avatar,
-        });
-
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    fetchPersonnelData();
-  }, []);
-
+  // ✅ Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
-  if (error)
-    return <div className="text-center text-red-500 p-4">{error}</div>;
+  // ✅ Define link sets by role
+  const linksByRole = {
+    EMPLOYEE: [
+      { to: "/login/employee", icon: <FaHome />, text: "Home" },
+      { to: "infor", icon: <FaRegUser />, text: "My Information" },
+      { to: "attendance", icon: <PiNotePencilDuotone />, text: "Check Attendance" },
+      { to: "submittask", icon: <IoMdCloudUpload />, text: "Submit Task" },
+      { to: "notification", icon: <BiChat />, text: "Notifications" },
+      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+    ],
+    MANAGER: [
+      { to: "/login/manager", icon: <FaHome />, text: "Home" },
+      { to: "infor", icon: <FaRegUser />, text: "My Information" },
+      { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
+      { to: "notification", icon: <BiChat />, text: "Notifications" },
+      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+    ],
+    ADMIN: [
+      { to: "/login/admin", icon: <FaHome />, text: "Home" },
+      { to: "employee", icon: <FaRegUser />, text: "All Employees" },
+      { to: "department", icon: <PiNotePencilDuotone />, text: "All Departments" },
+      { to: "admin-attendance", icon: <IoMdCloudUpload />, text: "Check Attendance" },
+      { to: "admin-salary", icon: <IoMdCloudUpload />, text: "Salary & Benefits" },
+      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+    ],
+  };
+
+  const sidebarLinks = linksByRole[role] || [];
 
   return (
     <div
@@ -104,70 +92,33 @@ function MainSideBar() {
         >
           {expanded ? <FaArrowLeft /> : <FaArrowRight />}
         </button>
+
       </div>
 
       {/* Avatar */}
-      <div className="flex flex-col items-center py-4 border-b border-gray-300 dark:border-gray-700">
+      {/* <div className="flex flex-col items-center py-4 border-b border-gray-300 dark:border-gray-700">
         <img
-          src={profile?.profileImage || Defaut_Profile}
+          src={DefaultProfile}
           alt="Avatar"
           className="w-14 h-14 rounded-full object-cover border-2 border-blue-300 dark:border-blue-500"
         />
         {expanded && (
-          <div className="mt-2 text-sm font-semibold">{profile?.name}</div>
+          <div className="mt-2 text-sm font-semibold">
+            {role ? role.charAt(0) + role.slice(1).toLowerCase() : "User"}
+          </div>
         )}
-      </div>
+      </div> */}
 
       {/* Sidebar Links */}
-      <div className="flex flex-col mt-4 space-y-1 text-base font-medium">
-        {role === "EMPLOYEE" && (
-          <SidebarLinks
-            expanded={expanded}
-            links={[
-              { to: "/login/employee", icon: <FaHome />, text: "Home" },
-              { to: "infor", icon: <FaRegUser />, text: "My Information" },
-              { to: "attendance", icon: <PiNotePencilDuotone />, text: "Check Attendance" },
-              { to: "submittask", icon: <IoMdCloudUpload />, text: "Submit Task" },
-              { to: "notification", icon: <BiChat />, text: "Notifications" },
-              { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
-            ]}
-          />
-        )}
-
-        {role === "MANAGER" && (
-          <SidebarLinks
-            expanded={expanded}
-            links={[
-              { to: "/login/manager", icon: <FaHome />, text: "Home" },
-              { to: "infor", icon: <FaRegUser />, text: "My Information" },
-              { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
-              { to: "notification", icon: <BiChat />, text: "Notifications" },
-              { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
-            ]}
-          />
-        )}
-
-        {role === "ADMIN" && (
-          <SidebarLinks
-            expanded={expanded}
-            links={[
-              { to: "/login/admin", icon: <FaHome />, text: "Home" },
-              { to: "employee", icon: <FaRegUser />, text: "All Employees" },
-              { to: "department", icon: <PiNotePencilDuotone />, text: "All Departments" },
-              { to: "admin-attendance", icon: <IoMdCloudUpload />, text: "Check Attendance" },
-              { to: "admin-salary", icon: <IoMdCloudUpload />, text: "Salary & Benefits" },
-              { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
-            ]}
-          />
-        )}
-      </div>
+      <SidebarLinks expanded={expanded} links={sidebarLinks} />
     </div>
   );
 }
 
+// ✅ Subcomponent for reusable sidebar links
 function SidebarLinks({ expanded, links }) {
   return (
-    <nav className="flex flex-col px-2">
+    <nav className="flex flex-col px-2 mt-4 space-y-1 text-base font-medium">
       {links.map(({ to, icon, text, onClick }, idx) => (
         <NavLink
           key={idx}
@@ -175,7 +126,11 @@ function SidebarLinks({ expanded, links }) {
           onClick={onClick}
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 
-             ${isActive ? "bg-[#1d5084] text-white shadow-md" : "hover:bg-blue-100 dark:hover:bg-gray-700 text-[#094067] dark:text-gray-200"}`
+             ${
+               isActive
+                 ? "bg-[#1d5084] text-white shadow-md"
+                 : "hover:bg-blue-100 dark:hover:bg-gray-700 text-[#094067] dark:text-gray-200"
+             }`
           }
         >
           <span className="text-lg">{icon}</span>
