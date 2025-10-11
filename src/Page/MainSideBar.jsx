@@ -11,23 +11,27 @@ import { PiNotePencilDuotone } from "react-icons/pi";
 import { BiLogOut, BiChat } from "react-icons/bi";
 import { IoMdCloudUpload } from "react-icons/io";
 import { jwtDecode } from "jwt-decode";
-import DefaultProfile from "../components/assets/defaut_pho.png";
-// phần này Dựa vào role trong token để hiển thị các link tương ứng
-// Roles: EMPLOYEE, MANAGER, ADMIN
+import {
+  MdDashboard,
+  MdOutlineSettings,
+  MdOutlineTaskAlt,
+  MdOutlineAttachMoney,
+} from "react-icons/md";
+import { BsGraphUpArrow, BsBullseye } from "react-icons/bs";
+import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 
 function MainSideBar() {
   const [expanded, setExpanded] = useState(true);
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
-  // ✅ Get role from JWT token
+  // Decode role từ token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/"); // Redirect to login if no token
+      navigate("/");
       return;
     }
-
     try {
       const decoded = jwtDecode(token);
       const userRole = decoded.scope || decoded.role;
@@ -38,106 +42,183 @@ function MainSideBar() {
     }
   }, [navigate]);
 
-  // ✅ Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  // ✅ Define link sets by role
+  // Links theo role 
   const linksByRole = {
     EMPLOYEE: [
-      { to: "/login/employee", icon: <FaHome />, text: "Home" },
-      { to: "infor", icon: <FaRegUser />, text: "My Information" },
-      { to: "attendance", icon: <PiNotePencilDuotone />, text: "Check Attendance" },
-      { to: "submittask", icon: <IoMdCloudUpload />, text: "Submit Task" },
-      { to: "notification", icon: <BiChat />, text: "Notifications" },
-      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+      {
+        group: "MAIN MENU",
+        items: [
+          { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
+          {
+            to: "/message",
+            icon: <HiOutlineDotsCircleHorizontal />,
+            text: "Message",
+          },
+        ],
+      },
+      {
+        group: "EMPLOYEES",
+        items: [
+          { to: "infor", icon: <FaRegUser />, text: "My information" },
+          { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
+          { to: "task", icon: <MdOutlineTaskAlt />, text: "Task" },
+          { to: "payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
+        ],
+      },
+      {
+        group: "PERFORMANCE",
+        items: [
+          { to: "performance", icon: <BsGraphUpArrow />, text: "Performance" },
+          { to: "goals", icon: <BsBullseye />, text: "Goals" },
+        ],
+      },
     ],
     MANAGER: [
-      { to: "/login/manager", icon: <FaHome />, text: "Home" },
-      { to: "infor", icon: <FaRegUser />, text: "My Information" },
-      { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
-      { to: "notification", icon: <BiChat />, text: "Notifications" },
-      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+      {
+        group: "MAIN MENU",
+        items: [
+          { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
+          {
+            to: "message",
+            icon: <HiOutlineDotsCircleHorizontal />,
+            text: "Message",
+          },
+        ],
+      },
+      {
+        group: "MANAGER",
+        items: [
+          { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
+          { to: "notification", icon: <BiChat />, text: "Notifications" },
+        ],
+      },
     ],
     ADMIN: [
-      { to: "/login/admin", icon: <FaHome />, text: "Home" },
-      { to: "employee", icon: <FaRegUser />, text: "All Employees" },
-      { to: "department", icon: <PiNotePencilDuotone />, text: "All Departments" },
-      { to: "admin-attendance", icon: <IoMdCloudUpload />, text: "Check Attendance" },
-      { to: "admin-salary", icon: <IoMdCloudUpload />, text: "Salary & Benefits" },
-      { to: "/", icon: <BiLogOut />, text: "Log Out", onClick: handleLogout },
+      {
+        group: "MAIN MENU",
+        items: [
+          { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard" },
+          { to: "notifications", icon: <MdDashboard />, text: "Notifications" },
+        ],
+      },
+      {
+        group: "ADMIN",
+        items: [
+          { to: "employee", icon: <FaRegUser />, text: "All Employees" },
+          {
+            to: "department",
+            icon: <PiNotePencilDuotone />,
+            text: "Departments",
+          },
+          {
+            to: "admin-attendance",
+            icon: <IoMdCloudUpload />,
+            text: "Attendance",
+          },
+          {
+            to: "admin-salary",
+            icon: <MdOutlineAttachMoney />,
+            text: "Salary & Benefits",
+          },
+        ],
+      },
     ],
   };
 
-  const sidebarLinks = linksByRole[role] || [];
+  const groupedLinks = linksByRole[role] || [];
 
   return (
+    /* parent relative để nút toggle absolute hoạt động đúng */
     <div
-      className={`flex flex-col h-full bg-[#d8eefe] dark:bg-gray-800 text-[#094067] dark:text-gray-100 transition-all duration-300 rounded-xl shadow-lg ${
+      className={`relative h-screen bg-white shadow-lg flex flex-col justify-between transition-all duration-300 ${
         expanded ? "w-64" : "w-20"
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-300 dark:border-gray-700">
-        {expanded && (
-          <span className="text-lg font-bold text-[#001858] dark:text-white">
-            BK-MANARATE
-          </span>
-        )}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="text-[#3da9fc] dark:text-blue-400 text-xl hover:scale-110 transition-transform"
-        >
-          {expanded ? <FaArrowLeft /> : <FaArrowRight />}
-        </button>
+      <div>
+        <div className="flex items-center justify-between px-5 py-5 border-b border-gray-200 relative">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo" className="w-7 h-7" />
+            {expanded && (
+              <h1 className="font-semibold text-[#1d3b84] text-xl">LOGO</h1>
+            )}
+          </div>
 
+          {/* Toggle button: functional updater + z-index cao + accessible */}
+          <button
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+            onClick={() => setExpanded((prev) => !prev)} // <-- functional updater
+            className="z-50 -mr-2 w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-md hover:scale-105 transition-transform absolute right-[-14px] top-5"
+            style={{ pointerEvents: "auto" }}
+            // keyboard accessibility
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ")
+                setExpanded((prev) => !prev);
+            }}
+          >
+            {expanded ? (
+              <FaArrowLeft className="text-[#1d3b84]" />
+            ) : (
+              <FaArrowRight className="text-[#1d3b84]" />
+            )}
+          </button>
+        </div>
+
+        {/* Sidebar Links */}
+        <div className="mt-6 flex flex-col gap-6 px-3 overflow-y-auto">
+          {groupedLinks.map((section, idx) => (
+            <div key={idx}>
+              {expanded && (
+                <p className="text-xs text-gray-400 uppercase font-medium mb-3 tracking-wide pl-2">
+                  {section.group}
+                </p>
+              )}
+              <div className="flex flex-col gap-1">
+                {section.items.map(({ to, icon, text, onClick }, i) => (
+                  <NavLink
+                    key={i}
+                    to={to}
+                    onClick={onClick}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 ${
+                        expanded ? "px-4" : "px-2 justify-center"
+                      } py-2 rounded-md transition-all ${
+                        isActive
+                          ? "text-[#1d3b84] font-medium bg-blue-50"
+                          : "text-gray-600 hover:bg-blue-50 hover:text-[#1d3b84]"
+                      }`
+                    }
+                  >
+                    <span className="text-lg">{icon}</span>
+                    {expanded && (
+                      <span className="text-sm truncate">{text}</span>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Avatar */}
-      {/* <div className="flex flex-col items-center py-4 border-b border-gray-300 dark:border-gray-700">
-        <img
-          src={DefaultProfile}
-          alt="Avatar"
-          className="w-14 h-14 rounded-full object-cover border-2 border-blue-300 dark:border-blue-500"
-        />
-        {expanded && (
-          <div className="mt-2 text-sm font-semibold">
-            {role ? role.charAt(0) + role.slice(1).toLowerCase() : "User"}
-          </div>
-        )}
-      </div> */}
-
-      {/* Sidebar Links */}
-      <SidebarLinks expanded={expanded} links={sidebarLinks} />
-    </div>
-  );
-}
-
-// ✅ Subcomponent for reusable sidebar links
-function SidebarLinks({ expanded, links }) {
-  return (
-    <nav className="flex flex-col px-2 mt-4 space-y-1 text-base font-medium">
-      {links.map(({ to, icon, text, onClick }, idx) => (
-        <NavLink
-          key={idx}
-          to={to}
-          onClick={onClick}
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 
-             ${
-               isActive
-                 ? "bg-[#1d5084] text-white shadow-md"
-                 : "hover:bg-blue-100 dark:hover:bg-gray-700 text-[#094067] dark:text-gray-200"
-             }`
-          }
+      {/* Logout Section */}
+      <div className="border-t border-gray-200 px-3 py-4">
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${
+            expanded ? "px-4 py-2" : "px-2 justify-center py-2"
+          }`}
         >
-          <span className="text-lg">{icon}</span>
-          {expanded && <span className="truncate">{text}</span>}
-        </NavLink>
-      ))}
-    </nav>
+          <BiLogOut className="text-lg" />
+          {expanded && <span className="text-sm font-medium">Logout</span>}
+        </button>
+      </div>
+    </div>
   );
 }
 
