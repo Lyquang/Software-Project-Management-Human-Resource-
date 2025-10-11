@@ -1,44 +1,49 @@
-import React, { useState, useRef, useEffect, Children } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
-export const AddPersonel = ({children}) => {
+export const AddPersonel = ({ children }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     firstName: '',
     lastName: '',
-    position: 'EMPLOYEE',
     gender: 'MALE',
+    dob: '',
     email: '',
+    phoneNumber: '',
     city: '',
     street: '',
-    phone: ''
+    description: '',
+    skills: '',
+    position: 'software',
+    role: 'EMPLOYEE'
   });
 
   const dropdownRef = useRef(null);
 
   const toggleDropdown = () => {
-    setShowDropdown(prev => !prev);
+    setShowDropdown((prev) => !prev);
   };
 
   const handleAddEmployee = () => {
-    setFormData(prev => ({ ...prev, position: 'EMPLOYEE' }));
+    setFormData((prev) => ({ ...prev, role: 'EMPLOYEE' }));
     setShowDropdown(false);
     setShowForm(true);
   };
 
   const handleAddManager = () => {
-    setFormData(prev => ({ ...prev, position: 'MANAGER' }));
+    setFormData((prev) => ({ ...prev, role: 'MANAGER' }));
     setShowDropdown(false);
     setShowForm(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -48,81 +53,59 @@ export const AddPersonel = ({children}) => {
     e.preventDefault();
 
     try {
-      // 1. Create account
-      const accountRes = await axios.post('http://localhost:8080/ems/account/create', {
-        username: formData.username,
-        password: formData.password
-      });
+      const token = localStorage.getItem('token'); // 👈 Token được lưu khi login
 
-      if (accountRes.data.code === 1000 && formData.position === 'EMPLOYEE') {
-        const accountId = accountRes.data.result.id;
-
-        // 2. Send personal info (replace URL if different)
-        const personRes = await axios.post('http://localhost:8080/ems/employee/create', {
-          accountId,
+      const res = await axios.post(
+        'http://localhost:8080/ems/personnels',
+        {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          position: formData.position,
           gender: formData.gender,
+          dob: formData.dob,
           email: formData.email,
+          phoneNumber: formData.phoneNumber,
           city: formData.city,
           street: formData.street,
-          phone: formData.phone
-        });
+          description: formData.description,
+          skills: formData.skills,
+          position: formData.position,
+          accountCreationRequest: {
+            username: formData.username,
+            password: formData.password,
+            role: formData.role
+          }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-        alert('✅ Tạo tài khoản EMPLOYEE thành công!');
+      if (res.status === 200 || res.status === 201) {
+        alert(`✅ Tạo ${formData.role} thành công!`);
         setShowForm(false);
         setFormData({
           username: '',
           password: '',
           firstName: '',
           lastName: '',
-          position: 'EMPLOYEE',
-          gender: '',
+          gender: 'MALE',
+          dob: '',
           email: '',
+          phoneNumber: '',
           city: '',
           street: '',
-          phone: ''
+          description: '',
+          skills: '',
+          position: 'software',
+          role: 'EMPLOYEE'
         });
-      }  
-      else if(accountRes.data.code === 1000 && formData.position === 'MANAGER') {
-        const accountId = accountRes.data.result.id;
-
-        // 2. Send personal info (replace URL if different)
-        const personRes = await axios.post('http://localhost:8080/ems/managers/create', {
-          accountId,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          position: formData.position,
-          gender: formData.gender,
-          email: formData.email,
-          city: formData.city,
-          street: formData.street,
-          phone: formData.phone
-        });
-
-        alert('✅ Tạo tài khoản MANAGER thành công!');
-        setShowForm(false);
-        setFormData({
-          username: '',
-          password: '',
-          firstName: '',
-          lastName: '',
-          position: 'MANAGER',
-          gender: '',
-          email: '',
-          city: '',
-          street: '',
-          phone: ''
-        });
-
-      }
-     else {
-        alert('❌ Lỗi tạo tài khoản: ' + accountRes.data.message);
       }
     } catch (error) {
-      console.error(error);
-      alert('❌ Có lỗi xảy ra khi tạo tài khoản hoặc nhân sự.');
+      console.error('❌ Lỗi tạo nhân sự:', error);
+      alert('❌ Có lỗi xảy ra khi tạo nhân sự.');
     }
   };
 
@@ -139,112 +122,217 @@ export const AddPersonel = ({children}) => {
 
   return (
     <div className="container mt-4">
-      <div className="dropdown mb-3 " style={{backgroundColor:'transparent'}} ref={dropdownRef}>
+      <div className="dropdown mb-3" style={{ backgroundColor: 'transparent' }} ref={dropdownRef}>
         <span className="btn btn-success dropdown-toggle" type="button" onClick={toggleDropdown}>
-          {children ||"+ Thêm nhân sự"}
+          {children || '+ Thêm nhân sự'}
         </span>
 
-        <div className={`dropdown-menu ${showDropdown ? 'show' : ''}` }>
-          <button className="dropdown-item bg-success " onClick={handleAddEmployee}>
+        <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+          <button className="dropdown-item bg-success text-white" onClick={handleAddEmployee}>
             ➕ Add Employee
           </button>
-          <button className="dropdown-item bg-success " onClick={handleAddManager}>
+          <button className="dropdown-item bg-success text-white" onClick={handleAddManager}>
             ➕ Add Manager
           </button>
         </div>
       </div>
 
       {showForm && (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog"
-        style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1050
-        }}
-      >
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Thông tin tài khoản & nhân sự</h5>
-              <button
-                type="button"
-                className="close"
-                onClick={() => setShowForm(false)}
-              >
-                <span>&times;</span>
-              </button>
-            </div>
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 1050
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Thông tin nhân sự</h5>
+                <button type="button" className="close" onClick={() => setShowForm(false)}>
+                  <span>&times;</span>
+                </button>
+              </div>
 
-            <div className="modal-body" style={{ maxHeight: '75rem',maxWidth: '60rem', overflowY: 'auto' }}>
-              <form onSubmit={handleSubmit}>
-                <form style={{ gap: '3rem' }}>
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" id="email" placeholder="Enter username" name="username" value={formData.username} onChange={handleChange} required />
-                        </div>
-                        <div class="col">
-                            <input type="password" class="form-control" placeholder="Enter password" name="password" value={formData.password} onChange={handleChange} required/>
-                        </div>
+              <div className="modal-body" style={{ maxHeight: '75rem', maxWidth: '60rem', overflowY: 'auto' }}>
+                <form onSubmit={handleSubmit}>
+                  <div className="row">
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" id="email" placeholder="LastName" name="lastName"value={formData.lastName} onChange={handleChange} required />
-                        </div>
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="FirstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
-                        </div>
+                    <div className="col">
+                      <input
+                        type="password"
+                        className="form-control"
+                        placeholder="Password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
+                  </div>
 
-                    <div class="row">
-                        <div class="col">
-                            <select className="form-control" name="gender" placeholder="Gender" value={formData.gender} onChange={handleChange}> 
-                                <option value="MALE">Nam</option>
-                                <option value="FEMALE">Nữ</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Position" name="position" value={formData.position} readOnly />
-                        </div>
+                  <div className="row mt-2">
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Last Name"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
-
-                    <div class="row">
-                        <div class="col">
-                             <input type="email" className="form-control" placeholder="Email" name="email" value={formData.email} onChange={handleChange} required />
-                        </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="First Name"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
+                  </div>
 
-                    <div class="row">
-                        <div class="col">
-                            <input type="text" class="form-control" id="email" placeholder="City" name="city"  value={formData.city} onChange={handleChange} required />
-                        </div>
-                        <div class="col">
-                            <input type="text" class="form-control" placeholder="Street" name="street"value={formData.street} onChange={handleChange} required />
-                        </div>
+                  <div className="row mt-2">
+                    <div className="col">
+                      <select
+                        className="form-control"
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="MALE">Nam</option>
+                        <option value="FEMALE">Nữ</option>
+                      </select>
                     </div>
-
-                     <div class="row">
-                        <div class="col">
-                             <input type="text" className="form-control" placeholder="PhoneNumber" name="phone" value={formData.phone} onChange={handleChange} required />
-                        </div>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
+                  </div>
 
+                  <div className="row mt-2">
+                    <div className="col">
+                      <input
+                        type="email"
+                        className="form-control"
+                        placeholder="Email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Phone Number"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mt-2">
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="City"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Street"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mt-2">
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Skills"
+                        name="skills"
+                        value={formData.skills}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Position"
+                        name="position"
+                        value={formData.position}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-2">
+                    <textarea
+                      className="form-control"
+                      placeholder="Description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="modal-footer mt-3">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>
+                      Hủy
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Tạo tài khoản
+                    </button>
+                  </div>
                 </form>
-
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Hủy</button>
-                  <button type="submit" className="btn btn-primary">Tạo tài khoản</button>
-                </div>
-              </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-        
       )}
     </div>
   );

@@ -7,6 +7,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import backgroundImage from "../assets/background.jpg";
 import { login } from "../../store/slices/user-slices";
+import { API_ROUTES } from "../../api/apiRoutes";
+
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -26,10 +28,13 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const response = await axios.post("http://localhost:8080/ems/auth/login", {
+
+
+      const response = await axios.post(API_ROUTES.PERSONNELS.LOGIN, {
         username,
         password,
       });
+
 
       console.log("Login response:", response.data);
 

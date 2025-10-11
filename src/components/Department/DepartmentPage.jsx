@@ -6,6 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { MdAddHomeWork } from "react-icons/md";
 import "../../index.css";
 import Loading from "../Loading/Loading";
+import { API_ROUTES } from "../../api/apiRoutes";
+import axiosInstance from "../../api/axiosInstance";
 const DepartmentPage = () => {
   const [departments, setDepartments] = useState([]);
   const [error, setError] = useState(null);
@@ -24,11 +26,19 @@ useEffect(() => {
         return;
       }
 
-      const response = await axios.get("http://localhost:8080/ems/departments/all", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const response = await axios.get("http://localhost:8080/ems/departments/all", {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+      // const response = await axios.get(API_ROUTES.DEPARTMENT.GET_ALL);
+      const response = await axiosInstance.get(API_ROUTES.DEPARTMENT.GET_ALL);
+
+      console.log("Fetched departments with managers:", response.data);
+
+
+
+
 
 
 

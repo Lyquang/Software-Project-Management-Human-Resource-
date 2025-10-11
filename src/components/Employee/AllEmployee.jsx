@@ -8,11 +8,15 @@ import { MdAssignment } from "react-icons/md";
 import { ThemeContext } from "../../ThemeContext";
 import Loading from "../Loading/Loading";
 import "../../index.css";
+import { API_ROUTES } from "../../api/apiRoutes";
+import axiosInstance from "../../api/axiosInstance";
 
 function AllEmployee() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const { theme } = useContext(ThemeContext);
 
@@ -26,9 +30,8 @@ function AllEmployee() {
           return;
         }
 
-        const response = await axios.get("http://localhost:8080/ems/personnels/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+// đã thêm sẵn token ơn axiosInstance  /src/api/axiosInstance.js
+        const response = await axiosInstance.get(API_ROUTES.PERSONNELS.GET_ALL);
 
         const data = response.data.result || [];
         console.log("Fetched employees:", data);
@@ -44,20 +47,19 @@ function AllEmployee() {
     fetchEmployees();
   }, []);
 
-  const handleSettingClick = (employee) => {
-    console.log("Clicked employee:", employee.firstName, employee.lastName);
-  };
+  const totalPages = Math.ceil(employees.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEmployees = employees.slice(indexOfFirstItem, indexOfLastItem);
 
   if (loading) return <Loading />;
   if (error)
-    return <div className="text-center text-red-500 text-lg py-10">{error}</div>;
+    return (
+      <div className="text-center text-red-500 text-lg py-10">{error}</div>
+    );
 
   return (
-    <div
-      className={`min-h-screen py-8 px-6 transition-colors duration-300 ${
-        theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
-    >
+    <div className={`min-h-screen py-8 px-6 transition-colors duration-300`}>
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">All Employees</h2>
@@ -71,8 +73,65 @@ function AllEmployee() {
         </div>
       </div>
 
-      {/* Employee Table */}
-      <EmployeeCard employees={employees} />
+      {/* Employee List */}
+      {employees.length === 0 ? (
+        <div className="text-center text-lg">No employees found.</div>
+      ) : (
+        <>
+          <EmployeeCard employees={currentEmployees} />
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center mt-6">
+            <ul className="flex space-x-2">
+              {/* Previous Button */}
+              <li>
+                <button
+                  className={`px-4 py-2 rounded ${
+                    currentPage === 1
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+              </li>
+
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li key={i}>
+                  <button
+                    className={`px-4 py-2 rounded ${
+                      currentPage === i + 1
+                        ? "bg-blue-700 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-blue-100"
+                    }`}
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
+
+              {/* Next Button */}
+              <li>
+                <button
+                  className={`px-4 py-2 rounded ${
+                    currentPage === totalPages
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </div>
+        </>
+      )}
     </div>
   );
 }
