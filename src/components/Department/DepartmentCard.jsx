@@ -27,6 +27,8 @@ const departmentImages = [
 const DepartmentCard = ({ department }) => {
   const randomImage =
     departmentImages[Math.floor(Math.random() * departmentImages.length)];
+    // pick manager object safely
+    const manager = department.manager || {};
 
   return (
     <div className="col-md-6 col-lg-4 mb-4">
@@ -37,19 +39,18 @@ const DepartmentCard = ({ department }) => {
           style={{ backgroundImage: `url(${randomImage})` }}
         >
           <div className="avatar-icon">
-            <img src={department.managerAvatar || DefaultAvatar} alt="Avatar" />
+            <img src={manager.avatar || DefaultAvatar} alt="Avatar" />
           </div>
         </div>
 
         {/* Right Info Area */}
         <div className="card px-3 py-3 flex-grow-1 card-text" style={{ marginLeft: "10px" }}>
-          <h5 className="fw-bold display-7">{department.department_name}</h5>
+          <h5 className="fw-bold display-7"> {department.department_name}</h5>
           <p className="mb-2 display-7 fw-bold" style={{ fontSize: "16px" }}>
-            Department ID: {department.department_id}<br />
-            Manager ID: {department.manager_code || "Not Yet"}<br />
+            Manager ID: {manager.code || "Not Yet"}<br />
             Number of Employees: {department.employee_number}<br />
             Establish Date: {department.establishment_date}<br />
-            Manager: {department.managerName || "Not Yet"}
+            Manager: {manager.name || "Not Yet"}
           </p>
 
           <div className="d-flex justify-content-start gap-3 text-success" style={{ fontSize: "1.5rem" }}>

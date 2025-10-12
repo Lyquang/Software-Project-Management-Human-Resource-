@@ -6,7 +6,6 @@ import {jwtDecode } from "jwt-decode"; // 🧩 thêm dòng này
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import backgroundImage from "../assets/background.jpg";
-import { login } from "../../store/slices/user-slices";
 import { API_ROUTES } from "../../api/apiRoutes";
 
 
@@ -17,7 +16,6 @@ function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -55,7 +53,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(decoded));
 
         // Cập nhật redux (nếu cần)
-        dispatch(login({ user: decoded, token }));
+        // dispatch(login({ user: decoded, token }));
 
         // 🧭 Điều hướng dựa trên scope
         const scope = decoded.scope;

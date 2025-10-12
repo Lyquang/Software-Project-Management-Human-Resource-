@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AddDepartmentBtn } from "./AddDepartmentBtn";
 import DepartmentCard from "./DepartmentCard";
-import axios from "../utils/axiosCustomize";
+// import axios from "../utils/axiosCustomize";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { MdAddHomeWork } from "react-icons/md";
 import "../../index.css";
@@ -39,7 +39,6 @@ useEffect(() => {
 
       if (response.data && Array.isArray(response.data.result)) {
         setDepartments(response.data.result);
-        console.log("all department", response.data.result)
         console.log("API Response all department:", departments);
       } else {
         setError("Invalid API response format.");

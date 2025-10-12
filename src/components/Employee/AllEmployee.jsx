@@ -30,7 +30,7 @@ function AllEmployee() {
           return;
         }
 
-// đã thêm sẵn token ơn axiosInstance  /src/api/axiosInstance.js
+        // đã thêm sẵn token ơn axiosInstance  /src/api/axiosInstance.js
         const response = await axiosInstance.get(API_ROUTES.PERSONNELS.GET_ALL);
 
         const data = response.data.result || [];
