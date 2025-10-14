@@ -26,12 +26,6 @@ useEffect(() => {
         return;
       }
 
-      // const response = await axios.get("http://localhost:8080/ems/departments/all", {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
-      // const response = await axios.get(API_ROUTES.DEPARTMENT.GET_ALL);
       const response = await axiosInstance.get(API_ROUTES.DEPARTMENT.GET_ALL);
 
       console.log("Fetched departments with managers:", response.data);

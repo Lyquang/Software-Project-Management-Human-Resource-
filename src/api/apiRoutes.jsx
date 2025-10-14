@@ -1,33 +1,8 @@
 // src/api/apiRoutes.js
+// dương link chạy local
 // const BASE_URL = "http://localhost:8080/ems";
-
-// export const API_ROUTES = {
-//   PERSONNELS: {
-//     BASE: `${BASE_URL}/personnels`,
-//     GET_ALL: `${BASE_URL}/personnels/all`,
-//     GET_ONE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
-//     CREATE: `${BASE_URL}/personnels`,
-//     UPDATE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
-//     DELETE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
-//   },
-
-//   ACCOUNTS: {
-//     CREATE: `${BASE_URL}/account/create`,
-//   },
-
-//   EMPLOYEES: {
-//     CREATE: `${BASE_URL}/employee/create`,
-//   },
-
-//   MANAGERS: {
-//     CREATE: `${BASE_URL}/managers/create`,
-//   },
-// };
-
-
-// src/api/apiRoutes.js
-const BASE_URL = "http://localhost:8080/ems";
-//const BASE_URL = "https://ems-efub.onrender.com/ems";
+// link render trên web
+const BASE_URL = "https://ems-efub.onrender.com/ems";
 
 export const API_ROUTES = {
   PERSONNELS: {
@@ -39,11 +14,18 @@ export const API_ROUTES = {
     UPDATE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     DELETE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     MY_INFO: `${BASE_URL}/personnels/myInfo`,
+    ASSIGN_EMPLOYEE: (departmentId, empCode) =>
+      `${BASE_URL}/departments/${departmentId}/employee/assign?employeeCode=${empCode}`,
+    ASSIGN_MANAGER: (departmentId, empCode) =>
+      `${BASE_URL}/departments/${departmentId}/manager/assign?managerId=${empCode}`,
   },
 
   DEPARTMENT: {
     BASE: `${BASE_URL}/departments`,
-    GET_ALL: `${BASE_URL}/departments/all`,},
+    GET_ALL: `${BASE_URL}/departments/all`,
+    GET_DEPARTMENT_PERSONNEL: (departmentId) =>
+      `${BASE_URL}/departments/${departmentId}/employees`,
+  },
 
   ACCOUNTS: {
     CREATE: `${BASE_URL}/account/create`,
@@ -57,4 +39,3 @@ export const API_ROUTES = {
     CREATE: `${BASE_URL}/managers/create`,
   },
 };
-

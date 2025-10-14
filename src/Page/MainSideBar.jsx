@@ -19,6 +19,7 @@ import {
 } from "react-icons/md";
 import { BsGraphUpArrow, BsBullseye } from "react-icons/bs";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
+import logo from "../components/assets/logo.jpg"
 
 function MainSideBar() {
   const [expanded, setExpanded] = useState(true);
@@ -143,10 +144,8 @@ function MainSideBar() {
       <div>
         <div className="flex items-center justify-between px-5 py-5 border-b border-gray-200 relative">
           <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Logo" className="w-7 h-7" />
-            {expanded && (
-              <h1 className="font-semibold text-[#1d3b84] text-xl">LOGO</h1>
-            )}
+            <img src ={logo}  alt="Logo" className="w-[8rem] h-[8rem]" />
+            {expanded }
           </div>
 
           {/* Toggle button: functional updater + z-index cao + accessible */}

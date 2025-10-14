@@ -56,7 +56,7 @@ export const AddPersonel = ({ children }) => {
       const token = localStorage.getItem('token'); // 👈 Token được lưu khi login
 
       const res = await axios.post(
-        'http://localhost:8080/ems/personnels',
+        'https://ems-efub.onrender.com/ems/personnels',
         {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -105,7 +105,7 @@ export const AddPersonel = ({ children }) => {
       }
     } catch (error) {
       console.error('❌ Lỗi tạo nhân sự:', error);
-      alert('❌ Có lỗi xảy ra khi tạo nhân sự.');
+      alert('❌ Có lỗi xảy ra khi tạo nhân sự.', error);
     }
   };
 
@@ -136,7 +136,7 @@ export const AddPersonel = ({ children }) => {
           </button>
         </div>
       </div>
-
+{/* hiện form đang kí thông tin nhân sự */}
       {showForm && (
         <div
           className="modal fade show d-block"
@@ -334,6 +334,8 @@ export const AddPersonel = ({ children }) => {
           </div>
         </div>
       )}
+
+
     </div>
   );
 };

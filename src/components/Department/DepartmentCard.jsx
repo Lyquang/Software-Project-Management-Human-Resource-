@@ -47,18 +47,18 @@ const DepartmentCard = ({ department }) => {
         <div className="card px-3 py-3 flex-grow-1 card-text" style={{ marginLeft: "10px" }}>
           <h5 className="fw-bold display-7"> {department.department_name}</h5>
           <p className="mb-2 display-7 fw-bold" style={{ fontSize: "16px" }}>
-            Manager ID: {manager.code || "Not Yet"}<br />
+            Department ID: {department.department_id|| "Not Yet"}<br />
             Number of Employees: {department.employee_number}<br />
             Establish Date: {department.establishment_date}<br />
-            Manager: {manager.name || "Not Yet"}
+
           </p>
 
           <div className="d-flex justify-content-start gap-3 text-success" style={{ fontSize: "1.5rem" }}>
-            <DeleteDepartmentBtn departmentId={department.departmentId}>
+            <DeleteDepartmentBtn departmentId={department.department_id}>
               <MdDelete style={{ cursor: "pointer", color: "red" }} />
             </DeleteDepartmentBtn>
 
-            <EmployeeBelongDep departmentId={department.departmentId}>
+            <EmployeeBelongDep departmentId={department.department_id}>
               <IoIosPeople style={{ cursor: "pointer", color: "blue" }} />
             </EmployeeBelongDep>
           </div>
