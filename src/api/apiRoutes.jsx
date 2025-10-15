@@ -10,7 +10,7 @@ export const API_ROUTES = {
     BASE: `${BASE_URL}/personnels`,
     GET_ALL: `${BASE_URL}/personnels/all`,
     GET_ONE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
-    CREATE: `${BASE_URL}/personnels`,
+    CREATE:  `${BASE_URL}/personnels`,
     UPDATE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     DELETE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     MY_INFO: `${BASE_URL}/personnels/myInfo`,
@@ -21,21 +21,11 @@ export const API_ROUTES = {
   },
 
   DEPARTMENT: {
+    CREATE: `${BASE_URL}/departments`,
     BASE: `${BASE_URL}/departments`,
     GET_ALL: `${BASE_URL}/departments/all`,
     GET_DEPARTMENT_PERSONNEL: (departmentId) =>
       `${BASE_URL}/departments/${departmentId}/employees`,
   },
 
-  ACCOUNTS: {
-    CREATE: `${BASE_URL}/account/create`,
-  },
-
-  EMPLOYEES: {
-    CREATE: `${BASE_URL}/employee/create`,
-  },
-
-  MANAGERS: {
-    CREATE: `${BASE_URL}/managers/create`,
-  },
 };

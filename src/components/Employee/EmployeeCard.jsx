@@ -4,6 +4,7 @@ import { Eye, Edit, Trash2 } from "lucide-react";
 import { FaMale, FaFemale } from "react-icons/fa";
 import DeletePersonel from "./DeletePersonel";
 import AssignPersonel from "./AssignPersonel";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
   if (!employees || employees.length === 0) {
@@ -59,21 +60,23 @@ const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-[1rem] text-gray-900 leading-none">
                           {emp.firstName} {emp.lastName}
                         </p>
+
                         {GenderIcon && (
                           <GenderIcon
                             className={`${
                               emp.gender === "MALE"
                                 ? "text-blue-500"
                                 : "text-pink-500"
-                            } text-sm`}
+                            } text-[1rem] flex-shrink-0`}
                           />
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">
-                        Code: {emp.code || "—"}
+
+                      <p className="text-sm text-gray-500 font-semibold">
+                        {emp.code || "—"}
                       </p>
                     </div>
                   </td>
@@ -120,15 +123,15 @@ const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <AssignPersonel  empCode={emp.code} role={emp.role}/>
+                  <td className="px-1 py-1 w-[0.5rem] whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <AssignPersonel empCode={emp.code} role={emp.role} />
                       <button
                         onClick={() => onEdit?.(emp)}
                         className="text-gray-500 hover:text-yellow-600 transition"
                         title="Edit"
                       >
-                        <Edit size={18} />
+                        <IoIosInformationCircleOutline size={20} color="blue" />
                       </button>
                       <DeletePersonel empCode={emp.code} onDeleted={onDelete} />
                     </div>

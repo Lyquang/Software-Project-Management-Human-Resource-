@@ -3,6 +3,7 @@ import { Eye } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../../api/axiosInstance";
 import { API_ROUTES } from "../../api/apiRoutes";
+import { MdAssignment } from "react-icons/md";
 
 const AssignPersonel = ({ empCode, role }) => {
   const [showForm, setShowForm] = useState(false);
@@ -12,7 +13,7 @@ const AssignPersonel = ({ empCode, role }) => {
   // ✅ Fetch all departments when component mounts
   const fetchDepartmentData = async () => {
     try {
-        //lay all department
+      //lay all department
       const response = await axiosInstance.get(API_ROUTES.DEPARTMENT.GET_ALL);
       const departments = response.data.result || [];
       console.log("Fetched departments:", departments);
@@ -33,7 +34,6 @@ const AssignPersonel = ({ empCode, role }) => {
 
   // ✅ Assign employee to selected department
   const handleAssign = async () => {
-  
     if (!selectedDepartment) {
       alert("Please select a department first!");
       return;
@@ -79,7 +79,7 @@ const AssignPersonel = ({ empCode, role }) => {
         className="text-gray-500 hover:text-blue-600 transition"
         title="Assign Into Department"
       >
-        <Eye size={18} />
+        <MdAssignment  size={20}/>
       </button>
 
       {/* 🧾 Modal Form */}
