@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import MainSideBar from "./MainSideBar";
+import Header from "./Header"
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ThemeProvider } from "../ThemeContext";
-import ThemeSwitcher from "../ThemeSwitcher";
 import { toast, ToastContainer } from "react-toastify";
-import Message_icon from "../components/assets/icon_message.svg";
 import { jwtDecode } from "jwt-decode";
 import "../index.css";
 
@@ -47,37 +46,27 @@ const MainPage = () => {
   return (
     <ThemeProvider>
       <ToastContainer />
-      <div className="d-flex vh-10" style={{ zIndex: 0 }}>
+      <div className="flex h-screen bg-gray-50 overflow-hidden">
         {/* Sidebar */}
-        <div className="main-sidebar">
-          <MainSideBar
-            expanded={isSidebarExpanded}
-            toggleSidebar={toggleSidebar}
-            tokenData={tokenData} // pass decoded data
+        <MainSideBar
+          expanded={isSidebarExpanded}
+          toggleSidebar={toggleSidebar}
+          tokenData={tokenData}
+        />
+
+        {/* Main Content Area */}
+        <div className="flex flex-col flex-1">
+          {/* 🆕 Header */}
+          <Header
+            userName={tokenData?.sub || "User"}
+            avatarUrl="/avatars/default.png"
           />
+
+          {/* 🧩 Nội dung chính */}
+          <main className="flex-1 p-4 overflow-y-auto">
+            <Outlet context={{ tokenData }} />
+          </main>
         </div>
-
-        {/* Main content */}
-        <div className="flex-grow-1 p-1 w-50">
-          <Outlet context={{ tokenData }} />
-        </div>
-
-        {/* Floating buttons */}
-        {/* <div>
-          <a className="btn-to-top rounded-circle shadow-lg" title="Lên đầu trang">
-            <ThemeSwitcher />
-          </a>
-
-          <a
-            href="#"
-            className="btn-message btn-primary rounded-circle shadow-lg"
-            title="Liên hệ & Góp ý"
-          >
-            <span className="rounded-circle">
-              <img className="img-message" src={Message_icon} alt="message" />
-            </span>
-          </a>
-        </div> */}
       </div>
     </ThemeProvider>
   );

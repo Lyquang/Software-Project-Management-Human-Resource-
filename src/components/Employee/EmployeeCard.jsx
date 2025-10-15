@@ -1,13 +1,10 @@
 import React from "react";
 import DefaultPhoto from "../assets/default_ava2.webp";
 import { Eye, Edit, Trash2 } from "lucide-react";
-
-const statusColorMap = {
-  Active: "bg-green-100 text-green-800 border border-green-300",
-  Paused: "bg-pink-100 text-pink-800 border border-pink-300",
-  Vacation: "bg-yellow-100 text-yellow-800 border border-yellow-300",
-  Default: "bg-gray-100 text-gray-700 border border-gray-300",
-};
+import { FaMale, FaFemale } from "react-icons/fa";
+import DeletePersonel from "./DeletePersonel";
+import AssignPersonel from "./AssignPersonel";
+import { IoIosInformationCircleOutline } from "react-icons/io";
 
 const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
   if (!employees || employees.length === 0) {
@@ -25,84 +22,118 @@ const EmployeeCard = ({ employees, onDelete, onViewDetail, onEdit }) => {
 
   return (
     <div className="p-6 bg-white text-gray-800 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg">
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="overflow-x-auto rounded-lg">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold">NAME</th>
+              <th className="px-4 py-3 text-left font-semibold">NAME / CODE</th>
+              <th className="px-4 py-3 text-left font-semibold">DEPARTMENT</th>
               <th className="px-4 py-3 text-left font-semibold">ROLE</th>
-              <th className="px-4 py-3 text-left font-semibold">STATUS</th>
+              <th className="px-4 py-3 text-left font-semibold">
+                EMAIL / PHONE
+              </th>
+
+              <th className="px-4 py-3 text-left font-semibold">CITY</th>
               <th className="px-4 py-3 text-left font-semibold">ACTIONS</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200">
             {employees.map((emp, index) => {
-              const statusClass =
-                statusColorMap[emp.status] || statusColorMap.Default;
+              const GenderIcon =
+                emp.gender === "MALE"
+                  ? FaMale
+                  : emp.gender === "FEMALE"
+                  ? FaFemale
+                  : null;
               return (
                 <tr
                   key={emp.code || index}
                   className="hover:bg-gray-50 transition-colors duration-200"
                 >
-                  {/* NAME */}
-                  <td className=" py-3 flex items-center gap-3">
+                  {/* NAME + CODE */}
+                  <td className="px-4 py-3 flex items-center gap-3">
                     <img
                       src={emp.avatarUrl || DefaultPhoto}
                       alt="avatar"
                       className="w-10 h-10 rounded-full object-cover border border-gray-300"
                     />
                     <div>
-                      <p className="font-semibold text-gray-900">
-                        {emp.firstName} {emp.lastName}
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-[1rem] text-gray-900 leading-none">
+                          {emp.firstName} {emp.lastName}
+                        </p>
+
+                        {GenderIcon && (
+                          <GenderIcon
+                            className={`${
+                              emp.gender === "MALE"
+                                ? "text-blue-500"
+                                : "text-pink-500"
+                            } text-[1rem] flex-shrink-0`}
+                          />
+                        )}
+                      </div>
+
+                      <p className="text-sm text-gray-500 font-semibold">
+                        {emp.code || "—"}
                       </p>
-                      <p className="text-sm text-gray-500">{emp.email}</p>
                     </div>
+                  </td>
+
+                  {/* DEPARTMENT */}
+                  <td className="px-4 py-3">
+                    <p className="text-sm font-medium text-gray-800">
+                      {emp.departmentName || "Not Assigned"}
+                    </p>
                   </td>
 
                   {/* ROLE */}
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-gray-800">
-                      {emp.role || "Employee"}
+                    <p
+                      className={`font-semibold text-gray-800 inline-block px-2 py-1 rounded-full text-sm ${
+                        emp.role === "MANAGER"
+                          ? "bg-red-100"
+                          : emp.role === "EMPLOYEE"
+                          ? "bg-blue-100"
+                          : "bg-gray-100"
+                      }`}
+                    >
+                      {emp.role || "Not Assigned"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {emp.department || "—"}
+                      {emp.position || "No Position"}
                     </p>
                   </td>
 
-                  {/* STATUS */}
+                  {/* EMAIL + PHONE */}
                   <td className="px-4 py-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClass}`}
-                    >
-                      {emp.status || "Active"}
-                    </span>
+                    <p className="text-sm font-medium text-gray-800">
+                      {emp.email || "—"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {emp.phoneNumber || "—"}
+                    </p>
+                  </td>
+
+                  {/* CITY */}
+                  <td className="px-4 py-3 ">
+                    <p className="text-sm text-gray-700">{emp.city || "—"}</p>
+                    <p className="text-sm text-gray-700">{emp.street || "—"}</p>
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => onViewDetail?.(emp)}
-                        className="text-gray-500 hover:text-blue-600 transition"
-                        title="View details"
-                      >
-                        <Eye size={18} />
-                      </button>
+                  <td className="px-1 py-1 w-[0.5rem] whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <AssignPersonel empCode={emp.code} role={emp.role} />
                       <button
                         onClick={() => onEdit?.(emp)}
                         className="text-gray-500 hover:text-yellow-600 transition"
                         title="Edit"
                       >
-                        <Edit size={18} />
+                        <IoIosInformationCircleOutline size={20} color="blue" />
                       </button>
-                      <button
-                        onClick={() => onDelete?.(emp)}
-                        className="text-gray-500 hover:text-red-600 transition"
-                        title="Delete"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <DeletePersonel empCode={emp.code} onDeleted={onDelete} />
                     </div>
                   </td>
                 </tr>

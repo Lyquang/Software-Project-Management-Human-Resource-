@@ -4,12 +4,14 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API_ROUTES } from "../../api/apiRoutes";
+import axiosInstance from "../../api/axiosInstance";
 
 export const AddDepartmentBtn = ({ setDepartments, children }) => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    managerId: "",
+    manager_id: "",
   });
   const [error, setError] = useState(null);
 
@@ -17,7 +19,7 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
     setShowForm(true);
     setFormData({
       name: "",
-      managerId: "",
+      manager_id: "",
     });
   };
 
@@ -25,7 +27,7 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
     setShowForm(false);
     setFormData({
       name: "",
-      managerId: "",
+      manager_id: "",
     });
   };
 
@@ -35,24 +37,35 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
       ...prevData,
       [name]: value,
     }));
+    console.log("Form data updated:", formData);
   };
+  const token = localStorage.getItem("token"); // or however you store it
 
   const createDepartment = async (e) => {
     e.preventDefault();
 
     try {
       const payload = {
-        departmentName: formData.name,
-        managerId: formData.managerId ? Number(formData.managerId) : null, // Ensure managerId is numeric or null
+        name: formData.name,
+        // manager_id: formData.manager_id ? formData.manager_id : null, // Ensure managerId is numeric or null
       };
 
-      const response = await axios.post(
-        "http://localhost:8080/ems/departments/create",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // Nếu có nhập manager_id thì thêm vào payload
+      if (formData.manager_id && formData.manager_id.trim() !== "") {
+        payload.manager_id = formData.manager_id.trim();
+      }
+
+      // const response = await axiosInstance.post(
+      //   API_ROUTES.DEPARTMENT.CREATE,
+      //   payload
+      // );
+
+      const response = await axios.post(API_ROUTES.DEPARTMENT.CREATE, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response && response.data && response.data.result) {
         // Add the newly created department to the state
@@ -119,8 +132,8 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
                       type="text"
                       className="form-control"
                       placeholder="Enter ManagerID"
-                      name="managerId"
-                      value={formData.managerId}
+                      name="manager_id"
+                      value={formData.manager_id}
                       onChange={handleFormChange}
                     />
                   </div>

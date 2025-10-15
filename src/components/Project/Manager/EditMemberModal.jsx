@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EditMemberModal.scss";
-import { getAllPersonel, getAllProjects } from "../../services/apiService";
+// import { getAllPersonel, getAllProjects } from "../../services/apiService";
 import axios from "axios";
 import Loading from "../../Loading/Loading";
 
