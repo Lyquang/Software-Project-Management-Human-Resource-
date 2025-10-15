@@ -45,7 +45,7 @@ const DeletePersonel = ({ empCode, onDeleted }) => {
       }`}
       title="Delete"
     >
-      <Trash2 size={18} />
+      <Trash2 size={18} color="red" />
     </button>
   );
 };

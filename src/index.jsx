@@ -3,13 +3,12 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import store from "./store";
+// import store from "./store";
 
 
 import { Provider } from "react-redux";
 //import component chưa sử dụng
 // import AdminTraining from "./components/Training/AdminTraining";
-import Statistic from "./components/Statistic/Statistic";
 // import Page
 import MainPage from "./Page/MainPage";
 import Home from "./components/Authentication/Home";
@@ -20,11 +19,10 @@ import AllEmployee from "./components/Employee/AllEmployee";
 import EDashboard from "./Page/EDashboard";
 import SubmitTask from "./components/Project/Employee/SubmitTask";
 import EmployeeAttendance from "./components/Attendance/EmployeeAttendance";
-import EmployeeTraining from "./components/Training/EmployeeTraining";
 import PersonelInfor from "./components/Information/PersonelInfor";
+import EmployeeNotification from "./components/Notification/Employee/EmployeeNotification";
 // import component of manager
-import ManagerNotification from "./components/Chat/Manager/ManagerNotification";
-import EmployeeNotification from "./components/Chat/Employee/EmployeeNotification";
+import ManagerNotification from "./components/Notification/Manager/ManagerNotification";
 import ManagerProject from "./components/Project/Manager/ManagerProject";
 // import component of admin
 import DepartmentPage from "./components/Department/DepartmentPage";
@@ -34,7 +32,6 @@ import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -46,7 +43,6 @@ root.render(
           <Route path="admin-attendance" element={<AdminAttendance />} />
           <Route path="admin-salary" element={<AdminSalary />} />
           <Route path="department" element={<DepartmentPage />} />
-          <Route path="statistic" element={<Statistic />} />
         </Route>
 
         <Route exact path="/login/employee" element={<MainPage />}>
@@ -54,7 +50,6 @@ root.render(
           <Route path="infor" element={<PersonelInfor />} />
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="submittask" element={<SubmitTask />} />
-          <Route path="training" element={<EmployeeTraining />} />
           <Route path="notification" element={<EmployeeNotification />} />
         </Route>
 
@@ -63,12 +58,10 @@ root.render(
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="department" element={<DepartmentPage />} />
           <Route path="project" element={<ManagerProject />} />
-          <Route path="training" element={<EmployeeTraining />} />
           <Route path="notification" element={<ManagerNotification />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  </Provider>
 );
 
 reportWebVitals();

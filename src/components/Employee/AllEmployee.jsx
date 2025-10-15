@@ -30,7 +30,7 @@ function AllEmployee() {
           return;
         }
 
-// đã thêm sẵn token ơn axiosInstance  /src/api/axiosInstance.js
+        // đã thêm sẵn token ơn axiosInstance  /src/api/axiosInstance.js
         const response = await axiosInstance.get(API_ROUTES.PERSONNELS.GET_ALL);
 
         const data = response.data.result || [];
@@ -61,12 +61,10 @@ function AllEmployee() {
   return (
     <div className={`min-h-screen py-8 px-6 transition-colors duration-300`}>
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">All Employees</h2>
-        <div className="flex space-x-3">
-          <AssignEmployeeBtn refresh={() => window.location.reload()}>
-            <MdAssignment className="w-6 h-6" />
-          </AssignEmployeeBtn>
+      <div className="relative flex items-center mb-6">
+        <h2 className="text-[2rem] font-semibold mx-auto">All Employees</h2>
+
+        <div className="absolute right-0">
           <AddPersonel>
             <IoMdPersonAdd className="w-6 h-6" />
           </AddPersonel>
