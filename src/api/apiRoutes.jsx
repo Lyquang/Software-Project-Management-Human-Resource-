@@ -26,8 +26,8 @@
 
 
 // src/api/apiRoutes.js
-const BASE_URL = "http://localhost:8080/ems";
-//const BASE_URL = "https://ems-efub.onrender.com/ems";
+// const BASE_URL = "http://localhost:8080/ems";
+const BASE_URL = "https://ems-efub.onrender.com/ems";
 
 export const API_ROUTES = {
   PERSONNELS: {
@@ -39,6 +39,7 @@ export const API_ROUTES = {
     UPDATE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     DELETE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     MY_INFO: `${BASE_URL}/personnels/myInfo`,
+    UPLOAD_AVATAR: `${BASE_URL}/personnels/upload-avatar`,
   },
 
   DEPARTMENT: {
@@ -55,6 +56,10 @@ export const API_ROUTES = {
 
   MANAGERS: {
     CREATE: `${BASE_URL}/managers/create`,
+  },
+
+  ATTENDANCE: {
+    OVERVIEW: `${BASE_URL}/attendance/overview`,
   },
 };
 
