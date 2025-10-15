@@ -1,164 +1,208 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";      
-import "react-toastify/dist/ReactToastify.css";
-import "./EmployeeAttendance.scss";
-import { CheckInBtn } from "./CheckInBtn";
-import { CheckOutBtn } from "./CheckOutBtn";
+// src/components/EmployeeAttendance/EmployeeAttendance.jsx
+import React, { useState, useEffect, useMemo } from "react";
+import AttendanceCard from "./AttendanceCard";
+import AttendanceTable from "./AttendanceTable";
+import TimeDisplay from "./TimeDisplay";
+
+// Import icons
+import { FaCalendarAlt, FaCheckCircle, FaClock, FaTimesCircle, FaHourglassHalf } from "react-icons/fa";
+import axios from "../../api/axiosInstance";
+import { API_ROUTES } from "../../api/apiRoutes";
+
 const EmployeeAttendance = () => {
-  const [attendanceData, setAttendanceData] = useState([]);
+  const currentYear = new Date().getFullYear();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [filteredData, setFilteredData] = useState([]);
+  const [attendanceStats, setAttendanceStats] = useState({
+    present: 0,
+    late: 0,
+    absent: 0,
+    avgHours: "0.0",
+  });
+  const [todayStatus, setTodayStatus] = useState({
+    status: "...",
+    clockIn: "--:--",
+    workingHours: "In Progress",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const employeeCode = localStorage.getItem("personelCode");
+  const statusColors = {
+    Present: "bg-green-500",
+    "Work from office": "bg-green-600",
+    "Work from home": "bg-green-600",
+    Late: "bg-yellow-500",
+    Absent: "bg-red-500",
+    "In Progress": "bg-blue-500",
+  };
 
-  const fetchAttendanceData = async (month, year) => {
-    setLoading(true);
-    setError(null);
-
-    if (!employeeCode) {
-      setError("Employee code not found in local storage.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/ems/attendance/all/employee",
-        {
-          params: { code: employeeCode },
-        }
-      );
-
-      const { code, result } = response.data;
-      if (code === 1000) {
-        const filteredData = result.filter((attendance) => {
-          const attendanceDate = new Date(attendance.date);
-          return (
-            attendanceDate.getMonth() === month - 1 &&
-            attendanceDate.getFullYear() === year
-          );
-        });
-        setAttendanceData(filteredData);
-      } else {
-        setError("Failed to fetch attendance records.");
-      }
-    } catch (err) {
-      setError("Error while fetching attendance data.");
-    } finally {
-      setLoading(false);
+  const mapStatus = (status) => {
+    switch ((status || "").toUpperCase()) {
+      case "WORK_FROM_OFFICE": return "Work from office";
+      case "WORK_FROM_HOME": return "Work from home";
+      case "PRESENT": return "Present";
+      case "ABSENT": return "Absent";
+      case "LATE": return "Late";
+      default: return "Present";
     }
   };
+
+  const parseApiDate = (s) => {
+    const d = new Date(s); // e.g. "14 Oct 2025"
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  };
+
+  const isSameYMD = (a, b) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
 
   useEffect(() => {
-    fetchAttendanceData(selectedMonth, selectedYear);
+    const fetchOverview = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const { data } = await axios.get(API_ROUTES.ATTENDANCE.OVERVIEW, {
+          params: { month: selectedMonth, year: selectedYear },
+        });
+        if (data?.code !== 200 || !data?.result) {
+          throw new Error("Invalid response");
+        }
+        const { totalDays, presentDays, lateDays, absentDays, averageHours, records } = data.result;
+
+        // Cập nhật bảng
+        const tableData = (records || []).map((r) => ({
+          date: r.date,
+          day: r.day,
+          checkIn: r.checkIn ?? "--:--",
+          checkOut: r.checkOut ?? "--:--",
+          workHours: r.workHours,
+          status: mapStatus(r.status),
+          notes: r.notEnoughHour ? "Not enough hour" : "",
+        }));
+        setFilteredData(tableData);
+
+        // Cập nhật thống kê
+        setAttendanceStats({
+          totalDays: totalDays ?? tableData.length,
+          present: presentDays ?? 0,
+          late: lateDays ?? 0,
+          absent: absentDays ?? 0,
+          avgHours: typeof averageHours === "number" ? averageHours.toFixed(1) : "0.0",
+        });
+
+        // Lọc thông tin hôm nay
+        const today = new Date();
+        const todayRec = (records || []).find((r) => isSameYMD(parseApiDate(r.date), today));
+        if (todayRec) {
+          setTodayStatus({
+            status: mapStatus(todayRec.status),
+            clockIn: todayRec.checkIn ?? "--:--",
+            workingHours: todayRec.workHours ?? "0m",
+          });
+        } else {
+          setTodayStatus({
+            status: "Absent",
+            clockIn: "--:--",
+            workingHours: "0m",
+          });
+        }
+      } catch (e) {
+        setError("Failed to load attendance overview");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOverview();
   }, [selectedMonth, selectedYear]);
 
-  const calculateDurationInMinutes = (duration) => {
-    if (!duration) {
-      return 0; // Default to 0 if duration is null or undefined
-    }
-    const [hours, minutes] = duration.split(":").map(Number);
-    return hours * 60 + minutes;
-  };
+  const summaryCards = useMemo(() => [
+    { id: 1, title: "Total Days", value: attendanceStats.totalDays, icon: <FaCalendarAlt />, variant: "total" },
+    { id: 2, title: "Present", value: attendanceStats.present, icon: <FaCheckCircle />, variant: "present" },
+    { id: 3, title: "Late", value: attendanceStats.late, icon: <FaClock />, variant: "late" },
+    { id: 4, title: "Absent", value: attendanceStats.absent, icon: <FaTimesCircle />, variant: "absent" },
+    { id: 5, title: "Average hour", value: `${attendanceStats.avgHours}h`, icon: <FaHourglassHalf />, variant: "average" },
+  ], [attendanceStats]);
 
-  const getDayStatus = (day) => {
-    const match = attendanceData.find((attendance) => {
-      const attendanceDate = new Date(attendance.date);
-      return attendanceDate.getDate() === day;
-    });
-
-    if (!match) {
-      const today = new Date();
-      const isFuture = new Date(selectedYear, selectedMonth - 1, day) > today;
-      return isFuture
-        ? { color: "silver", text: "" }
-        : { color: "#ff4d4f", text: "Absent" };
-    }
-
-    const durationMinutes = calculateDurationInMinutes(match.duration);
-    let durationStatus = "";
-    let color = "";
-    console.log("da lam dc bn phut", durationMinutes);
-    if (durationMinutes >= 5) {
-      durationStatus = "Full Work ";
-      color = "#52c41a"; // Green for full work
-    } else if (durationMinutes >= 3 && durationMinutes < 5) {
-      durationStatus = "Half Work ";
-      color = "#faad14"; // Yellow for half work
-    } else {
-      durationStatus = "Absent";
-      color = "#ff4d4f"; // Red for absent
-    }
-
-    return { color, text: durationStatus };
-  };
 
   return (
-    <div className="container-fluid employee-attendance">
-      <ToastContainer />
-      <div className="title">My Attendance</div>
-      <div className="filters">
-        <div className="month-year-text">Month:</div>
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-        >
-          {[...Array(12).keys()].map((i) => (
-            <option key={i + 1} value={i + 1}>
-              {i + 1}
-            </option>
-          ))}
-        </select>
+    <div className="p-8 bg-gray-50 min-h-screen font-sans text-gray-800">
+      {/* Hiển thị lỗi/đang tải đơn giản */}
+      {loading && <div className="mb-4 text-gray-500">Loading attendance...</div>}
+      {error && <div className="mb-4 text-red-600">{error}</div>}
+      <h1 className="text-3xl font-bold mb-2">My Attendance</h1>
+      <p className="text-base text-gray-500 mb-8">Manage your attendance</p>
 
-        <div className="month-year-text">Year:</div>
-        <input
-          type="number"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-        />
-      </div>
-
-      <div className="calendar">
-        <div className="calendar-row">
-          {Array.from(
-            { length: new Date(selectedYear, selectedMonth, 0).getDate() },
-            (_, i) => i + 1
-          ).map((day) => {
-            const { color, text } = getDayStatus(day);
-            return (
-              <div
-                key={day}
-                className="calendar-day"
-                style={{
-                  backgroundColor: color,
-                margin:"3px",
-                  height:"16%",
-                  width:"16%",
-                  borderRadius: "8px",
-                  color: color === "transparent" ? "#000" : "#fff",
-                }}
-              >
-                <div className="day-number">{day}</div>
-                <div className="day-status">{text}</div>
-              </div>
-            );
-          })}
+      {/* Phần trên: Đồng hồ và Trạng thái hôm nay */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-xl font-semibold">Timekeeping</h3>
+          <TimeDisplay />
+          <div className="grid grid-cols-2 gap-4">
+            <button className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors">Check In</button>
+            <button className="w-full py-3 bg-gray-200 text-gray-500 font-semibold rounded-lg cursor-not-allowed" disabled>Check Out</button>
+          </div>
+        </div>
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-xl font-semibold">Total's Status</h3>
+          <p className="text-gray-500">Your attendance for today</p>
+          <div className="mt-6 space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500">Status:</span>
+              <span className={`px-3 py-1 text-sm font-semibold text-white rounded-full ${statusColors[todayStatus.status] || 'bg-gray-400'}`}>{todayStatus.status}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500">Clock In:</span>
+              <span className="font-semibold">{todayStatus.clockIn}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500">Working Hours:</span>
+              <span className={`px-3 py-1 text-sm font-semibold text-white rounded-full ${statusColors[todayStatus.workingHours === 'In Progress' ? 'In Progress' : ''] || 'bg-gray-700'}`}>{todayStatus.workingHours}</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="button-group">
-        <CheckInBtn
-          employeeCode={employeeCode}
-          onSuccess={() => fetchAttendanceData(selectedMonth, selectedYear)}
-        />
-        <CheckOutBtn
-          employeeCode={employeeCode}
-          onSuccess={() => fetchAttendanceData(selectedMonth, selectedYear)}
-        />
+      {/* Phần tổng quan */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex items-center gap-4 mb-6">
+            <label htmlFor="month-select" className="font-medium text-gray-600">Tháng:</label>
+            <select
+                id="month-select"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                {[...Array(12).keys()].map(i => <option key={i+1} value={i+1}>{i+1}</option>)}
+            </select>
+
+            <label htmlFor="year-select" className="font-medium text-gray-600">Năm:</label>
+            <select
+                id="year-select"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                {[...Array(5).keys()].map(i => <option key={currentYear - i} value={currentYear - i}>{currentYear - i}</option>)}
+            </select>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {summaryCards.map(card => (
+                <AttendanceCard
+                    key={card.id}
+                    title={card.title}
+                    value={card.value}
+                    icon={card.icon}
+                    variant={card.variant}
+                />
+            ))}
+        </div>
       </div>
+
+      {/* <-- Bảng danh sách được thêm vào đây --> */}
+      <AttendanceTable data={filteredData} />
     </div>
   );
 };
