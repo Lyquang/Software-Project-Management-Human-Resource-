@@ -1,49 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button } from 'react-bootstrap';
 
 const AdjustRateModal = ({ show, handleClose, rates, handleSave }) => {
-    const [formData, setFormData] = useState(rates);
+    const [formData, setFormData] = useState({
+        fullShiftRate: 0,
+        halfShiftRate: 0
+    });
     const [loading, setLoading] = useState(false);
+
+    // Sync formData với rates prop khi modal mở
+    useEffect(() => {
+        if (show && rates) {
+            setFormData({
+                fullShiftRate: rates.fullShiftRate || 0,
+                halfShiftRate: rates.halfShiftRate || 0
+            });
+        }
+    }, [show, rates]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const updatedFormData = { ...formData, [name]: parseFloat(value) };
-        setFormData(updatedFormData);
-        console.log(`Updated field: ${name}, Value: ${value}`); // For debugging
+        setFormData(prev => ({
+            ...prev,
+            [name]: parseFloat(value) || 0
+        }));
     };
 
     const handleSubmit = async () => {
-        console.log('Final data before save:', formData); // For debugging
+        console.log('Final data before save:', formData);
 
-        // Start loading state
+        // Validation
+        if (formData.fullShiftRate <= 0 || formData.halfShiftRate <= 0) {
+            alert('Vui lòng nhập giá trị hợp lệ (lớn hơn 0)');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // Call API to update rates
+            // Sử dụng URL đúng từ API
+            const API_URL = "https://ems-efub.onrender.com/ems";
+            
             const response = await axios.patch(
-                `http://localhost:8080/ems/salary/payrate-edit`,
+                `${API_URL}/salary/payrate-edit`,
                 null,
                 {
                     params: {
                         fullWorkPay: formData.fullShiftRate,
                         halfWorkPay: formData.halfShiftRate,
                     },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    }
                 }
             );
 
+            console.log('API Response:', response.data);
+
             if (response.data.code === 1000) {
                 alert('Cập nhật hệ số thành công!');
-                handleSave(formData); // Update parent state with new rates
+                handleSave(formData);
                 handleClose();
             } else {
-                alert('Đã có lỗi xảy ra, vui lòng thử lại!');
+                alert(`Lỗi: ${response.data.message || 'Đã có lỗi xảy ra'}`);
             }
         } catch (error) {
             console.error('Error updating rates:', error);
-            alert('Không thể cập nhật hệ số. Vui lòng kiểm tra kết nối!');
+            
+            if (error.response) {
+                // Server responded with error
+                alert(`Lỗi từ server: ${error.response.data?.message || error.response.statusText}`);
+            } else if (error.request) {
+                // Request made but no response
+                alert('Không thể kết nối đến server. Vui lòng kiểm tra kết nối!');
+            } else {
+                // Other errors
+                alert('Đã có lỗi xảy ra. Vui lòng thử lại!');
+            }
         } finally {
-            setLoading(false); // Stop loading state
+            setLoading(false);
         }
     };
 
@@ -54,25 +91,31 @@ const AdjustRateModal = ({ show, handleClose, rates, handleSave }) => {
             </Modal.Header>
             <Modal.Body>
                 <div className="mb-3">
-                    <label className="form-label">Lương 1 ca</label>
+                    <label className="form-label">Lương 1 ca (Full Shift)</label>
                     <input
                         type="number"
+                        step="0.01"
+                        min="0"
                         className="form-control"
                         name="fullShiftRate"
                         value={formData.fullShiftRate}
                         onChange={handleChange}
-                        disabled={loading} // Disable input during loading
+                        disabled={loading}
+                        placeholder="Nhập hệ số lương 1 ca"
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">Lương nửa ca</label>
+                    <label className="form-label">Lương nửa ca (Half Shift)</label>
                     <input
                         type="number"
+                        step="0.01"
+                        min="0"
                         className="form-control"
                         name="halfShiftRate"
                         value={formData.halfShiftRate}
                         onChange={handleChange}
-                        disabled={loading} // Disable input during loading
+                        disabled={loading}
+                        placeholder="Nhập hệ số lương nửa ca"
                     />
                 </div>
             </Modal.Body>
