@@ -27,7 +27,7 @@ const DeletePersonel = ({ empCode, onDeleted }) => {
 
       toast.success("✅ Personnel deleted successfully!");
       onDeleted?.(empCode);
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error("❌ Error deleting personnel:", error);
 
