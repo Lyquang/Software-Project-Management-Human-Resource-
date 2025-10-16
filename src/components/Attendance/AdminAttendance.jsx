@@ -104,7 +104,6 @@ const AttendanceAdmin = () => {
   };
 
   const fetchTodayAttendance = async () => {
-    // Code nguyên bản
     setLoading(true);
     setError(null);
     try {
@@ -148,7 +147,6 @@ const AttendanceAdmin = () => {
   };
 
   const fetchEmployeeAttendance = async (searchParams) => {
-    // Code nguyên bản
     setLoading(true);
     setError(null);
     try {
@@ -228,7 +226,6 @@ const AttendanceAdmin = () => {
   };
 
   const fetchRecords = async () => {
-    // Code nguyên bản
     setLoading(true);
     setError(null);
     try {
@@ -257,11 +254,12 @@ const AttendanceAdmin = () => {
       }
 
       const data = await response.json();
+      console.log("Records API response:", data);
 
-      if ((data.code === 200 || data.code === 0) && Array.isArray(data)) {
+      if (Array.isArray(data)) {
         setRecordsData(data);
-      } else if ((data.code === 200 || data.code === 0) && data.result) {
-        setRecordsData(data.result);
+      } else if (data.code === 200 || data.code === 0) {
+        setRecordsData(data.result || []);
       } else {
         setError(data.message || "Failed to fetch records");
       }
@@ -274,7 +272,6 @@ const AttendanceAdmin = () => {
   };
 
   const fetchSummary = async () => {
-    // Code nguyên bản
     setLoading(true);
     setError(null);
     try {
