@@ -153,18 +153,6 @@ const BasicInfo = () => {
 
   const handleAvatarClick = () => fileInputRef.current?.click();
 
-  const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result || '';
-        const base64 = String(result).split(',')[1] || '';
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
   const handleAvatarChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -172,27 +160,34 @@ const BasicInfo = () => {
       toast.error('Please select an image file');
       return;
     }
+
     setUploadingAvatar(true);
     const toastId = toast.loading('Uploading avatar...');
     try {
-      const base64 = await fileToBase64(file);
       const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+
+      const form = new FormData();
+      form.append('file', file); // field 'file' theo yêu cầu API
+
       const res = await fetch(API_ROUTES.PERSONNELS.UPLOAD_AVATAR, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          // KHÔNG đặt Content-Type để trình duyệt tự thêm boundary cho multipart/form-data
         },
-        body: JSON.stringify({ file: base64 }),
+        body: form,
       });
+
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.code !== 200) {
         throw new Error(data?.message || `Upload failed (${res.status})`);
       }
+
       const r = data.result;
       const newUrl = typeof r === 'string' ? r : r?.avatarUrl || r?.url || '';
       if (!newUrl) throw new Error('Missing avatarUrl in response');
+
       setFormData(prev => ({ ...prev, avatarUrl: newUrl }));
       toast.update(toastId, { render: 'Avatar updated!', type: 'success', isLoading: false, autoClose: 2000 });
     } catch (err) {
