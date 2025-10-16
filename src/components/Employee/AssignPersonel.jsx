@@ -34,22 +34,30 @@ const AssignPersonel = ({ empCode, role }) => {
 
     try {
       setLoading(true);
+
       if (role === "MANAGER") {
         await axiosInstance.put(
           API_ROUTES.PERSONNELS.ASSIGN_MANAGER(selectedDepartment, empCode)
         );
+        toast.success("Manager assigned successfully!");
       } else if (role === "EMPLOYEE") {
         await axiosInstance.put(
           API_ROUTES.PERSONNELS.ASSIGN_EMPLOYEE(selectedDepartment, empCode)
         );
+        toast.success("Employee assigned successfully!");
       }
 
-      // alert("Employee assigned successfully!");
-      toast.success("Employee assigned successfully!");
       setShowForm(false);
     } catch (error) {
-      console.error("Error assigning employee:", error);
-      toast.error("Failed to assign employee.");
+      console.error("❌ Error assigning employee:", error);
+
+      // Lấy message lỗi từ backend (nếu có)
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Failed to assign employee.";
+
+      toast.error(`❌ ${message}`);
     } finally {
       setLoading(false);
     }

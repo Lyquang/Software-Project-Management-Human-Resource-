@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { API_ROUTES } from "../../api/apiRoutes";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 
 export const AddPersonel = ({ children }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -75,8 +75,7 @@ export const AddPersonel = ({ children }) => {
 
       console.log("✅ Created personnel:", res.data);
       if (res.status === 200 || res.status === 201) {
-        // alert(`✅ ${formData.role} created successfully!`);
-        toast.success(` ${formData.role} created successfully!`);
+        toast.success(`${formData.role} created successfully!`);
         setShowForm(false);
         setFormData({
           username: "",
@@ -95,11 +94,21 @@ export const AddPersonel = ({ children }) => {
           basicSalary: 0,
           role: "EMPLOYEE",
         });
+      } else {
+        // Nếu server trả lỗi trong res
+        console.log("vao else", res);
+        const message =
+          res.data?.message || res.message || "Error creating personnel.";
+        toast.error(message);
       }
     } catch (error) {
       console.error("❌ Error creating personnel:", error);
-      // alert("❌ Error creating personnel.");
-      toast.error("Error creating personnel.", error);
+      // Lấy message từ backend (ví dụ "Age must be at least 18")
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Error creating personnel.";
+      toast.error(message);
     }
   };
 
@@ -118,25 +127,33 @@ export const AddPersonel = ({ children }) => {
     <div className="p-4">
       {/* Dropdown */}
       <div className="relative inline-block" ref={dropdownRef}>
+        {/* Main button */}
         <button
           onClick={toggleDropdown}
+          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
         >
-          {children || "+ Add Personnel"}
+          {children || "➕ Add Personnel"}
         </button>
 
+        {/* Dropdown menu */}
         {showDropdown && (
-          <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-20">
+          <div className="absolute mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden animate-fadeIn">
             <button
               onClick={handleAddEmployee}
-              className="block w-full text-left px-4 py-2 hover:bg-green-100 text-green-700"
+              className="flex items-center w-full text-left px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-150"
             >
-              ➕ Add Employee
+              <span className="text-lg mr-2">👤</span>
+              Add Employee
             </button>
+
+            <div className="h-px bg-gray-100 mx-2"></div>
+
             <button
               onClick={handleAddManager}
-              className="block w-full text-left px-4 py-2 hover:bg-green-100 text-green-700"
+              className="flex items-center w-full text-left px-4 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-150"
             >
-              👑 Add Manager
+              <span className="text-lg mr-2">👑</span>
+              Add Manager
             </button>
           </div>
         )}
@@ -329,7 +346,7 @@ export const AddPersonel = ({ children }) => {
           </div>
         </div>
       )}
-       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </div>
   );
 };
