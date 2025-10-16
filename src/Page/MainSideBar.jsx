@@ -94,6 +94,8 @@ function MainSideBar() {
       {
         group: "MANAGER",
         items: [
+           { to: "infor", icon: <FaRegUser />, text: "My information" },
+          { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
           { to: "notification", icon: <BiChat />, text: "Notifications" },
         ],

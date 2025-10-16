@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-// import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from "axios";
-import { API_ROUTES } from "../../api/apiRoutes";
 import axiosInstance from "../../api/axiosInstance";
+import { API_ROUTES } from "../../api/apiRoutes";
+import { ToastContainer, toast } from 'react-toastify';
 
 export const AddPersonel = ({ children }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -22,14 +22,13 @@ export const AddPersonel = ({ children }) => {
     description: "",
     skills: "",
     position: "software",
+    basicSalary: 0,
     role: "EMPLOYEE",
   });
 
   const dropdownRef = useRef(null);
 
-  const toggleDropdown = () => {
-    setShowDropdown((prev) => !prev);
-  };
+  const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
   const handleAddEmployee = () => {
     setFormData((prev) => ({ ...prev, role: "EMPLOYEE" }));
@@ -53,7 +52,6 @@ export const AddPersonel = ({ children }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const res = await axiosInstance.post(API_ROUTES.PERSONNELS.CREATE, {
         firstName: formData.firstName,
@@ -67,6 +65,7 @@ export const AddPersonel = ({ children }) => {
         description: formData.description,
         skills: formData.skills,
         position: formData.position,
+        basicSalary: formData.basicSalary,
         accountCreationRequest: {
           username: formData.username,
           password: formData.password,
@@ -74,10 +73,10 @@ export const AddPersonel = ({ children }) => {
         },
       });
 
-      console.log("✅ Tạo nhân sự thành công:", res.data);
-
+      console.log("✅ Created personnel:", res.data);
       if (res.status === 200 || res.status === 201) {
-        alert(`✅ Tạo ${formData.role} thành công!`);
+        // alert(`✅ ${formData.role} created successfully!`);
+        toast.success(` ${formData.role} created successfully!`);
         setShowForm(false);
         setFormData({
           username: "",
@@ -92,17 +91,19 @@ export const AddPersonel = ({ children }) => {
           street: "",
           description: "",
           skills: "",
-          position: "software",
+          position: "",
+          basicSalary: 0,
           role: "EMPLOYEE",
         });
       }
     } catch (error) {
-      console.error("❌ Lỗi tạo nhân sự:", error);
-      alert("❌ Có lỗi xảy ra khi tạo nhân sự.", error);
+      console.error("❌ Error creating personnel:", error);
+      // alert("❌ Error creating personnel.");
+      toast.error("Error creating personnel.", error);
     }
   };
 
-  // Click ngoài để đóng dropdown
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -114,249 +115,222 @@ export const AddPersonel = ({ children }) => {
   }, []);
 
   return (
-    <div className="container mt-4">
-      <div
-        className="dropdown mb-3"
-        style={{ backgroundColor: "transparent" }}
-        ref={dropdownRef}
-      >
-        <span
-          className="btn btn-success dropdown-toggle"
-          type="button"
+    <div className="p-4">
+      {/* Dropdown */}
+      <div className="relative inline-block" ref={dropdownRef}>
+        <button
           onClick={toggleDropdown}
         >
-          {children || "+ Thêm nhân sự"}
-        </span>
+          {children || "+ Add Personnel"}
+        </button>
 
-        <div className={`dropdown-menu ${showDropdown ? "show" : ""}`}>
-          <button
-            className="dropdown-item bg-success text-white"
-            onClick={handleAddEmployee}
-          >
-            ➕ Add Employee
-          </button>
-          <button
-            className="dropdown-item bg-success text-white"
-            onClick={handleAddManager}
-          >
-            ➕ Add Manager
-          </button>
-        </div>
+        {showDropdown && (
+          <div className="absolute mt-2 w-48 bg-white border rounded-lg shadow-lg z-20">
+            <button
+              onClick={handleAddEmployee}
+              className="block w-full text-left px-4 py-2 hover:bg-green-100 text-green-700"
+            >
+              ➕ Add Employee
+            </button>
+            <button
+              onClick={handleAddManager}
+              className="block w-full text-left px-4 py-2 hover:bg-green-100 text-green-700"
+            >
+              👑 Add Manager
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* hiện form đang kí thông tin nhân sự */}
+      {/* Modal Form */}
       {showForm && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          role="dialog"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 1050,
-          }}
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Thông tin nhân sự</h5>
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-30">
+          <div className="bg-white rounded-2xl shadow-lg w-[750px] max-h-[90vh] overflow-y-auto">
+            {/* Header Tabs */}
+            <div className="flex border-b border-gray-200">
+              {[
+                { id: "personal", label: "Personal Information" },
+                { id: "professional", label: "Professional Information" },
+                { id: "account", label: "Account Access" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-3 text-sm font-medium border-b-2 ${
+                    activeTab === tab.id
+                      ? "border-indigo-500 text-indigo-600"
+                      : "border-transparent text-gray-500 hover:text-indigo-400"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* === PERSONAL INFORMATION === */}
+              {activeTab === "personal" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="First Name"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Last Name"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  />
+                  <input
+                    type="date"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleChange}
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  />
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  >
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                  </select>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email Address"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200 col-span-2"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    placeholder="Phone Number"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200 col-span-2"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* === PROFESSIONAL INFORMATION === */}
+              {activeTab === "professional" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="position"
+                    value={formData.position}
+                    onChange={handleChange}
+                    placeholder="Position"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                  />
+                  <input
+                    type="text"
+                    name="skills"
+                    value={formData.skills}
+                    onChange={handleChange}
+                    placeholder="Skills"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                  />
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    placeholder="City"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                  />
+                  <input
+                    type="text"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleChange}
+                    placeholder="Street"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                  />
+                  <input
+                    type="number"
+                    name="basicSalary"
+                    value={formData.basicSalary}
+                    onChange={handleChange}
+                    placeholder="Basic Salary (USD)"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200 col-span-2"
+                  />
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    placeholder="Description"
+                    rows="3"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200 col-span-2"
+                  />
+                </div>
+              )}
+
+              {/* === ACCOUNT ACCESS === */}
+              {activeTab === "account" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Password"
+                    className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
+                    required
+                  />
+                  <div className="col-span-2 text-sm text-gray-500">
+                    Role: <span className="font-semibold">{formData.role}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Footer Buttons */}
+              <div className="flex justify-end mt-6 gap-3">
                 <button
                   type="button"
-                  className="close"
                   onClick={() => setShowForm(false)}
+                  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
                 >
-                  <span>&times;</span>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+                >
+                  Save
                 </button>
               </div>
-
-              <div
-                className="modal-body"
-                style={{
-                  maxHeight: "75rem",
-                  maxWidth: "60rem",
-                  overflowY: "auto",
-                }}
-              >
-                <form onSubmit={handleSubmit}>
-                  <div className="row">
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="col">
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row mt-2">
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Last Name"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="First Name"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row mt-2">
-                    <div className="col">
-                      <select
-                        className="form-control"
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="MALE">Nam</option>
-                        <option value="FEMALE">Nữ</option>
-                      </select>
-                    </div>
-                    <div className="col">
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="dob"
-                        value={formData.dob}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row mt-2">
-                    <div className="col">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Phone Number"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row mt-2">
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="City"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Street"
-                        name="street"
-                        value={formData.street}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row mt-2">
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Skills"
-                        name="skills"
-                        value={formData.skills}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Position"
-                        name="position"
-                        value={formData.position}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-2">
-                    <textarea
-                      className="form-control"
-                      placeholder="Description"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="modal-footer mt-3">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => setShowForm(false)}
-                    >
-                      Hủy
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Tạo tài khoản
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
+       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </div>
   );
 };
+export default AddPersonel;

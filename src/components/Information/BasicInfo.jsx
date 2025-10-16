@@ -56,6 +56,9 @@ const BasicInfo = () => {
             skills: r.skills || '',
             privileges: Array.isArray(r.privileges) ? r.privileges : [],
           }));
+          console.log('my department:', r.departmentName);
+
+
         } else {
           console.error('Fetch myInfo failed:', data);
           toast.error(data?.message || 'Fetch myInfo failed');
