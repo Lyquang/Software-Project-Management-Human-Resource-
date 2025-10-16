@@ -1,5 +1,3 @@
-
-
 // src/api/apiRoutes.js
 const BASE_URL = "https://ems-efub.onrender.com/ems";
 //const BASE_URL = "https://ems-efub.onrender.com/ems";
@@ -44,5 +42,8 @@ export const API_ROUTES = {
 
   ATTENDANCE: {
     OVERVIEW: `${BASE_URL}/attendance/overview`,
+    CHECK_IN: `${BASE_URL}/attendance/checkIn`,
+    CHECK_OUT: `${BASE_URL}/attendance/checkOut`,
+    TODAY_STATUS: `${BASE_URL}/attendance/today/status`,
   },
 };
