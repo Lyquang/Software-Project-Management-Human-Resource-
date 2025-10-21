@@ -46,4 +46,9 @@ export const API_ROUTES = {
     CHECK_OUT: `${BASE_URL}/attendance/checkOut`,
     TODAY_STATUS: `${BASE_URL}/attendance/today/status`,
   },
+  TASK: {
+    EMPLOYEE: `${BASE_URL}/tasks/employee`,
+    GET_ONE: (id) => `${BASE_URL}/tasks/${id}`,
+    UPDATE: (id) => `${BASE_URL}/tasks/${id}`,
+  },
 };

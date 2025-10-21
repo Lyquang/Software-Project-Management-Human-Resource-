@@ -29,6 +29,9 @@ import DepartmentPage from "./components/Department/DepartmentPage";
 import AdminAttendance from "./components/Attendance/AdminAttendance";
 import AdminSalary from "./components/Salary/AdminSalary";
 import "./index.css";
+import TaskManagementPage from "./components/Project/Employee/TaskManagementPage";
+import TaskDetail from "./components/Project/Employee/TaskDetail";
+import TaskEdit from "./components/Project/Employee/TaskEdit";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -51,6 +54,9 @@ root.render(
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="submittask" element={<SubmitTask />} />
           <Route path="notification" element={<EmployeeNotification />} />
+          <Route path="task" element={<TaskManagementPage />} />
+          <Route path="task/:id" element={<TaskDetail />} />
+          <Route path="task/:id/edit" element={<TaskEdit />} />
         </Route>
 
         <Route exact path="/login/manager" element={<MainPage />}>
