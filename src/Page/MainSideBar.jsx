@@ -19,12 +19,15 @@ import {
 } from "react-icons/md";
 import { BsGraphUpArrow, BsBullseye } from "react-icons/bs";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
-import logo from "../components/assets/logo.jpg"
+import logo from "../components/assets/logo.jpg";
+import { IoMdNotificationsOutline } from "react-icons/io";
 
 function MainSideBar() {
   const [expanded, setExpanded] = useState(true);
   const [role, setRole] = useState("");
+
   const navigate = useNavigate();
+  const unreadNotiCount = localStorage.getItem("unreadNotiCount");
 
   // Decode role từ token
   useEffect(() => {
@@ -34,6 +37,7 @@ function MainSideBar() {
       return;
     }
     try {
+      console.log("unreadConnt at sidebar", unreadNotiCount);
       const decoded = jwtDecode(token);
       const userRole = decoded.scope || decoded.role;
       setRole(userRole);
@@ -48,7 +52,7 @@ function MainSideBar() {
     navigate("/");
   };
 
-  // Links theo role 
+  // Links theo role
   const linksByRole = {
     EMPLOYEE: [
       {
@@ -56,9 +60,14 @@ function MainSideBar() {
         items: [
           { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "/message",
-            icon: <HiOutlineDotsCircleHorizontal />,
+            to: "message",
+            icon: <BiChat />,
             text: "Message",
+          },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
           },
         ],
       },
@@ -71,13 +80,6 @@ function MainSideBar() {
           { to: "payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
         ],
       },
-      {
-        group: "PERFORMANCE",
-        items: [
-          { to: "performance", icon: <BsGraphUpArrow />, text: "Performance" },
-          { to: "goals", icon: <BsBullseye />, text: "Goals" },
-        ],
-      },
     ],
     MANAGER: [
       {
@@ -86,18 +88,22 @@ function MainSideBar() {
           { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
           {
             to: "message",
-            icon: <HiOutlineDotsCircleHorizontal />,
+            icon: <BiChat />,
             text: "Message",
+          },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
           },
         ],
       },
       {
         group: "MANAGER",
         items: [
-           { to: "infor", icon: <FaRegUser />, text: "My information" },
+          { to: "infor", icon: <FaRegUser />, text: "My information" },
           { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
-          { to: "notification", icon: <BiChat />, text: "Notifications" },
         ],
       },
     ],
@@ -106,7 +112,11 @@ function MainSideBar() {
         group: "MAIN MENU",
         items: [
           { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard" },
-          { to: "notifications", icon: <MdDashboard />, text: "Notifications" },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
+          },
         ],
       },
       {
@@ -146,8 +156,8 @@ function MainSideBar() {
       <div>
         <div className="flex items-center justify-between px-5 py-5 border-b border-gray-200 relative">
           <div className="flex items-center gap-2">
-            <img src ={logo}  alt="Logo" className="w-[8rem] h-[8rem]" />
-            {expanded }
+            <img src={logo} alt="Logo" className="w-[8rem] h-[8rem]" />
+            {expanded}
           </div>
 
           {/* Toggle button: functional updater + z-index cao + accessible */}
@@ -195,7 +205,22 @@ function MainSideBar() {
                       }`
                     }
                   >
-                    <span className="text-lg">{icon}</span>
+                    {/* <span className="text-lg">{icon}</span> */}
+                    {/* Icon + Badge */}
+                    <div className="relative">
+                      <span className="text-lg">{icon}</span>
+
+                      {/* 🔴 Hiển thị badge khi có thông báo chưa đọc */}
+                      {text === "Notifications" &&
+                        Number(unreadNotiCount) > 0 && (
+                          <span
+                            className="absolute -top-2 -right-2 bg-red-500 text-white text-xs  
+                     rounded-full w-4 h-4 flex items-center justify-center"
+                          >
+                            {unreadNotiCount}
+                          </span>
+                        )}
+                    </div>
                     {expanded && (
                       <span className="text-sm truncate">{text}</span>
                     )}

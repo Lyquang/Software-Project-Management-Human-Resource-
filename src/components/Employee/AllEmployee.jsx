@@ -8,6 +8,7 @@ import Loading from "../Loading/Loading";
 import "../../index.css";
 import { API_ROUTES } from "../../api/apiRoutes";
 import axiosInstance from "../../api/axiosInstance";
+import Pagination from "../common/Pagination";
 
 function AllEmployee() {
   const [employees, setEmployees] = useState([]);
@@ -42,18 +43,25 @@ function AllEmployee() {
 
   const departmentOptions = [
     "All",
-    ...new Set(employees.map((e) => e.departmentName || "Not Assigned")),
+    ...new Set(
+      employees.map((e) =>
+        e.departmentName ? e.departmentName : "Not Assigned"
+      )
+    ),
   ];
   const genderOptions = ["All", "MALE", "FEMALE"];
   const roleOptions = ["All", "MANAGER", "EMPLOYEE"];
 
-  const filteredEmployees = employees.filter((emp) => {
+  const filteredEmployees = employees.filter((personel) => {
     const matchDepartment =
-      selectedDepartment === "All" || emp.departmentName === selectedDepartment;
+      selectedDepartment == "All" ||
+      (selectedDepartment == "Not Assigned"
+        ? personel.departmentName === null
+        : personel.departmentName == selectedDepartment);
     const matchGender =
-      selectedGender === "All" || emp.gender === selectedGender;
-    const matchRole = selectedRole === "All" || emp.role === selectedRole;
-    const matchSearch = `${emp.firstName} ${emp.lastName}`
+      selectedGender == "All" || personel.gender === selectedGender;
+    const matchRole = selectedRole == "All" || personel.role == selectedRole;
+    const matchSearch = `${personel.firstName} ${personel.lastName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     return matchDepartment && matchGender && matchRole && matchSearch;
@@ -139,9 +147,7 @@ function AllEmployee() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-purple-400 focus:outline-none"
               >
                 {departmentOptions.map((dept, idx) => (
-                  <option key={idx} value={dept}>
-                    {dept}
-                  </option>
+                  <option key={idx}>{dept}</option>
                 ))}
               </select>
             </div>
@@ -191,52 +197,11 @@ function AllEmployee() {
           <EmployeeCard employees={currentEmployees} />
 
           {/* Pagination */}
-          <div className="flex justify-center mt-6">
-            <ul className="flex space-x-2">
-              <li>
-                <button
-                  className={`px-4 py-2 rounded ${
-                    currentPage === 1
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-purple-600 text-white hover:bg-purple-700"
-                  }`}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-              </li>
-
-              {Array.from({ length: totalPages }, (_, i) => (
-                <li key={i}>
-                  <button
-                    className={`px-4 py-2 rounded ${
-                      currentPage === i + 1
-                        ? "bg-purple-700 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-purple-100"
-                    }`}
-                    onClick={() => setCurrentPage(i + 1)}
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              ))}
-
-              <li>
-                <button
-                  className={`px-4 py-2 rounded ${
-                    currentPage === totalPages
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-purple-600 text-white hover:bg-purple-700"
-                  }`}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              </li>
-            </ul>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </>
       )}
     </div>

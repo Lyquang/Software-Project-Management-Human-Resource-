@@ -57,6 +57,7 @@ function Login() {
 
         // 🧭 Điều hướng dựa trên scope
         const scope = decoded.scope;
+        localStorage.setItem("scope", scope); // lưu scope để sử dụng sau này
 
         if (scope === "EMPLOYEE") {
           navigate("/login/employee");

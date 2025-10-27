@@ -37,10 +37,14 @@ const BasicInfo = () => {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
+      
+
 
         const data = await res.json();
         if (res.ok && data?.code === 200 && data?.result) {
           const r = data.result;
+          localStorage.setItem("departmentId", r.departmentId);
+          
           setFormData(prev => ({
             ...prev,
             firstName: r.firstName || '',
@@ -57,7 +61,7 @@ const BasicInfo = () => {
             privileges: Array.isArray(r.privileges) ? r.privileges : [],
           }));
           console.log('my department:', r.departmentName);
-
+         
 
         } else {
           console.error('Fetch myInfo failed:', data);
