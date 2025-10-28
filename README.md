@@ -2,6 +2,7 @@
 **Group Project for Software Project Management Course (Sep 2025 – Present)**  
 
 🔗 **Live Demo:** [https://software-project-management-human-r-nu.vercel.app/](https://software-project-management-human-r-nu.vercel.app/)  
+🔗 **Backend Repository:** [https://github.com/George9071/EMS](https://github.com/George9071/EMS)
 
 ---
 
@@ -16,7 +17,7 @@ It is a full-featured web application designed to **streamline and automate vari
 - 🧭 Department and project organization  
 - 💬 Internal communication and collaboration  
 
-The system provides separate **Admin** and **Employee** interfaces, ensuring secure and efficient data management.  
+The system provides separate **Admin**, **Manager**, and **Employee** interfaces, ensuring secure and efficient data management.  
 
 ---
 
@@ -42,30 +43,42 @@ The system provides separate **Admin** and **Employee** interfaces, ensuring sec
 
 | Name | Role | Responsibilities |
 |------|------|------------------|
-| **Lý Thanh Nhật Quang** | *Product Owner (PO)* | Managed the product backlog, prioritized features, developed employee and admin interfaces, designed UI mockups in Figma, and created use case diagrams |
-| *(Add your teammates here)* | *Developers / Testers / Scrum Master / BA* | *(Describe their contributions here)* |
+| **Lý Thanh Nhật Quang** | *Product Owner (PO)* | Managed product backlog, prioritized features, developed employee/admin interfaces, designed Figma mockups, created use case diagrams |
+| *(Add teammates here)* | *Developers / Testers / Scrum Master / BA* | *(Describe their contributions here)* |
 
 ---
 
 ## 🚀 Features  
 
 ### 🧑‍💻 **Employee Portal**
-- View and update personal information  
-- Check attendance records and teaching schedules  
-- Submit leave requests and overtime registrations  
-- View notifications and announcements  
+- View and update personal profile  
+- View attendance and teaching schedule  
+- Submit leave and overtime requests  
+- Receive announcements and notifications  
 
 ### 🧭 **Admin Portal**
-- Manage employees, departments, and roles  
+- Manage employee records, departments, and projects  
 - Track attendance and payroll  
-- Create and send announcements to staff  
-- Approve or reject leave/overtime requests  
+- Create and broadcast announcements  
+- Approve/reject leave and overtime requests  
 
 ### 🧩 **System-Wide**
-- Secure login & authentication  
-- Pagination, search, and sorting for management tables  
-- Real-time notifications  
-- Local data caching for faster performance  
+- Authentication and role-based access control  
+- Pagination, filtering, and sorting  
+- Real-time updates  
+- Local data caching  
+
+---
+
+## 🔑 Test Accounts  
+
+You can log in using the following demo credentials:
+
+| Role | Username | Password |
+|------|-----------|-----------|
+| **Admin** | `admin` | `admin` |
+| **Manager** | `quangquang` | `12345678` |
+| **Employee** | `tranbao` | `12345678` |
 
 ---
 
@@ -77,16 +90,9 @@ You need to clone **both the frontend (React)** and **backend (Java MVC)** proje
 
 ```bash
 # Frontend
-git clone <frontend-repo-link>
+git clone <this-repo-link>
 cd <frontend-project-folder>
 
 # Backend
-git clone <backend-repo-link>
-cd <backend-project-folder>
-
-
-cd frontend
-npm install        # Install dependencies
-npm run dev        # Start development server
-
-
+git clone https://github.com/George9071/EMS
+cd EMS
