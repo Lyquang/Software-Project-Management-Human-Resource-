@@ -1,23 +1,92 @@
-# React + Vite
+# 🧑‍💼 HR Management Website  
+**Group Project for Software Project Management Course (Sep 2025 – Present)**  
 
-how to run
+🔗 **Live Demo:** [https://software-project-management-human-r-nu.vercel.app/](https://software-project-management-human-r-nu.vercel.app/)  
 
-npm install
+---
 
-npm run dev  
+## 📘 Overview  
+
+This project is a **Human Resource Management System (HRMS)** built as part of the *Software Project Management* course.  
+It is a full-featured web application designed to **streamline and automate various HR operations**, including:  
+
+- 👥 Employee information management  
+- 🕒 Attendance and time tracking  
+- 💰 Payroll and benefits management  
+- 🧭 Department and project organization  
+- 💬 Internal communication and collaboration  
+
+The system provides separate **Admin** and **Employee** interfaces, ensuring secure and efficient data management.  
+
+---
+
+## 🏗️ Tech Stack  
+
+### **Frontend (Client – React + Vite)**
+- **Framework:** React + Vite  
+- **Styling:** TailwindCSS, SCSS  
+- **Libraries & Tools:** Axios, React Router DOM, Lucide React, Day.js  
+- **Deployment:** Vercel  
+
+### **Backend (Server – Java MVC)**
+- **Framework:** Spring Boot (Java MVC pattern)  
+- **Database:** MySQL  
+- **ORM:** Hibernate / JPA  
+- **Cloud Services:** Aiven (MySQL hosting), Render (API hosting)  
+- **API Tools:** Postman, Swagger  
+- **DevOps:** Azure DevOps for CI/CD pipelines  
+
+---
+
+## 👩‍💻 Project Members & Roles  
+
+| Name | Role | Responsibilities |
+|------|------|------------------|
+| **Lý Thanh Nhật Quang** | *Product Owner (PO)* | Managed the product backlog, prioritized features, developed employee and admin interfaces, designed UI mockups in Figma, and created use case diagrams |
+| *(Add your teammates here)* | *Developers / Testers / Scrum Master / BA* | *(Describe their contributions here)* |
+
+---
+
+## 🚀 Features  
+
+### 🧑‍💻 **Employee Portal**
+- View and update personal information  
+- Check attendance records and teaching schedules  
+- Submit leave requests and overtime registrations  
+- View notifications and announcements  
+
+### 🧭 **Admin Portal**
+- Manage employees, departments, and roles  
+- Track attendance and payroll  
+- Create and send announcements to staff  
+- Approve or reject leave/overtime requests  
+
+### 🧩 **System-Wide**
+- Secure login & authentication  
+- Pagination, search, and sorting for management tables  
+- Real-time notifications  
+- Local data caching for faster performance  
+
+---
+
+## ⚙️ Installation & Setup  
+
+### 🧩 1. Clone Both Repositories
+
+You need to clone **both the frontend (React)** and **backend (Java MVC)** projects.  
+
+```bash
+# Frontend
+git clone <frontend-repo-link>
+cd <frontend-project-folder>
+
+# Backend
+git clone <backend-repo-link>
+cd <backend-project-folder>
 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+cd frontend
+npm install        # Install dependencies
+npm run dev        # Start development server
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
