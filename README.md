@@ -118,3 +118,4 @@ The project is intended for academic and learning purposes.
 It demonstrates the full development lifecycle — from requirements analysis and UI design to DevOps deployment.
 
 CI/CD pipelines are configured in Azure DevOps to automate builds and deployments.
+
