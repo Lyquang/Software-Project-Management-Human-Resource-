@@ -1,23 +1,98 @@
-# React + Vite
+# 🧑‍💼 HR Management Website  
+**Group Project for Software Project Management Course (Sep 2025 – Present)**  
 
-how to run
+🔗 **Live Demo:** [https://software-project-management-human-r-nu.vercel.app/](https://software-project-management-human-r-nu.vercel.app/)  
+🔗 **Backend Repository:** [https://github.com/George9071/EMS](https://github.com/George9071/EMS)
 
-npm install
+---
 
-npm run dev  
+## 📘 Overview  
 
+This project is a **Human Resource Management System (HRMS)** built as part of the *Software Project Management* course.  
+It is a full-featured web application designed to **streamline and automate various HR operations**, including:  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- 👥 Employee information management  
+- 🕒 Attendance and time tracking  
+- 💰 Payroll and benefits management  
+- 🧭 Department and project organization  
+- 💬 Internal communication and collaboration  
 
-Currently, two official plugins are available:
+The system provides separate **Admin**, **Manager**, and **Employee** interfaces, ensuring secure and efficient data management.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🏗️ Tech Stack  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### **Frontend (Client – React + Vite)**
+- **Framework:** React + Vite  
+- **Styling:** TailwindCSS, SCSS  
+- **Libraries & Tools:** Axios, React Router DOM, Lucide React, Day.js  
+- **Deployment:** Vercel  
 
-## Expanding the ESLint configuration
+### **Backend (Server – Java MVC)**
+- **Framework:** Spring Boot (Java MVC pattern)  
+- **Database:** MySQL  
+- **ORM:** Hibernate / JPA  
+- **Cloud Services:** Aiven (MySQL hosting), Render (API hosting)  
+- **API Tools:** Postman, Swagger  
+- **DevOps:** Azure DevOps for CI/CD pipelines  
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 👩‍💻 Project Members & Roles  
+
+| Name | Role | Responsibilities |
+|------|------|------------------|
+| **Lý Thanh Nhật Quang** | *Product Owner (PO)* | Managed product backlog, prioritized features, developed employee/admin interfaces, designed Figma mockups, created use case diagrams |
+| *(Add teammates here)* | *Developers / Testers / Scrum Master / BA* | *(Describe their contributions here)* |
+
+---
+
+## 🚀 Features  
+
+### 🧑‍💻 **Employee Portal**
+- View and update personal profile  
+- View attendance and teaching schedule  
+- Submit leave and overtime requests  
+- Receive announcements and notifications  
+
+### 🧭 **Admin Portal**
+- Manage employee records, departments, and projects  
+- Track attendance and payroll  
+- Create and broadcast announcements  
+- Approve/reject leave and overtime requests  
+
+### 🧩 **System-Wide**
+- Authentication and role-based access control  
+- Pagination, filtering, and sorting  
+- Real-time updates  
+- Local data caching  
+
+---
+
+## 🔑 Test Accounts  
+
+You can log in using the following demo credentials:
+
+| Role | Username | Password |
+|------|-----------|-----------|
+| **Admin** | `admin` | `admin` |
+| **Manager** | `quangquang` | `12345678` |
+| **Employee** | `tranbao` | `12345678` |
+
+---
+
+## ⚙️ Installation & Setup  
+
+### 🧩 1. Clone Both Repositories
+
+You need to clone **both the frontend (React)** and **backend (Java MVC)** projects.  
+
+```bash
+# Frontend
+git clone <this-repo-link>
+cd <frontend-project-folder>
+
+# Backend
+git clone https://github.com/George9071/EMS
+cd EMS
