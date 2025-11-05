@@ -2,12 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import {jwtDecode } from "jwt-decode"; // 🧩 thêm dòng này
+import { jwtDecode } from "jwt-decode"; // 🧩 thêm dòng này
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import backgroundImage from "../assets/background.jpg";
 import { API_ROUTES } from "../../api/apiRoutes";
-
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -26,13 +25,10 @@ function Login() {
     setErrorMessage("");
 
     try {
-
-
       const response = await axios.post(API_ROUTES.PERSONNELS.LOGIN, {
         username,
         password,
       });
-
 
       console.log("Login response:", response.data);
 
@@ -48,16 +44,16 @@ function Login() {
         const decoded = jwtDecode(token);
         console.log("Decoded token:", decoded);
 
-        // Lưu token và payload vào localStorage
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(decoded));
+        // Lưu token và payload vào sessionStorage
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("user", JSON.stringify(decoded));
 
         // Cập nhật redux (nếu cần)
         // dispatch(login({ user: decoded, token }));
 
         // 🧭 Điều hướng dựa trên scope
         const scope = decoded.scope;
-        localStorage.setItem("scope", scope); // lưu scope để sử dụng sau này
+        sessionStorage.setItem("scope", scope); // lưu scope để sử dụng sau này
 
         if (scope === "EMPLOYEE") {
           navigate("/login/employee");
@@ -70,7 +66,9 @@ function Login() {
         }
       }
     } catch (error) {
-      setErrorMessage("Login failed. Please check your credentials and try again.");
+      setErrorMessage(
+        "Login failed. Please check your credentials and try again."
+      );
       console.error("Login error:", error);
     }
   };
@@ -94,7 +92,9 @@ function Login() {
         }}
       >
         <h3 className="text-center mb-4">Login to your account</h3>
-        {errorMessage && <p className="text-center text-danger mb-3">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="text-center text-danger mb-3">{errorMessage}</p>
+        )}
         <form onSubmit={submit}>
           <div className="mb-3 position-relative">
             <input
@@ -123,12 +123,18 @@ function Login() {
               onClick={togglePasswordVisibility}
               style={{ cursor: "pointer" }}
             >
-              <i className={passwordVisible ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+              <i
+                className={passwordVisible ? "bi bi-eye-slash" : "bi bi-eye"}
+              ></i>
             </span>
           </div>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="form-check">
-              <input type="checkbox" className="form-check-input" id="rememberMe" />
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="rememberMe"
+              />
               <label className="form-check-label" htmlFor="rememberMe">
                 Remember me
               </label>

@@ -16,7 +16,7 @@ const DeletePersonel = ({ empCode, onDeleted }) => {
     setLoading(true);
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       await axios.delete(API_ROUTES.PERSONNELS.DELETE(empCode), {
         headers: {

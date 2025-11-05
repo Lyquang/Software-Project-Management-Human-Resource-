@@ -28,11 +28,11 @@ function MainSideBar() {
   const [role, setRole] = useState("");
 
   const navigate = useNavigate();
-  const unreadNotiCount = localStorage.getItem("unreadNotiCount");
+  const unreadNotiCount = sessionStorage.getItem("unreadNotiCount");
 
   // Decode role từ token
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       navigate("/");
       return;
@@ -49,7 +49,7 @@ function MainSideBar() {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     navigate("/");
   };
 

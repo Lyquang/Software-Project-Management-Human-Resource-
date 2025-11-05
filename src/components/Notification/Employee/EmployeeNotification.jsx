@@ -21,11 +21,11 @@ const EmployeeNotifications = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [unreadNotiCount, setUnradCount] = useState(0);
 
-  const departmentId = localStorage.getItem("departmentId");
+  const departmentId = sessionStorage.getItem("departmentId");
   console.log("Department ID in EmployeeNotifications:", departmentId);
 
   const pageSize = 5;
-  const scope = localStorage.getItem("scope");
+  const scope = sessionStorage.getItem("scope");
 
   // useEffect(() => {
   //   if (scope) setUserRole(scope);
@@ -43,7 +43,7 @@ const EmployeeNotifications = () => {
   // ✅ Fetch tất cả thông báo mà nhân viên nhận
   const fetchNotifications = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       const res = await axios.get(API_ROUTES.PERSONNELS.GET_MY_NOTIFICATIONS, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -53,7 +53,7 @@ const EmployeeNotifications = () => {
         const unreadNotiCount = notifications.filter(
           (noti) => noti.read == false
         ).length;
-        localStorage.setItem("unreadNotiCount", unreadNotiCount);
+        sessionStorage.setItem("unreadNotiCount", unreadNotiCount);
         console.log("thong bao chuaw doc", unreadNotiCount);
       }
     } catch (err) {
@@ -67,7 +67,7 @@ const EmployeeNotifications = () => {
   const fetchSentNotifications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (userRole?.toLowerCase() === "manager") {
         const resManagerSent = await axios.get(

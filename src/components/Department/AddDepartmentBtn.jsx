@@ -11,8 +11,8 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
     name: "",
     manager_id: "",
   });
-
-  const token = localStorage.getItem("token");
+// sessionStorage
+  const token = sessionStorage.getItem("token");
 
   const openForm = () => {
     setShowForm(true);
