@@ -148,9 +148,10 @@ export const AddPersonel = ({ children }) => {
         {/* Main button */}
         <button
           onClick={toggleDropdown}
-          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+          className="flex items-center gap-2 backdrop-blur-md bg-white/10 border border-white/20  font-medium px-6 py-3 rounded-xl hover:bg-white/20 hover:border-white/40 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
         >
-          {children || "➕ Add Personnel"}
+          <span className="text-xl">➕</span>
+          <span>Add Personnel</span>
         </button>
 
         {/* Dropdown menu */}
