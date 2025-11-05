@@ -1,6 +1,7 @@
 import React from "react";
 
-const Pagination = ({ currentPage, totalPages, onPageChange }) => { // ✅ đổi totalPage → totalPages
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  // ✅ đổi totalPage → totalPages
   return (
     <div className="flex justify-center items-center gap-3 mt-6">
       <button
@@ -15,20 +16,20 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => { // ✅ đổ
         Prev
       </button>
 
-      {Array.from({ length: totalPages }, (_, i) => (
-        <li key={i}>
-          <button
-            className={`px-4 py-2 rounded ${
-              currentPage === i + 1
-                ? "bg-purple-700 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-purple-100"
-            }`}
-            onClick={() => onPageChange(i + 1)}
-          >
-            {i + 1}
-          </button>
-        </li>
-      ))}
+       {Array.from({ length: totalPages }, (_, i) => (
+          <li key={i} className="list-none" >
+            <button
+              className={`px-4 py-2 rounded ${
+                currentPage === i + 1
+                  ? "bg-purple-700 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-purple-100"
+              }`}
+              onClick={() => onPageChange(i + 1)}
+            >
+              {i + 1}
+            </button>
+          </li>
+        ))}
 
       <button
         disabled={currentPage === totalPages}
