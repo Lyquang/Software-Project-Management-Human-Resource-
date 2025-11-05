@@ -3,7 +3,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import MainSideBar from "./MainSideBar";
 import Header from "./Header"
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ThemeProvider } from "../ThemeContext";
+import { ThemeProvider } from "../context/ThemeContext";
 import { toast, ToastContainer } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import "../index.css";
@@ -54,15 +54,12 @@ const MainPage = () => {
           tokenData={tokenData}
         />
 
-        {/* Main Content Area */}
+      
         <div className="flex flex-col flex-1">
-          {/* 🆕 Header */}
           <Header
             userName={tokenData?.sub || "User"}
             avatarUrl="/avatars/default.png"
           />
-
-          {/* 🧩 Nội dung chính */}
           <main className="flex-1 p-4 overflow-y-auto">
             <Outlet context={{ tokenData }} />
           </main>

@@ -3,7 +3,7 @@ import EmployeeCard from "./EmployeeCard";
 import { AddPersonel } from "./AddPersonel";
 import { IoMdPersonAdd } from "react-icons/io";
 import { FiFilter } from "react-icons/fi";
-import { ThemeContext } from "../../ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 import Loading from "../Loading/Loading";
 import "../../index.css";
 import { API_ROUTES } from "../../api/apiRoutes";
@@ -83,13 +83,16 @@ function AllEmployee() {
 
   return (
     <div
-      className={`min-h-screen py-8 px-6 transition-colors duration-300 ${
-        theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50"
+      className={`min-h-screen py-8 px-6 transition-colors duration-300 
       }`}
     >
       {/* Header: Title + Add Button */}
       <div className="flex flex-wrap items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">All Employees</h2>
+        <div className="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 p-6 rounded-lg shadow transition-all">
+          <h1 className="text-xl font-semibold">Dark / Light Mode</h1>
+          <p>Switch between themes to see the effect!</p>
+        </div>
 
         <AddPersonel />
       </div>

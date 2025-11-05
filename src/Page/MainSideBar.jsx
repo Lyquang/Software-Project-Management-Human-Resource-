@@ -21,6 +21,7 @@ import { BsGraphUpArrow, BsBullseye } from "react-icons/bs";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import logo from "../components/assets/logo.jpg";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import ThemeSwitcher from "../components/common/ThemeSwitcher";
 
 function MainSideBar() {
   const [expanded, setExpanded] = useState(true);
@@ -231,6 +232,7 @@ function MainSideBar() {
           ))}
         </div>
       </div>
+        <ThemeSwitcher/>
 
       {/* Logout Section */}
       <div className="border-t border-gray-200 px-3 py-4">
@@ -242,6 +244,7 @@ function MainSideBar() {
         >
           <BiLogOut className="text-lg" />
           {expanded && <span className="text-sm font-medium">Logout</span>}
+        
         </button>
       </div>
     </div>
