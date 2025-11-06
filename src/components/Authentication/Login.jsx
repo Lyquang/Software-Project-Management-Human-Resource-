@@ -47,6 +47,7 @@ function Login() {
         // Lưu token và payload vào sessionStorage
         sessionStorage.setItem("token", token);
         sessionStorage.setItem("user", JSON.stringify(decoded));
+        
 
         // Cập nhật redux (nếu cần)
         // dispatch(login({ user: decoded, token }));
@@ -54,9 +55,11 @@ function Login() {
         // 🧭 Điều hướng dựa trên scope
         const scope = decoded.scope;
         sessionStorage.setItem("scope", scope); // lưu scope để sử dụng sau này
+        console.log("scope at login",scope );
 
         if (scope === "EMPLOYEE") {
           navigate("/login/employee");
+          console.log("role employee")
         } else if (scope === "MANAGER") {
           navigate("/login/manager");
         } else if (scope === "ADMIN") {
