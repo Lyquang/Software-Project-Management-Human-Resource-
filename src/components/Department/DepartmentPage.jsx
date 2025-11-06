@@ -14,10 +14,10 @@ const DepartmentPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const { theme } = useContext(ThemeContext);
+  const token = sessionStorage.getItem("token");
 
   const fetchDepartmentsWithManagers = async () => {
     try {
-      const token = localStorage.getItem("token");
       if (!token) {
         setError("No token found. Please log in again.");
         setLoading(false);
@@ -55,7 +55,10 @@ const DepartmentPage = () => {
   const totalPages = Math.ceil(departments.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentDepartment = departments.slice(indexOfFirstItem, indexOfLastItem);
+  const currentDepartment = departments.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -65,8 +68,7 @@ const DepartmentPage = () => {
         <AddDepartmentBtn
           setDepartments={setDepartments}
           onAdded={fetchDepartmentsWithManagers}
-        >
-        </AddDepartmentBtn>
+        ></AddDepartmentBtn>
       </div>
 
       {/* Departments Grid */}
@@ -92,9 +94,7 @@ const DepartmentPage = () => {
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
               <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.max(prev - 1, 1))
-                }
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className={`px-4 py-2 text-sm rounded-lg border ${
                   currentPage === 1
