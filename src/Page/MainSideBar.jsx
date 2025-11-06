@@ -23,7 +23,7 @@ import logo from "../components/assets/logo.jpg";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import ThemeSwitcher from "../components/common/ThemeSwitcher";
 
-function MainSideBar() {
+const MainSideBar = () => {
   const [expanded, setExpanded] = useState(true);
   const [role, setRole] = useState("");
 
