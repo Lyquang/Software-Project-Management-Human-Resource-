@@ -3,7 +3,7 @@ import axios from "axios";
 const BASE_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:8080/ems"
-    : "https://ems-efub.onrender.com/ems";
+    : "https://ems-toq5.onrender.com/ems";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
