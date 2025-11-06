@@ -25,11 +25,13 @@ const BasicInfo = () => {
   });
   const fileInputRef = useRef(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  //  const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+  //  console.log("token at basicInfor", token);
 
   useEffect(() => {
     const fetchMyInfo = async () => {
       try {
-        const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+        const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
         const res = await fetch(API_ROUTES.PERSONNELS.MY_INFO, {
           method: 'GET',
           headers: {
@@ -43,7 +45,7 @@ const BasicInfo = () => {
         const data = await res.json();
         if (res.ok && data?.code === 200 && data?.result) {
           const r = data.result;
-          localStorage.setItem("departmentId", r.departmentId);
+          sessionStorage.setItem("departmentId", r.departmentId);
           
           setFormData(prev => ({
             ...prev,
@@ -86,20 +88,20 @@ const BasicInfo = () => {
 
     let empCode = '';
     try {
-      const userRaw = localStorage.getItem('user');
+      const userRaw = sessionStorage.getItem('user');
       if (userRaw) {
         const user = JSON.parse(userRaw);
         empCode = user?.code || user?.result?.code || '';
       }
     } catch (err) {
-      console.error('Parse localStorage.user error:', err);
+      console.error('Parse sessionStorage.user error:', err);
     }
     if (!empCode) {
       toast.error('Missing employee code. Please login again.');
       return;
     }
 
-    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+    const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
     const payload = {
       firstName: formData.firstName || '',
       lastName: formData.lastName || '',
@@ -168,7 +170,7 @@ const BasicInfo = () => {
     setUploadingAvatar(true);
     const toastId = toast.loading('Uploading avatar...');
     try {
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
 
       const form = new FormData();
       form.append('file', file); // field 'file' theo yêu cầu API

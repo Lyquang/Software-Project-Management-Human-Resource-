@@ -188,7 +188,6 @@ const EmployeeNotifications = () => {
           <CreateNotification
             fetchNotifications={fetchNotifications}
             userRole={userRole}
-            departmentId={departmentId}
           />
         )}
 

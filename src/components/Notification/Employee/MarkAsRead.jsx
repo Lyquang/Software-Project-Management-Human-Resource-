@@ -5,13 +5,12 @@ import { API_ROUTES } from "../../../api/apiRoutes";
 
 const MarkAsRead = ({ notificationId, isRead, onMarkAsRead }) => {
   const [loading, setLoading] = useState(false);
+  const token = sessionStorage.getItem("token");
 
   const handleMarkAsRead = async () => {
     if (isRead) return; // Đã đọc thì bỏ qua
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-
       const res = await axios.post(
         API_ROUTES.PERSONNELS.MARK_NOTIFICATION_AS_READ(notificationId),
         {},

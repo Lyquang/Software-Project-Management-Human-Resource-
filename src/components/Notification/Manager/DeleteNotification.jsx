@@ -6,6 +6,7 @@ import axios from "axios";
 import { Trash2 } from "lucide-react";
 
 const DeleteNotification = ({ notificationId, onDeleted }) => {
+  const token = sessionStorage.getItem("token");
   const confirmDelete = () => {
     toast.info(
       <div className="text-sm">
@@ -44,7 +45,7 @@ const DeleteNotification = ({ notificationId, onDeleted }) => {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem("token");
+      
       const res = await axios.delete(
         API_ROUTES.MANAGERS.DELETE_NOTIFICATION(notificationId),
         {

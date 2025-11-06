@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_ROUTES } from "../../../api/apiRoutes";
 
-const CreateNotification = ({ fetchNotifications, userRole, departmentId }) => {
+const CreateNotification = ({ fetchNotifications, userRole}) => {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -14,7 +14,9 @@ const CreateNotification = ({ fetchNotifications, userRole, departmentId }) => {
   const [employees, setEmployees] = useState([]);
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
+    const departmentId = sessionStorage.getItem("departmentId");
+  console.log("Department ID in create Notifications:", departmentId);
 
   // 🔹 Fetch employees from Department 1
   useEffect(() => {
