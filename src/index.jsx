@@ -40,7 +40,7 @@ root.render(
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          <Route exact path="/login/admin" element={<MainPage />}>
+          <Route  path="/login/admin" element={<MainPage />}>
             <Route path="employee" element={<AllEmployee />} />
             <Route path="admin-attendance" element={<AdminAttendance />} />
             <Route path="admin-salary" element={<AdminSalary />} />
@@ -48,7 +48,7 @@ root.render(
             <Route path="notification" element={<EmployeeNotification />} />
           </Route>
 
-          <Route exact path="/login/employee" element={<MainPage />}>
+          <Route  path="/login/employee" element={<MainPage />}>
             <Route index element={<EDashboard />}></Route>
             <Route path="infor" element={<PersonelInfor />} />
             <Route path="attendance" element={<EmployeeAttendance />} />
@@ -56,7 +56,7 @@ root.render(
             <Route path="notification" element={<EmployeeNotification />} />
           </Route>
 
-          <Route exact path="/login/manager" element={<MainPage />}>
+          <Route path="/login/manager" element={<MainPage />}>
             <Route path="infor" element={<PersonelInfor />} />
             <Route path="attendance" element={<EmployeeAttendance />} />
             <Route path="department" element={<DepartmentPage />} />
