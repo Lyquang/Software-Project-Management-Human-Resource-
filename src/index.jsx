@@ -24,6 +24,7 @@ import EmployeeNotification from "./components/Notification/Employee/EmployeeNot
 // import component of manager
 import ManagerNotification from "./components/Notification/Manager/ManagerNotification";
 import ManagerProject from "./components/Project/Manager/ManagerProject";
+import CreateTask from "./components/Project/Manager/CreateTask";
 // import component of admin
 import DepartmentPage from "./components/Department/DepartmentPage";
 import AdminAttendance from "./components/Attendance/AdminAttendance";
@@ -65,6 +66,7 @@ root.render(
           <Route path="department" element={<DepartmentPage />} />
           <Route path="project" element={<ManagerProject />} />
           <Route path="notification" element={<ManagerNotification />} />
+          <Route path="tasks/create" element={<CreateTask />} />
         </Route>
       </Routes>
     </BrowserRouter>

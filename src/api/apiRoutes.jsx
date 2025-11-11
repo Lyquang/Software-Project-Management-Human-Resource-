@@ -48,6 +48,7 @@ export const API_ROUTES = {
   },
   TASK: {
     EMPLOYEE: `${BASE_URL}/tasks/employee`,
+    CREATE: `${BASE_URL}/tasks`,
     GET_ONE: (id) => `${BASE_URL}/tasks/${id}`,
     UPDATE: (id) => `${BASE_URL}/tasks/${id}`,
   },
