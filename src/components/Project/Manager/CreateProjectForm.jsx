@@ -1,31 +1,44 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { API_ROUTES } from '../../../api/apiRoutes';
+import { toast } from 'react-toastify';
 
 const CreateProjectForm = ({ onClose, onSave }) => {
-    const [projectName, setProjectName] = useState('');
-    const [projectDescription, setProjectDescription] = useState('');
-    const [departmentId, setDepartmentId] = useState(1); // Set a default departmentId
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [departmentId, setDepartmentId] = useState(0);
+    const [maxParticipants, setMaxParticipants] = useState(0);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newProject = {
-            projectName,
-            projectDescription,
-            departmentId,
+            name,
+            description,
+            department_id: Number(departmentId),
+            max_participants: Number(maxParticipants) || 0,
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/ems/projects/create', newProject);
-            if (response.data && response.data.code === 1000) {
-                // Call the onSave function passed from the parent to update the project list
-                onSave(response.data.result);
-                onClose(); // Close the modal after successful creation
-            } else {
-                console.error('Error creating project:', response.data.message);
+            const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+            const res = await fetch(API_ROUTES.PROJECT.CREATE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(newProject),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || (data && data.code !== 200 && data.code !== 0)) {
+                toast.error(data?.message || `Create failed (${res.status})`);
+                return;
             }
+            onSave(data.result);
+            onClose();
         } catch (error) {
             console.error('Error creating project:', error);
+            toast.error('Error creating project');
         }
     };
 
@@ -38,8 +51,8 @@ const CreateProjectForm = ({ onClose, onSave }) => {
                     <input
                         type="text"
                         id="projectName"
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
@@ -47,8 +60,8 @@ const CreateProjectForm = ({ onClose, onSave }) => {
                     <label htmlFor="projectDescription">Project Description</label>
                     <textarea
                         id="projectDescription"
-                        value={projectDescription}
-                        onChange={(e) => setProjectDescription(e.target.value)}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         required
                     />
                 </div>
@@ -62,8 +75,18 @@ const CreateProjectForm = ({ onClose, onSave }) => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Add New Project</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                <div className="form-group">
+                    <label htmlFor="maxParticipants">Max Participants:</label>
+                    <input
+                        type="number"
+                        id="maxParticipants"
+                        value={maxParticipants}
+                        onChange={(e) => setMaxParticipants(Number(e.target.value))}
+                        min={0}
+                    />
+                </div>
+                <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold shadow hover:bg-indigo-700">Add New Project</button>
+                <button type="button" className="ml-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50" onClick={onClose}>Cancel</button>
             </form>
         </div>
     );
