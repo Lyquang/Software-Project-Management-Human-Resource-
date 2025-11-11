@@ -23,19 +23,17 @@ import EmployeeNotification from "./components/Notification/Employee/EmployeeNot
 // import component of manager
 import ManagerProject from "./components/Project/Manager/ManagerProject";
 import CreateTask from "./components/Project/Manager/CreateTask";
+import ProjectTasksPage from "./components/Project/Manager/ProjectTasksPage";
 // import component of admin
 import DepartmentPage from "./components/Department/DepartmentPage";
 import AdminAttendance from "./components/Attendance/AdminAttendance";
 import AdminSalary from "./components/Salary/AdminSalary";
 import "./index.css";
-<<<<<<< HEAD
 import TaskManagementPage from "./components/Project/Employee/TaskManagementPage";
 import TaskDetail from "./components/Project/Employee/TaskDetail";
 import TaskEdit from "./components/Project/Employee/TaskEdit";
-=======
 import { AppProvider } from "./context/AppContext";
 import { ThemeProvider } from "./context/ThemeContext";
->>>>>>> main
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -44,6 +42,10 @@ root.render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          {/* Project tasks route with layout to keep Header/Sidebar */}
+          <Route path="/project" element={<MainPage />}>
+            <Route path=":id/tasks" element={<ProjectTasksPage />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
@@ -55,35 +57,15 @@ root.render(
             <Route path="notification" element={<EmployeeNotification />} />
           </Route>
 
-<<<<<<< HEAD
-        <Route exact path="/login/employee" element={<MainPage />}>
-          <Route index element={<EDashboard />}></Route>
-          <Route path="infor" element={<PersonelInfor />} />
-          <Route path="attendance" element={<EmployeeAttendance />} />
-          <Route path="submittask" element={<SubmitTask />} />
-          <Route path="notification" element={<EmployeeNotification />} />
-          <Route path="task" element={<TaskManagementPage />} />
-          <Route path="task/:id" element={<TaskDetail />} />
-          <Route path="task/:id/edit" element={<TaskEdit />} />
-        </Route>
-
-        <Route exact path="/login/manager" element={<MainPage />}>
-          <Route path="infor" element={<PersonelInfor/>} />
-          <Route path="attendance" element={<EmployeeAttendance />} />
-          <Route path="department" element={<DepartmentPage />} />
-          <Route path="project" element={<ManagerProject />} />
-          <Route path="notification" element={<ManagerNotification />} />
-          <Route path="tasks/create" element={<CreateTask />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-=======
           <Route  path="/login/employee" element={<MainPage />}>
             <Route index element={<EDashboard />}></Route>
             <Route path="infor" element={<PersonelInfor />} />
             <Route path="attendance" element={<EmployeeAttendance />} />
             <Route path="submittask" element={<SubmitTask />} />
             <Route path="notification" element={<EmployeeNotification />} />
+            <Route path="task" element={<TaskManagementPage />} />
+            <Route path="task/:id" element={<TaskDetail />} />
+            <Route path="task/:id/edit" element={<TaskEdit />} />
           </Route>
 
           <Route path="/login/manager" element={<MainPage />}>
@@ -91,13 +73,13 @@ root.render(
             <Route path="attendance" element={<EmployeeAttendance />} />
             <Route path="department" element={<DepartmentPage />} />
             <Route path="project" element={<ManagerProject />} />
+            <Route path="project/:projectId/tasks" element={<ProjectTasksPage />} />
             <Route path="notification" element={<EmployeeNotification />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </AppProvider>
   </ThemeProvider>
->>>>>>> main
 );
 
 reportWebVitals();

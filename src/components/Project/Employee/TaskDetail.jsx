@@ -158,7 +158,7 @@ const TaskDetailsPage = () => {
     if (!id) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
       const res = await fetch(API_ROUTES.TASK.GET_ONE(id), {
         headers: {
           Accept: 'application/json',

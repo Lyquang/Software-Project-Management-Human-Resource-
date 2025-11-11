@@ -3,7 +3,7 @@ import React from "react";
 import { toast } from "react-toastify";
 
 export const SendFileBtn = ({ taskId, task, setTasks }) => {
-  const personelCode = localStorage.getItem("personelCode");
+  const personelCode = sessionStorage.getItem("personelCode");
   const isSent = task?.isSent;
 
   const submitTask = (taskId, file, personelCode) => {

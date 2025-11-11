@@ -44,7 +44,7 @@ const CreateTask = () => {
     };
 
     try {
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
       const res = await fetch(API_ROUTES.TASK.CREATE, {
         method: 'POST',
         headers: {

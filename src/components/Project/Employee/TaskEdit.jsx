@@ -52,7 +52,7 @@ const TaskEdit = () => {
     if (!id) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
       const res = await fetch(API_ROUTES.TASK.GET_ONE(id), {
         headers: {
           Accept: 'application/json',
@@ -91,7 +91,7 @@ const TaskEdit = () => {
     if (!id) return;
     setSaving(true);
     try {
-      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
       const payload = {
         title: form.title,
         description: form.description,

@@ -22,8 +22,8 @@ const UpdateInforBtn = ({ profile, setProfile, children }) => {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const personnelCode = localStorage.getItem("personelCode");
+  const token = sessionStorage.getItem("token");
+  const personnelCode = sessionStorage.getItem("personelCode");
 
       const updatedData = {
         street: editedProfile.address.split(",")[0].trim(),

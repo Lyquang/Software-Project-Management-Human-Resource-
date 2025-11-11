@@ -1,10 +1,11 @@
-// src/components/TaskManagementPage.jsx
+// src/components/Project/Manager/ProjectTasksPage.jsx
 import React, { useEffect, useMemo, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { BsFillGridFill, BsArrowRepeat, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
-import StatCard from './StatCard';
-import TaskList from './TaskList';
-import { API_ROUTES } from '../../../api/apiRoutes';
 import { toast } from 'react-toastify';
+import { API_ROUTES } from '../../../api/apiRoutes';
+import TaskCard from '../Employee/TaskCard';
+import StatCard from '../Employee/StatCard';
 
 const mapStatusUi = (s) => {
   const v = (s || '').toUpperCase();
@@ -33,33 +34,22 @@ const normalizeTask = (t) => ({
   dueDate: formatDue(t.due),
   priority: 'MEDIUM',
   status: mapStatusUi(t.status),
+  assigneeCode: t.assignee_code || null,
 });
 
-const getEmpCode = () => {
-  try {
-    const raw = sessionStorage.getItem('user');
-    if (!raw) return null;
-    const u = JSON.parse(raw);
-    return u?.code || u?.result?.code || null;
-  } catch {
-    return null;
-  }
-};
-
-const TaskManagementPage = () => {
+const ProjectTasksPage = () => {
+  const { projectId, id } = useParams();
+  const effectiveProjectId = projectId || id;
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchMyTasks = async () => {
-    const code = getEmpCode();
-    if (!code) {
-      toast.error('Missing user code');
-      return;
-    }
+  const fetchTasks = async () => {
+    if (!effectiveProjectId) return;
     setLoading(true);
     try {
-      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
-      const url = `${API_ROUTES.TASK.EMPLOYEE}?code=${encodeURIComponent(code)}`;
+  const token=sessionStorage.getItem('token');
+      const url = `${API_ROUTES.TASK.BY_PROJECT}?projectId=${encodeURIComponent(effectiveProjectId)}`;
       const res = await fetch(url, {
         headers: {
           Accept: 'application/json',
@@ -73,15 +63,13 @@ const TaskManagementPage = () => {
       const list = Array.isArray(data.result) ? data.result : [];
       setTasks(list.map(normalizeTask));
     } catch (e) {
-      toast.error(e.message || 'Load tasks failed');
+      toast.error(e.message || 'Load project tasks failed');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMyTasks();
-  }, []);
+  useEffect(() => { fetchTasks(); }, [effectiveProjectId]);
 
   const stats = useMemo(() => {
     const c = { todo: 0, inProgress: 0, review: 0, done: 0 };
@@ -103,15 +91,29 @@ const TaskManagementPage = () => {
     <div className="w-full max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Task Management</h1>
-          <p className="text-gray-500 mt-1">Manage, evaluate and track all tasks</p>
+          <h1 className="text-3xl font-bold text-gray-900">Project Tasks</h1>
+          <p className="text-gray-500 mt-1">Project ID: {effectiveProjectId}</p>
         </div>
-        <button
-          onClick={fetchMyTasks}
-          className="mt-4 sm:mt-0 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-200"
-        >
-          {loading ? 'Refreshing...' : 'Refresh'}
-        </button>
+        <div className="flex gap-3 mt-4 sm:mt-0">
+          <button
+            onClick={fetchTasks}
+            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-200"
+          >
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+          <Link
+            to={`/login/manager/project/${effectiveProjectId}/tasks/create`}
+            className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-green-700 transition duration-200"
+          >
+            New Task
+          </Link>
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Back
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -128,9 +130,17 @@ const TaskManagementPage = () => {
         ))}
       </div>
 
-      <TaskList tasks={tasks} />
+      {tasks.length === 0 && !loading && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 text-gray-500">No tasks for this project.</div>
+      )}
+
+      <div className="flex flex-col gap-5">
+        {tasks.map(t => (
+          <TaskCard key={t.id} task={t} />
+        ))}
+      </div>
     </div>
   );
 };
 
-export default TaskManagementPage;
+export default ProjectTasksPage;
