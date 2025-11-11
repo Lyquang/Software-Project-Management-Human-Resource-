@@ -7,6 +7,7 @@ export const AddPersonel = ({ children }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [errors, setErrors] = useState("");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -50,9 +51,26 @@ export const AddPersonel = ({ children }) => {
     }));
   };
 
+  const validate = () => {
+    const newError = {};
+    const userNameRegex = /^[A-Za-z\s]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.username.trim()) {
+      newError.username = "UserName must be require";
+    } else if (!userNameRegex.test(formData.username.trim())) {
+      newError.username = "UserName only have letter";
+    }
+    console.log(newError);
+    setErrors(newError);
+    return Object.keys(newError).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      validate();
       const res = await axiosInstance.post(API_ROUTES.PERSONNELS.CREATE, {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -130,9 +148,10 @@ export const AddPersonel = ({ children }) => {
         {/* Main button */}
         <button
           onClick={toggleDropdown}
-          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+          className="flex items-center gap-2 backdrop-blur-md bg-white/10 border border-white/20  font-medium px-6 py-3 rounded-xl hover:bg-white/20 hover:border-white/40 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
         >
-          {children || "➕ Add Personnel"}
+          <span className="text-xl">➕</span>
+          <span>Add Personnel</span>
         </button>
 
         {/* Dropdown menu */}
@@ -309,8 +328,10 @@ export const AddPersonel = ({ children }) => {
                     onChange={handleChange}
                     placeholder="Username"
                     className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
-                    required
                   />
+                  {errors.username && (
+                    <small style={{ color: "red" }}>{errors.username}</small>
+                  )}
                   <input
                     type="password"
                     name="password"
@@ -318,7 +339,6 @@ export const AddPersonel = ({ children }) => {
                     onChange={handleChange}
                     placeholder="Password"
                     className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
-                    required
                   />
                   <div className="col-span-2 text-sm text-gray-500">
                     Role: <span className="font-semibold">{formData.role}</span>

@@ -1,5 +1,7 @@
 // src/api/apiRoutes.js
-const BASE_URL = "https://ems-efub.onrender.com/ems";
+// const BASE_URL = "https://ems-efub.onrender.com/ems";
+//https://ems-toq5.onrender.com/ems/
+const BASE_URL = "https://ems-toq5.onrender.com/ems";
 //const BASE_URL = "https://ems-efub.onrender.com/ems";
 // const BASE_URL = "http://localhost:8080/ems";
 // link render trên web
@@ -22,6 +24,14 @@ export const API_ROUTES = {
       `${BASE_URL}/departments/${departmentId}/employee/assign?employeeCode=${empCode}`,
     ASSIGN_MANAGER: (departmentId, empCode) =>
       `${BASE_URL}/departments/${departmentId}/manager/assign?managerId=${empCode}`,
+
+    GET_MY_NOTIFICATIONS: `${BASE_URL}/personnels/notifications`,
+    
+    MARK_NOTIFICATION_AS_READ: (notificationId) =>
+      `${BASE_URL}/personnels/notifications/${notificationId}`,
+
+    SENT_ADMIN_NOTIFICATIONS: `${BASE_URL}/notification/admin/send`,
+    GET_ADMIN_SENT_NOTIFICATIONS: `${BASE_URL}/notification/admin`,
   },
 
   DEPARTMENT: {
@@ -38,7 +48,13 @@ export const API_ROUTES = {
 
   MANAGERS: {
     CREATE: `${BASE_URL}/managers/create`,
+    GET_MY_EMPLOYEES: (departmentId) => `${BASE_URL}/departments/${departmentId}/employees`,
+    GET_MY_SENT_NOTIFICATIONS: `${BASE_URL}/notification/manager`,
+    SEND_NOTIFICATION: `${BASE_URL}/notification/send`,
+    DELETE_NOTIFICATION: (notificationId) =>
+      `${BASE_URL}/notification/${notificationId}`,
   },
+
 
   ATTENDANCE: {
     OVERVIEW: `${BASE_URL}/attendance/overview`,

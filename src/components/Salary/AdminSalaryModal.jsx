@@ -22,7 +22,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
     const API_URL = "https://ems-efub.onrender.com/ems";
 
     const getHeaders = () => ({
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         "Content-Type": "application/json",
     });
 
