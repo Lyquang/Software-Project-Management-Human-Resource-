@@ -34,52 +34,55 @@ import TaskDetail from "./components/Project/Employee/TaskDetail";
 import TaskEdit from "./components/Project/Employee/TaskEdit";
 import { AppProvider } from "./context/AppContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import RootProvider from "./context/RootProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ThemeProvider>
-    <AppProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* Project tasks route with layout to keep Header/Sidebar */}
-          <Route path="/project" element={<MainPage />}>
-            <Route path=":id/tasks" element={<ProjectTasksPage />} />
-          </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+  <RootProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        {/* Project tasks route with layout to keep Header/Sidebar */}
+        <Route path="/project" element={<MainPage />}>
+          <Route path=":id/tasks" element={<ProjectTasksPage />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
-          <Route  path="/login/admin" element={<MainPage />}>
-            <Route path="employee" element={<AllEmployee />} />
-            <Route path="admin-attendance" element={<AdminAttendance />} />
-            <Route path="admin-salary" element={<AdminSalary />} />
-            <Route path="department" element={<DepartmentPage />} />
-            <Route path="notification" element={<EmployeeNotification />} />
-          </Route>
+        <Route path="/login/admin" element={<MainPage />}>
+          <Route path="employee" element={<AllEmployee />} />
+          <Route path="admin-attendance" element={<AdminAttendance />} />
+          <Route path="admin-salary" element={<AdminSalary />} />
+          <Route path="department" element={<DepartmentPage />} />
+          <Route path="notification" element={<EmployeeNotification />} />
+        </Route>
 
-          <Route  path="/login/employee" element={<MainPage />}>
-            <Route index element={<EDashboard />}></Route>
-            <Route path="infor" element={<PersonelInfor />} />
-            <Route path="attendance" element={<EmployeeAttendance />} />
-            <Route path="submittask" element={<SubmitTask />} />
-            <Route path="notification" element={<EmployeeNotification />} />
-            <Route path="task" element={<TaskManagementPage />} />
-            <Route path="task/:id" element={<TaskDetail />} />
-            <Route path="task/:id/edit" element={<TaskEdit />} />
-          </Route>
+        <Route path="/login/employee" element={<MainPage />}>
+          <Route index element={<EDashboard />}></Route>
+          <Route path="infor" element={<PersonelInfor />} />
+          <Route path="attendance" element={<EmployeeAttendance />} />
+          <Route path="submittask" element={<SubmitTask />} />
+          <Route path="notification" element={<EmployeeNotification />} />
+          <Route path="task" element={<TaskManagementPage />} />
+          <Route path="task/:id" element={<TaskDetail />} />
+          <Route path="task/:id/edit" element={<TaskEdit />} />
+        </Route>
 
-          <Route path="/login/manager" element={<MainPage />}>
-            <Route path="infor" element={<PersonelInfor />} />
-            <Route path="attendance" element={<EmployeeAttendance />} />
-            <Route path="department" element={<DepartmentPage />} />
-            <Route path="project" element={<ManagerProject />} />
-            <Route path="project/:projectId/tasks" element={<ProjectTasksPage />} />
-            <Route path="notification" element={<EmployeeNotification />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AppProvider>
-  </ThemeProvider>
+        <Route path="/login/manager" element={<MainPage />}>
+          <Route path="infor" element={<PersonelInfor />} />
+          <Route path="attendance" element={<EmployeeAttendance />} />
+          <Route path="department" element={<DepartmentPage />} />
+          <Route path="project" element={<ManagerProject />} />
+          <Route
+            path="project/:projectId/tasks"
+            element={<ProjectTasksPage />}
+          />
+          <Route path="notification" element={<EmployeeNotification />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </RootProvider>
 );
 
 reportWebVitals();

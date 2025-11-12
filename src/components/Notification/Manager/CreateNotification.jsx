@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_ROUTES } from "../../../api/apiRoutes";
 
-const CreateNotification = ({ fetchNotifications, userRole}) => {
+const CreateNotification = ({ fetchSentNotifications, userRole }) => {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -15,7 +15,7 @@ const CreateNotification = ({ fetchNotifications, userRole}) => {
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const token = sessionStorage.getItem("token");
-    const departmentId = sessionStorage.getItem("departmentId");
+  const departmentId = sessionStorage.getItem("departmentId");
   console.log("Department ID in create Notifications:", departmentId);
 
   // 🔹 Fetch employees from Department 1
@@ -69,12 +69,18 @@ const CreateNotification = ({ fetchNotifications, userRole}) => {
           managerSentPayload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        toast.success(" Notification from Manager sent successfully!");
-        setTitle("");
-        setMessage("");
-        setSelectedCodes([]);
-        setShowModal(false);
+        console.log("sentManagerResponse", sentManagerResponse);
+        if (sentManagerResponse.data.code == 200) {
+          console.log("susscess");
+          toast.success("Notification from Manager sent successfully!");
+          setTimeout(() => {
+            if (fetchSentNotifications) fetchSentNotifications();
+          }, 6000); // ⏱ Delay 6s để toast hiện ra
+          setTitle("");
+          setMessage("");
+          setSelectedCodes([]);
+          setShowModal(false);
+        }
       } else if (userRole?.toLowerCase() === "admin") {
         const adminSentPayload = {
           subject: title,
@@ -88,12 +94,17 @@ const CreateNotification = ({ fetchNotifications, userRole}) => {
           adminSentPayload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        toast.success(
-          "Notification from Human Resources Department sent successfully!"
-        );
-        setTitle("");
-        setMessage("");
-        setShowModal(false);
+        if (sentAdminResponse.data.code == 200) {
+          toast.success(
+            "Notification from Human Resources Department sent successfully!"
+          );
+          setTimeout(() => {
+            if (fetchSentNotifications) fetchSentNotifications();
+          }, 6000); // ⏱ Delay 6s để toast hiện ra
+          setTitle("");
+          setMessage("");
+          setShowModal(false);
+        }
       }
     } catch (error) {
       console.error(error);

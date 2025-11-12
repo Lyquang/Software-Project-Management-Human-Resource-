@@ -6,14 +6,35 @@ const BASE_URL = "https://ems-toq5.onrender.com/ems";
 // const BASE_URL = "http://localhost:8080/ems";
 // link render trên web
 
-
 export const API_ROUTES = {
   PERSONNELS: {
     LOGIN: `${BASE_URL}/auth/login`,
     BASE: `${BASE_URL}/personnels`,
-    GET_ALL: `${BASE_URL}/personnels/all`,
+    // GET_SEARCH_FILLTER: (page, size, keyword, role, gender, department) => `${BASE_URL}/personnels/all`,
+    GET_SEARCH_FILLTER: (page, size, keyword, role, gender, department) => {
+      let url = `${BASE_URL}/personnels/all?page=${page}&size=${size}`;
+
+      if (keyword && keyword.trim() !== "") {
+        url += `&keyword=${encodeURIComponent(keyword.trim())}`;
+      }
+
+      if (role && role !== "All") {
+        url += `&role=${encodeURIComponent(role)}`;
+      }
+
+      if (gender && gender !== "All") {
+        url += `&gender=${encodeURIComponent(gender)}`;
+      }
+
+      if (department && department !== "All") {
+        url += `&department=${encodeURIComponent(department)}`;
+      }
+
+      return url;
+    },
+
     GET_ONE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
-    CREATE:  `${BASE_URL}/personnels`,
+    CREATE: `${BASE_URL}/personnels`,
     UPDATE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     DELETE: (empCode) => `${BASE_URL}/personnels/${empCode}`,
     MY_INFO: `${BASE_URL}/personnels/myInfo`,
@@ -26,7 +47,7 @@ export const API_ROUTES = {
       `${BASE_URL}/departments/${departmentId}/manager/assign?managerId=${empCode}`,
 
     GET_MY_NOTIFICATIONS: `${BASE_URL}/personnels/notifications`,
-    
+
     MARK_NOTIFICATION_AS_READ: (notificationId) =>
       `${BASE_URL}/personnels/notifications/${notificationId}`,
 
@@ -48,7 +69,8 @@ export const API_ROUTES = {
 
   MANAGERS: {
     CREATE: `${BASE_URL}/managers/create`,
-    GET_MY_EMPLOYEES: (departmentId) => `${BASE_URL}/departments/${departmentId}/employees`,
+    GET_MY_EMPLOYEES: (departmentId) =>
+      `${BASE_URL}/departments/${departmentId}/employees`,
     GET_MY_SENT_NOTIFICATIONS: `${BASE_URL}/notification/manager`,
     SEND_NOTIFICATION: `${BASE_URL}/notification/send`,
     DELETE_NOTIFICATION: (notificationId) =>
@@ -57,10 +79,11 @@ export const API_ROUTES = {
 
   PROJECT: {
     CREATE: `${BASE_URL}/projects`,
-    BY_DEPARTMENT: (deptId) => `${BASE_URL}/projects/department?deptID=${deptId}`,
-    GET_BY_CODE: (code) => `${BASE_URL}/projects?code=${encodeURIComponent(code)}`,
+    BY_DEPARTMENT: (deptId) =>
+      `${BASE_URL}/projects/department?deptID=${deptId}`,
+    GET_BY_CODE: (code) =>
+      `${BASE_URL}/projects?code=${encodeURIComponent(code)}`,
   },
-
 
   ATTENDANCE: {
     OVERVIEW: `${BASE_URL}/attendance/overview`,

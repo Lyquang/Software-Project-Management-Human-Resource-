@@ -8,6 +8,8 @@ import NotificationBar from "./NotificationBar";
 import CreateNotification from "../Manager/CreateNotification";
 import { API_ROUTES } from "../../../api/apiRoutes";
 import Pagination from "../../common/Pagination";
+import { useNotification } from "../../../context/NotificationContext";
+
 
 dayjs.extend(relativeTime);
 
@@ -20,25 +22,13 @@ const EmployeeNotifications = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [unreadNotiCount, setUnradCount] = useState(0);
+  const { setUnreadCount } = useNotification();
 
   const departmentId = sessionStorage.getItem("departmentId");
   console.log("Department ID in EmployeeNotifications:", departmentId);
 
   const pageSize = 5;
   const scope = sessionStorage.getItem("scope");
-
-  // useEffect(() => {
-  //   if (scope) setUserRole(scope);
-
-  //   fetchNotifications();
-  // }, []);
-
-  useEffect(() => {
-    if (scope && userRole !== scope) setUserRole(scope);
-    console.log("my role", userRole);
-    fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unreadNotiCount]);
 
   // ✅ Fetch tất cả thông báo mà nhân viên nhận
   const fetchNotifications = async () => {
@@ -48,13 +38,12 @@ const EmployeeNotifications = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.data.code === 200) {
-        setNotifications(res.data.result);
-        const unreadNotiCount = notifications.filter(
-          (noti) => noti.read == false
-        ).length;
-        sessionStorage.setItem("unreadNotiCount", unreadNotiCount);
-        console.log("thong bao chuaw doc", unreadNotiCount);
+      if (res.data.code == 200) {
+        const allNoti = res.data.result;
+        setNotifications(allNoti);
+        const unread = allNoti.filter((n) => !n.read).length;
+        console.log(" so thong bao chuaw doc")
+        setUnreadCount(unread);
       }
     } catch (err) {
       console.error("Error fetching notifications:", err);
@@ -62,6 +51,12 @@ const EmployeeNotifications = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (scope && userRole !== scope) setUserRole(scope);
+    console.log("my role", userRole);
+    fetchNotifications();
+  }, [unreadNotiCount]);
 
   // ✅ Fetch thông báo đã gửi của Manager and admin
   const fetchSentNotifications = async () => {
@@ -186,7 +181,7 @@ const EmployeeNotifications = () => {
         {(userRole?.toLowerCase() === "manager" ||
           userRole?.toLowerCase() === "admin") && (
           <CreateNotification
-            fetchNotifications={fetchNotifications}
+            fetchSentNotifications={fetchSentNotifications} // 👈 thêm prop này
             userRole={userRole}
           />
         )}

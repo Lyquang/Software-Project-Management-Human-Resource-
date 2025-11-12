@@ -123,8 +123,8 @@ const AssignPersonel = ({ empCode, role }) => {
                 >
                   <option value="">-- Choose Department --</option>
                   {departments.map((dep) => (
-                    <option key={dep.department_id} value={dep.department_id}>
-                      {dep.department_name}
+                    <option key={dep.departmentId} value={dep.departmentId}>
+                      {dep.departmentName}
                     </option>
                   ))}
                 </select>

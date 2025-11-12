@@ -22,13 +22,14 @@ import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import logo from "../components/assets/logo.jpg";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import ThemeSwitcher from "../components/common/ThemeSwitcher";
+import { useNotification } from "../context/NotificationContext";
 
 const MainSideBar = () => {
+  const { unreadCount } = useNotification();
   const [expanded, setExpanded] = useState(true);
   const [role, setRole] = useState("");
 
   const navigate = useNavigate();
-  const unreadNotiCount = sessionStorage.getItem("unreadNotiCount");
 
   // Decode role từ token
   useEffect(() => {
@@ -38,7 +39,6 @@ const MainSideBar = () => {
       return;
     }
     try {
-      console.log("unreadConnt at sidebar", unreadNotiCount);
       const decoded = jwtDecode(token);
       const userRole = decoded.scope || decoded.role;
       setRole(userRole);
@@ -49,7 +49,7 @@ const MainSideBar = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
+    sessionStorage.clear();
     navigate("/");
   };
 
@@ -208,20 +208,24 @@ const MainSideBar = () => {
                   >
                     {/* <span className="text-lg">{icon}</span> */}
                     {/* Icon + Badge */}
+
                     <div className="relative">
                       <span className="text-lg">{icon}</span>
 
                       {/* 🔴 Hiển thị badge khi có thông báo chưa đọc */}
-                      {text === "Notifications" &&
-                        Number(unreadNotiCount) > 0 && (
+                      {(role?.toLowerCase() === "employee" ||
+                        role?.toLocaleLowerCase() === "manager") &&
+                        text === "Notifications" &&
+                        Number(unreadCount) >= 0 && (
                           <span
                             className="absolute -top-2 -right-2 bg-red-500 text-white text-xs  
                      rounded-full w-4 h-4 flex items-center justify-center"
                           >
-                            {unreadNotiCount}
+                            {unreadCount}
                           </span>
                         )}
                     </div>
+
                     {expanded && (
                       <span className="text-sm truncate">{text}</span>
                     )}
@@ -232,7 +236,7 @@ const MainSideBar = () => {
           ))}
         </div>
       </div>
-        <ThemeSwitcher/>
+      <ThemeSwitcher />
 
       {/* Logout Section */}
       <div className="border-t border-gray-200 px-3 py-4">
@@ -244,11 +248,10 @@ const MainSideBar = () => {
         >
           <BiLogOut className="text-lg" />
           {expanded && <span className="text-sm font-medium">Logout</span>}
-        
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default MainSideBar;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import EmployeeCard from "./EmployeeCard";
 import { AddPersonel } from "./AddPersonel";
-import { IoMdPersonAdd } from "react-icons/io";
 import { FiFilter } from "react-icons/fi";
 import { ThemeContext } from "../../context/ThemeContext";
 import Loading from "../Loading/Loading";
@@ -14,66 +13,58 @@ function AllEmployee() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
+  // Temporary inputs (before submitting)
+  const [tempSearchTerm, setTempSearchTerm] = useState("");
+  const [tempDepartment, setTempDepartment] = useState("All");
+  const [tempGender, setTempGender] = useState("All");
+  const [tempRole, setTempRole] = useState("All");
+
+  // Applied filters (used in API)
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("All");
   const [selectedGender, setSelectedGender] = useState("All");
   const [selectedRole, setSelectedRole] = useState("All");
-  const [showFilter, setShowFilter] = useState(false);
 
+  const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 8;
   const { theme } = useContext(ThemeContext);
 
+  // Fetch employees
   useEffect(() => {
     const fetchEmployees = async () => {
+      setLoading(true);
       try {
-        const response = await axiosInstance.get(API_ROUTES.PERSONNELS.GET_ALL);
-        const data = response.data.result || [];
-        setEmployees(data);
+        const response = await axiosInstance.get(
+          API_ROUTES.PERSONNELS.GET_SEARCH_FILLTER(
+            currentPage,
+            itemsPerPage,
+            searchTerm,
+            selectedRole,
+            selectedGender,
+            selectedDepartment
+          )
+        );
+        const result = response.data.result || {};
+        setEmployees(result.data || []);
+        setTotalPages(result.totalPages || 1);
       } catch (err) {
-        setError("Failed to fetch employees. Please try again later.");
         console.error("API Error:", err);
+        setError("Failed to fetch employees. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
     fetchEmployees();
-  }, []);
-
-  const departmentOptions = [
-    "All",
-    ...new Set(
-      employees.map((e) =>
-        e.departmentName ? e.departmentName : "Not Assigned"
-      )
-    ),
-  ];
-  const genderOptions = ["All", "MALE", "FEMALE"];
-  const roleOptions = ["All", "MANAGER", "EMPLOYEE"];
-
-  const filteredEmployees = employees.filter((personel) => {
-    const matchDepartment =
-      selectedDepartment == "All" ||
-      (selectedDepartment == "Not Assigned"
-        ? personel.departmentName === null
-        : personel.departmentName == selectedDepartment);
-    const matchGender =
-      selectedGender == "All" || personel.gender === selectedGender;
-    const matchRole = selectedRole == "All" || personel.role == selectedRole;
-    const matchSearch = `${personel.firstName} ${personel.lastName}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    return matchDepartment && matchGender && matchRole && matchSearch;
-  });
-
-  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEmployees = filteredEmployees.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  }, [
+    currentPage,
+    searchTerm,
+    selectedRole,
+    selectedGender,
+    selectedDepartment,
+  ]);
 
   if (loading) return <Loading />;
   if (error)
@@ -81,11 +72,25 @@ function AllEmployee() {
       <div className="text-center text-red-500 text-lg py-10">{error}</div>
     );
 
+  const genderOptions = ["All", "MALE", "FEMALE"];
+  const roleOptions = ["All", "MANAGER", "EMPLOYEE"];
+
+  const departmentOptions = [
+    "All",
+    ...new Set(employees.map((e) => e.departmentName || "Not Assigned")),
+  ];
+
+  // Handle submit
+  const handleApplyFilters = () => {
+    setSearchTerm(tempSearchTerm);
+    setSelectedDepartment(tempDepartment);
+    setSelectedGender(tempGender);
+    setSelectedRole(tempRole);
+    setCurrentPage(1);
+  };
+
   return (
-    <div
-      className={`min-h-screen py-8 px-6 transition-colors duration-300 
-      }`}
-    >
+    <div className={`min-h-screen py-8 px-6 transition-colors duration-300`}>
       {/* Header: Title + Add Button */}
       <div className="flex flex-wrap items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">All Employees</h2>
@@ -99,8 +104,8 @@ function AllEmployee() {
           <input
             type="text"
             placeholder="Search employee..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={tempSearchTerm}
+            onChange={(e) => setTempSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none placeholder-gray-400 text-gray-700"
           />
           <svg
@@ -128,35 +133,41 @@ function AllEmployee() {
             <FiFilter className="text-lg text-gray-500" />
             <span className="font-medium">Filter</span>
           </button>
+
+          {/* Apply Button */}
+          <button
+            onClick={handleApplyFilters}
+            className="bg-purple-500 hover:bg-purple-600 text-white font-medium px-4 py-2.5 rounded-lg shadow-sm transition-all duration-200"
+          >
+            Apply Filters
+          </button>
         </div>
       </div>
 
-      {/* Filter Panel (Dropdown style) */}
+      {/* Filter Panel */}
       {showFilter && (
         <div className="bg-white rounded-lg shadow-md p-4 mb-6 border border-gray-200">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Department */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Department
               </label>
-              <select
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
+              <input
+                value={tempDepartment}
+                onChange={(e) => setTempDepartment(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-purple-400 focus:outline-none"
-              >
-                {departmentOptions.map((dept, idx) => (
-                  <option key={idx}>{dept}</option>
-                ))}
-              </select>
+              ></input>
             </div>
 
+            {/* Gender */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Gender
               </label>
               <select
-                value={selectedGender}
-                onChange={(e) => setSelectedGender(e.target.value)}
+                value={tempGender}
+                onChange={(e) => setTempGender(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-purple-400 focus:outline-none"
               >
                 {genderOptions.map((g, idx) => (
@@ -167,13 +178,14 @@ function AllEmployee() {
               </select>
             </div>
 
+            {/* Role */}
             <div>
               <label className="block text-gray-700 font-medium mb-1">
                 Role
               </label>
               <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
+                value={tempRole}
+                onChange={(e) => setTempRole(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-purple-400 focus:outline-none"
               >
                 {roleOptions.map((r, idx) => (
@@ -188,13 +200,11 @@ function AllEmployee() {
       )}
 
       {/* Employee List */}
-      {filteredEmployees.length === 0 ? (
+      {employees.length === 0 ? (
         <div className="text-center text-lg">No employees found.</div>
       ) : (
         <>
-          <EmployeeCard employees={currentEmployees} />
-
-          {/* Pagination */}
+          <EmployeeCard employees={employees} />
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

@@ -47,6 +47,7 @@ const BasicInfo = () => {
           const r = data.result;
           sessionStorage.setItem("departmentId", r.departmentId);
           sessionStorage.setItem("avartarUrl", r.avatarUrl);
+          console.log("at basic ìnor", r.departmentId);
           
           setFormData(prev => ({
             ...prev,

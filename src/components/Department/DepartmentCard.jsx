@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
-import { IoIosPeople } from "react-icons/io";
 import DeleteDepartmentBtn from "./DeleteDepartmentBtn";
 import { EmployeeBelongDep } from "./EmployeeBelongDep";
 import DefaultAvatar from "../assets/defaut_pho.png";
@@ -19,7 +18,7 @@ const DepartmentCard = ({ department }) => {
       try {
         const response = await axiosInstance.get(
           API_ROUTES.DEPARTMENT.GET_DEPARTMENT_PERSONNEL(
-            department.department_id
+            department.departmentId
           )
         );
         if (response.data && response.data.result) {
@@ -32,29 +31,20 @@ const DepartmentCard = ({ department }) => {
       }
     };
     fetchEmployees();
-  }, [department.department_id]);
+  }, [department.departmentId]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
+    <div className="relative bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 flex flex-col justify-between">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-800 truncate">
-          {department.department_name || "Unnamed Department"}
+          {department.departmentName || "Unnamed Department"}
         </h3>
-
-        <div className="flex gap-3">
-          <EmployeeBelongDep departmentId={department.department_id}>
-            <button className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition">
-              View All
-            </button>
-          </EmployeeBelongDep>
-          {/* <DeleteDepartmentBtn departmentId={department.department_id}>
-            <MdDelete
-              size={18}
-              className="text-red-500 hover:text-red-700 cursor-pointer transition"
-            />
-          </DeleteDepartmentBtn> */}
-        </div>
+        <EmployeeBelongDep departmentId={department.departmentId}>
+          <button className="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition">
+            View All
+          </button>
+        </EmployeeBelongDep>
       </div>
 
       {/* Sub-info */}
@@ -81,14 +71,11 @@ const DepartmentCard = ({ department }) => {
                     {emp.name}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {"Employee"} - {emp.position || "No Position"}
+                    Employee - {emp.position || "No Position"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                {/* <IoIosPeople className="text-gray-400 hover:text-indigo-600 transition" /> */}
-                <AssignPersonel empCode={emp.code} role={"EMPLOYEE"} />
-              </div>
+              <AssignPersonel empCode={emp.code} role={"EMPLOYEE"} />
             </div>
           ))
         ) : (
@@ -96,7 +83,7 @@ const DepartmentCard = ({ department }) => {
         )}
       </div>
 
-      {/* Footer (Manager + Actions) */}
+      {/* Footer (Manager + Delete Button) */}
       <div className="border-t pt-3 mt-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
@@ -108,12 +95,19 @@ const DepartmentCard = ({ department }) => {
             <p className="text-sm font-medium text-gray-800">
               {manager.name || "No Manager"}
             </p>
-            <p className="text-sm text-gray-500 bg-red">Manager</p>
+            <p className="text-sm text-gray-500">Manager</p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          {/* <IoIosPeople className="text-gray-400 hover:text-indigo-600 transition" /> */}
+
+        <div className="flex items-center gap-2">
           <AssignPersonel empCode={manager.code} role={"MANAGER"} />
+          <DeleteDepartmentBtn departmentId={department.departmentId}>
+            <MdDelete
+              title="Delete this Department"
+              size={20}
+              className="text-red-500 hover:text-red-700 cursor-pointer transition ml-1"
+            />
+          </DeleteDepartmentBtn>
         </div>
       </div>
     </div>
