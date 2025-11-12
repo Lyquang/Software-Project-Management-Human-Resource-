@@ -144,7 +144,7 @@ import { Pointer } from "lucide-react";
 export const TaskCard = () => {
   const { personnel } = useSelector((state) => state);
   const [tasks, setTasks] = useState([]);
-  const personelCode = localStorage.getItem("personelCode");
+  const personelCode = sessionStorage.getItem("personelCode");
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 

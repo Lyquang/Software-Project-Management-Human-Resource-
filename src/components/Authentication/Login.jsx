@@ -48,9 +48,6 @@ function Login() {
         sessionStorage.setItem("token", token);
       
         sessionStorage.setItem("user", JSON.stringify(decoded));
-
-        
-
         // Cập nhật redux (nếu cần)
         // dispatch(login({ user: decoded, token }));
         // 🧭 Điều hướng dựa trên scope

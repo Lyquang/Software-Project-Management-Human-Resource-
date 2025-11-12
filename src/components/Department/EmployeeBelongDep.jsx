@@ -14,7 +14,7 @@ export const EmployeeBelongDep = ({ departmentId, children }) => {
   const handleClose = () => setShow(false);
 
   const handleShow = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       setError("No token found. Please log in again.");
       return;
