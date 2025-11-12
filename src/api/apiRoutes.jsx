@@ -55,11 +55,24 @@ export const API_ROUTES = {
       `${BASE_URL}/notification/${notificationId}`,
   },
 
+  PROJECT: {
+    CREATE: `${BASE_URL}/projects`,
+    BY_DEPARTMENT: (deptId) => `${BASE_URL}/projects/department?deptID=${deptId}`,
+    GET_BY_CODE: (code) => `${BASE_URL}/projects?code=${encodeURIComponent(code)}`,
+  },
+
 
   ATTENDANCE: {
     OVERVIEW: `${BASE_URL}/attendance/overview`,
     CHECK_IN: `${BASE_URL}/attendance/checkIn`,
     CHECK_OUT: `${BASE_URL}/attendance/checkOut`,
     TODAY_STATUS: `${BASE_URL}/attendance/today/status`,
+  },
+  TASK: {
+    EMPLOYEE: `${BASE_URL}/tasks/employee`,
+    CREATE: `${BASE_URL}/tasks`,
+    GET_ONE: (id) => `${BASE_URL}/tasks/${id}`,
+    UPDATE: (id) => `${BASE_URL}/tasks/${id}`,
+    BY_PROJECT: `${BASE_URL}/tasks/project`,
   },
 };

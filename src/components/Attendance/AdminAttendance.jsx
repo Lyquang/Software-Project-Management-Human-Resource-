@@ -37,7 +37,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -107,7 +107,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -150,7 +150,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -229,7 +229,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -275,7 +275,8 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = sessionStorage.getItem("token");
+
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);

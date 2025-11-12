@@ -14,7 +14,7 @@ export const AvatarUploadBtn = ({ setProfile,children }) => {
       return;
     }
 
-    const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
     const formData = new FormData();
     formData.append("image", file);
 

@@ -43,8 +43,8 @@ export const PersonelInforCard = () => {
   useEffect(() => {
     const fetchPersonelData = async () => {
       try {
-        const token = sessionStorage.getItem("token");
-        const accountId = sessionStorage.getItem("accountId");
+        const token = localStorage.getItem("token");
+        const accountId = localStorage.getItem("accountId");
 
         if (!token || !accountId) {
           setError("Authentication token or account ID not found");
@@ -81,7 +81,7 @@ export const PersonelInforCard = () => {
           throw new Error("Failed to fetch employee data");
         }
 
-        sessionStorage.setItem("personelCode", data.personelCode);
+        localStorage.setItem("personelCode", data.personelCode);
 
         setProfile({
           personelCode: data.personelCode,
@@ -100,8 +100,8 @@ export const PersonelInforCard = () => {
           projectList: data.projectList || [],
           projectsCompleteNumber: data.projectsCompleteNumber || 0,
         });
-        // lưu personelCode vào sessionStorage để dùng chung
-        sessionStorage.setItem("personelCode", data.personelCode);
+        // lưu personelCode vào localStorage để dùng chung
+        localStorage.setItem("personelCode", data.personelCode);
 
 
         
