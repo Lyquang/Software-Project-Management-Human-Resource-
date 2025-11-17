@@ -6,7 +6,9 @@ import {
   FaHome,
   FaArrowRight,
   FaArrowLeft,
+  FaCalendarAlt
 } from "react-icons/fa";
+import { MdMeetingRoom } from "react-icons/md";
 import { PiNotePencilDuotone } from "react-icons/pi";
 import { BiLogOut, BiChat } from "react-icons/bi";
 import { IoMdCloudUpload } from "react-icons/io";
@@ -69,6 +71,7 @@ function MainSideBar() {
           { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "task", icon: <MdOutlineTaskAlt />, text: "Task" },
           { to: "payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
+          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
       {
@@ -96,6 +99,7 @@ function MainSideBar() {
         items: [
           { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
           { to: "notification", icon: <BiChat />, text: "Notifications" },
+          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
     ],
@@ -126,6 +130,7 @@ function MainSideBar() {
             icon: <MdOutlineAttachMoney />,
             text: "Salary & Benefits",
           },
+          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
     ],
@@ -142,7 +147,7 @@ function MainSideBar() {
     >
       {/* Header */}
       <div>
-        <div className="flex items-center justify-between px-5 py-5 border-b border-gray-200 relative">
+        <div className="relative flex items-center justify-between px-5 py-5 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <img src ={logo}  alt="Logo" className="w-[8rem] h-[8rem]" />
             {expanded }
@@ -169,11 +174,11 @@ function MainSideBar() {
         </div>
 
         {/* Sidebar Links */}
-        <div className="mt-6 flex flex-col gap-6 px-3 overflow-y-auto">
+        <div className="flex flex-col gap-6 px-3 mt-6 overflow-y-auto">
           {groupedLinks.map((section, idx) => (
             <div key={idx}>
               {expanded && (
-                <p className="text-xs text-gray-400 uppercase font-medium mb-3 tracking-wide pl-2">
+                <p className="pl-2 mb-3 text-xs font-medium tracking-wide text-gray-400 uppercase">
                   {section.group}
                 </p>
               )}
@@ -206,7 +211,7 @@ function MainSideBar() {
       </div>
 
       {/* Logout Section */}
-      <div className="border-t border-gray-200 px-3 py-4">
+      <div className="px-3 py-4 border-t border-gray-200">
         <button
           onClick={handleLogout}
           className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${

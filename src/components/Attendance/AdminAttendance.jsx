@@ -31,7 +31,7 @@ const AttendanceAdmin = () => {
   const [searchError, setSearchError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
-  const API_URL = "https://ems-efub.onrender.com/ems";
+  const API_URL = "https://ems-toq5.onrender.com/ems";
 
   const fetchDashboard = async () => {
     setLoading(true);

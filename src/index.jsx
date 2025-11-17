@@ -30,6 +30,13 @@ import AdminAttendance from "./components/Attendance/AdminAttendance";
 import AdminSalary from "./components/Salary/AdminSalary";
 import "./index.css";
 
+//import meeting room pages
+import MeetingRoomAdmin from "./Page/MeetingRoomAdmin";
+import EmployeeMeetingRoom from "./Page/EmployeeMeetingRoom";
+import ManagerMeetingRoom from "./Page/ManagerMeetingRoom";
+
+
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <BrowserRouter>
@@ -43,6 +50,7 @@ root.render(
           <Route path="admin-attendance" element={<AdminAttendance />} />
           <Route path="admin-salary" element={<AdminSalary />} />
           <Route path="department" element={<DepartmentPage />} />
+          <Route path="meeting-rooms" element={<MeetingRoomAdmin />} />
         </Route>
 
         <Route exact path="/login/employee" element={<MainPage />}>
@@ -51,6 +59,7 @@ root.render(
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="submittask" element={<SubmitTask />} />
           <Route path="notification" element={<EmployeeNotification />} />
+          <Route path="meeting-rooms" element={<EmployeeMeetingRoom />} />
         </Route>
 
         <Route exact path="/login/manager" element={<MainPage />}>
@@ -59,6 +68,7 @@ root.render(
           <Route path="department" element={<DepartmentPage />} />
           <Route path="project" element={<ManagerProject />} />
           <Route path="notification" element={<ManagerNotification />} />
+          <Route path="meeting-rooms" element={<ManagerMeetingRoom />} />
         </Route>
       </Routes>
     </BrowserRouter>

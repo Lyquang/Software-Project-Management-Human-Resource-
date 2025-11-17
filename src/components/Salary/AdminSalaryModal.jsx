@@ -19,7 +19,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
     const [loading, setLoading] = useState(false);
     const [detailedRecord, setDetailedRecord] = useState(null);
 
-    const API_URL = "https://ems-efub.onrender.com/ems";
+    const API_URL = "https://ems-toq5.onrender.com/ems";
 
     const getHeaders = () => ({
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -109,7 +109,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                 {record && (
                     <div className="space-y-4">
                         {/* Basic Info */}
-                        <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="grid grid-cols-2 gap-4 p-3 rounded-lg bg-gray-50">
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Period</label>
                                 <p className="font-semibold">{record.month}/{record.year}</p>
@@ -123,7 +123,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                         {/* Work Hours & Attendance */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Total Work Hours
                                 </label>
                                 <input
@@ -136,7 +136,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Overtime Hours
                                 </label>
                                 <input
@@ -153,7 +153,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                         {/* Attendance Details */}
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Full Day Work
                                 </label>
                                 <input
@@ -165,7 +165,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Half Day Work
                                 </label>
                                 <input
@@ -177,7 +177,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Absence Days
                                 </label>
                                 <input
@@ -192,7 +192,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
 
                         <div className="grid grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Late Days
                                 </label>
                                 <input
@@ -204,7 +204,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Not Enough Hour Days
                                 </label>
                                 <input
@@ -220,7 +220,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                         {/* Allowances & Deductions */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Position Allowance
                                 </label>
                                 <input
@@ -233,7 +233,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block mb-1 text-sm font-medium text-gray-700">
                                     Overtime Pay
                                 </label>
                                 <input
@@ -248,7 +248,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Penalty
                             </label>
                             <input
@@ -262,8 +262,8 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
                         </div>
 
                         {/* Calculated Fields (Read-only) */}
-                        <div className="p-3 bg-blue-50 rounded-lg">
-                            <h6 className="font-semibold text-blue-800 mb-2">Calculated Fields</h6>
+                        <div className="p-3 rounded-lg bg-blue-50">
+                            <h6 className="mb-2 font-semibold text-blue-800">Calculated Fields</h6>
                             <div className="grid grid-cols-2 gap-3 text-sm">
                                 <div>
                                     <span className="text-gray-600">Gross Salary:</span>

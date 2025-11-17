@@ -48,7 +48,7 @@ const AdminSalary = () => {
     averageNetSalary: 0
   });
 
-  const API_URL = "https://ems-efub.onrender.com/ems";
+  const API_URL = "https://ems-toq5.onrender.com/ems";
 
   const getHeaders = () => ({
     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -306,7 +306,7 @@ const AdminSalary = () => {
           <h3 className="text-lg font-semibold text-gray-900">Filters & Search</h3>
         </div>
         
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-5 mb-4">
+        <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 lg:grid-cols-4">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Month
@@ -344,10 +344,11 @@ const AdminSalary = () => {
           <div className="flex items-end">
             <button
               onClick={handleViewAll}
-              className="flex items-center justify-center w-full gap-2 px-4 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+              className="flex items-center justify-center w-full gap-2 px-4 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700 whitespace-nowrap"
             >
               <MdPeople />
-              View All Employees
+              <span className="hidden sm:inline">View All Employees</span>
+              <span className="sm:hidden">View All</span>
             </button>
           </div>
 
@@ -355,56 +356,57 @@ const AdminSalary = () => {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-gray-700 transition-colors bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center flex-1 gap-2 px-4 py-2 font-medium text-gray-700 transition-colors bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed sm:flex-initial"
             >
               <MdRefresh className={refreshing ? "animate-spin" : ""} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
+              className="flex items-center justify-center flex-1 gap-2 px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700 sm:flex-initial"
             >
               <MdDownload />
-              Export
+              <span className="hidden sm:inline">Export</span>
             </button>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Search Employee
-            </label>
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <input
-                type="text"
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value)}
-                placeholder="Enter personnel code..."
-                className="flex-1 px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-              >
-                <MdSearch className="text-lg" />
-              </button>
-              {searchCode && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300"
-                >
-                  Clear
-                </button>
-              )}
-            </form>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+        <div className="mb-4">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Search Employee
+          </label>
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <input
+              type="text"
+              value={searchCode}
+              onChange={(e) => setSearchCode(e.target.value)}
+              placeholder="Enter personnel code..."
+              className="flex-1 px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              type="submit"
+              className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
+            >
+              <MdSearch className="text-lg" />
+              <span className="hidden sm:inline">Search</span>
+            </button>
+            {searchCode && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Clear
+              </button>
+            )}
+          </form>
+        </div>
+
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50">
           <span className="text-sm font-medium text-blue-800">
             Current View: 
           </span>
-          <span className="px-2 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-md">
+          <span className="px-2 py-1 text-xs font-bold text-blue-800 break-all bg-blue-100 rounded-md">
             {viewMode === "all" ? "All Employees" : `Search: ${searchCode || "No employee selected"}`}
           </span>
         </div>
