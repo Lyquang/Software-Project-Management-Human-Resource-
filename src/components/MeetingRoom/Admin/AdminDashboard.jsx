@@ -32,17 +32,14 @@ const AdminDashboard = () => {
   const itemsPerPage = 10;
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
-  // Hàm chuyển đổi định dạng thời gian từ API sang Date object
   const parseApiDateTime = (dateTimeString) => {
     if (!dateTimeString) return null;
     
-    // Định dạng: "09:30:00 12/11/2025"
     try {
       const [timePart, datePart] = dateTimeString.split(' ');
       const [hours, minutes, seconds] = timePart.split(':');
       const [day, month, year] = datePart.split('/');
       
-      // Tạo Date object (month - 1 vì JavaScript month bắt đầu từ 0)
       return new Date(year, month - 1, day, hours, minutes, seconds);
     } catch (error) {
       console.error('Error parsing date:', dateTimeString, error);
@@ -50,7 +47,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Hàm format ngày để so sánh (YYYY-MM-DD)
   const formatDateForComparison = (date) => {
     return date.toISOString().split('T')[0];
   };
