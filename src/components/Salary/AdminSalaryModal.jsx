@@ -19,7 +19,7 @@ const AdminSalaryModal = ({ show, handleClose, record, handleSave }) => {
     const [loading, setLoading] = useState(false);
     const [detailedRecord, setDetailedRecord] = useState(null);
 
-    const API_URL = "https://ems-efub.onrender.com/ems";
+    const API_URL = "https://ems-toq5.onrender.com/ems/";
 
     const getHeaders = () => ({
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,

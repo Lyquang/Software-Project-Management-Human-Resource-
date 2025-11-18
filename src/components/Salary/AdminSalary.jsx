@@ -48,7 +48,7 @@ const AdminSalary = () => {
     averageNetSalary: 0
   });
 
-  const API_URL = "https://ems-efub.onrender.com/ems";
+  const API_URL = "https://ems-toq5.onrender.com/ems";
 
   const getHeaders = () => ({
     Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -301,114 +301,127 @@ const AdminSalary = () => {
       </div>
 
       <div className="p-6 mb-6 bg-white shadow-sm rounded-xl">
-        <div className="flex items-center gap-2 mb-4">
-          <MdFilterList className="text-xl text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters & Search</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-5 mb-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Month
-            </label>
-            <select
-              value={filterMonth}
-              onChange={(e) => setFilterMonth(parseInt(e.target.value))}
-              className="w-full px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {[...Array(12).keys()].map((m) => (
-                <option key={m + 1} value={m + 1}>
-                  {new Date(2000, m).toLocaleString('en', { month: 'long' })}
-                </option>
-              ))}
-            </select>
-          </div>
+  <div className="flex items-center gap-2 mb-4">
+    <MdFilterList className="text-xl text-gray-600" />
+    <h3 className="text-lg font-semibold text-gray-900">Filters & Search</h3>
+  </div>
+  
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 mb-4">
+    {/* Month */}
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-gray-700">
+        Month
+      </label>
+      <select
+        value={filterMonth}
+        onChange={(e) => setFilterMonth(parseInt(e.target.value))}
+        className="w-full px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        {[...Array(12).keys()].map((m) => (
+          <option key={m + 1} value={m + 1}>
+            {new Date(2000, m).toLocaleString('en', { month: 'long' })}
+          </option>
+        ))}
+      </select>
+    </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Year
-            </label>
-            <select
-              value={filterYear}
-              onChange={(e) => setFilterYear(parseInt(e.target.value))}
-              className="w-full px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {[2023, 2024, 2025].map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
+    {/* Year */}
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-gray-700">
+        Year
+      </label>
+      <select
+        value={filterYear}
+        onChange={(e) => setFilterYear(parseInt(e.target.value))}
+        className="w-full px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        {[2023, 2024, 2025].map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
+    </div>
 
-          <div className="flex items-end">
+    {/* View all */}
+    <div className="flex items-end">
+      <button
+        onClick={handleViewAll}
+        className="flex items-center justify-center w-full gap-2 px-4 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+      >
+        <MdPeople />
+        View All Employees
+      </button>
+    </div>
+
+    {/* Refresh + Export */}
+    <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-end">
+      <button
+        onClick={handleRefresh}
+        disabled={refreshing}
+        className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-gray-700 transition-colors bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <MdRefresh className={refreshing ? 'animate-spin' : ''} />
+        Refresh
+      </button>
+      <button
+        onClick={handleExport}
+        className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
+      >
+        <MdDownload />
+        Export
+      </button>
+    </div>
+
+    {/* Search Employee */}
+    <div className="space-y-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
+      <label className="block text-sm font-medium text-gray-700">
+        Search Employee
+      </label>
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-col gap-2 sm:flex-row"
+      >
+        <input
+          type="text"
+          value={searchCode}
+          onChange={(e) => setSearchCode(e.target.value)}
+          placeholder="Enter personnel code..."
+          className="flex-1 px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="flex items-center justify-center flex-1 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 sm:flex-none"
+          >
+            <MdSearch className="text-lg" />
+          </button>
+          {searchCode && (
             <button
-              onClick={handleViewAll}
-              className="flex items-center justify-center w-full gap-2 px-4 py-2 font-medium text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+              type="button"
+              onClick={handleClearSearch}
+              className="flex items-center justify-center flex-1 px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300 sm:flex-none"
             >
-              <MdPeople />
-              View All Employees
+              Clear
             </button>
-          </div>
-
-          <div className="flex items-end gap-2">
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-gray-700 transition-colors bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <MdRefresh className={refreshing ? "animate-spin" : ""} />
-              Refresh
-            </button>
-            <button
-              onClick={handleExport}
-              className="flex items-center justify-center gap-2 px-4 py-2 font-medium text-white transition-colors bg-purple-600 rounded-lg hover:bg-purple-700"
-            >
-              <MdDownload />
-              Export
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Search Employee
-            </label>
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <input
-                type="text"
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value)}
-                placeholder="Enter personnel code..."
-                className="flex-1 px-3 py-2 transition-colors border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-              >
-                <MdSearch className="text-lg" />
-              </button>
-              {searchCode && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300"
-                >
-                  Clear
-                </button>
-              )}
-            </form>
-          </div>
+          )}
         </div>
+      </form>
+    </div>
+  </div>
 
-        <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
-          <span className="text-sm font-medium text-blue-800">
-            Current View: 
-          </span>
-          <span className="px-2 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-md">
-            {viewMode === "all" ? "All Employees" : `Search: ${searchCode || "No employee selected"}`}
-          </span>
-        </div>
-      </div>
+  <div className="flex flex-wrap items-center gap-2 p-3 bg-blue-50 rounded-lg">
+    <span className="text-sm font-medium text-blue-800">
+      Current View:
+    </span>
+    <span className="px-2 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-md">
+      {viewMode === 'all'
+        ? 'All Employees'
+        : `Search: ${searchCode || 'No employee selected'}`}
+    </span>
+  </div>
+</div>
+
 
       {error && (
         <div className="flex items-center gap-3 p-4 mb-6 border border-red-200 rounded-lg bg-red-50">
@@ -421,13 +434,13 @@ const AdminSalary = () => {
         <div className="p-6 text-white transition-transform duration-200 transform shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-blue-100">Total Employees</p>
-              <p className="mt-1 text-2xl font-bold">
+              <p className="text-sm font-medium text-blue-500">Total Employees</p>
+              <p className="mt-1 text-2xl font-bold text-blue-500">
                 {statistics.totalEmployees}
               </p>
-              <p className="mt-2 text-xs text-blue-200">All employees this month</p>
+              <p className="mt-2 text-xs text-blue-500">All employees this month</p>
             </div>
-            <div className="p-3 bg-blue-400 rounded-full bg-opacity-20">
+            <div className="p-3 bg-blue-500 rounded-full">
               <MdPeople className="text-2xl" />
             </div>
           </div>
@@ -436,13 +449,13 @@ const AdminSalary = () => {
         <div className="p-6 text-white transition-transform duration-200 transform shadow-lg bg-gradient-to-br from-green-500 to-green-600 rounded-xl hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-green-100">Total Gross Salary</p>
-              <p className="mt-1 text-2xl font-bold">
+              <p className="text-sm font-medium text-green-500">Total Gross Salary</p>
+              <p className="mt-1 text-2xl font-bold text-green-500">
                 ${statistics.totalGrossSalary?.toLocaleString()}
               </p>
-              <p className="mt-2 text-xs text-green-200">Before deductions</p>
+              <p className="mt-2 text-xs text-green-600">Before deductions</p>
             </div>
-            <div className="p-3 bg-green-400 rounded-full bg-opacity-20">
+            <div className="p-3 bg-green-500 rounded-full">
               <MdAttachMoney className="text-2xl" />
             </div>
           </div>
@@ -451,13 +464,13 @@ const AdminSalary = () => {
         <div className="p-6 text-white transition-transform duration-200 transform shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-purple-100">Total Net Salary</p>
-              <p className="mt-1 text-2xl font-bold">
+              <p className="text-sm font-medium text-purple-500">Total Net Salary</p>
+              <p className="mt-1 text-2xl font-bold text-purple-500">
                 ${statistics.totalNetSalary?.toLocaleString()}
               </p>
-              <p className="mt-2 text-xs text-purple-200">After deductions</p>
+              <p className="mt-2 text-xs text-purple-500">After deductions</p>
             </div>
-            <div className="p-3 bg-purple-400 rounded-full bg-opacity-20">
+            <div className="p-3 bg-purple-500 rounded-full">
               <MdTrendingUp className="text-2xl" />
             </div>
           </div>
@@ -466,13 +479,13 @@ const AdminSalary = () => {
         <div className="p-6 text-white transition-transform duration-200 transform shadow-lg bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl hover:scale-105">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-amber-100">Average Net Salary</p>
-              <p className="mt-1 text-2xl font-bold">
+              <p className="text-sm font-medium text-amber-500">Average Net Salary</p>
+              <p className="mt-1 text-2xl font-bold text-amber-500">
                 ${statistics.averageNetSalary?.toFixed(2)}
               </p>
-              <p className="mt-2 text-xs text-amber-200">Per employee</p>
+              <p className="mt-2 text-xs text-amber-500">Per employee</p>
             </div>
-            <div className="p-3 rounded-full bg-amber-400 bg-opacity-20">
+            <div className="p-3 rounded-full bg-amber-500">
               <MdCardGiftcard className="text-2xl" />
             </div>
           </div>

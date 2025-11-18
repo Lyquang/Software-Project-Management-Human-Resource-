@@ -1,4 +1,3 @@
-// SalaryDetailModal.jsx
 import React from "react";
 import { MdClose, MdAttachMoney, MdTrendingDown, MdWork } from "react-icons/md";
 
