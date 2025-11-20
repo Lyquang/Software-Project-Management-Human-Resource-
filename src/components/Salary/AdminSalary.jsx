@@ -422,7 +422,6 @@ const AdminSalary = () => {
   </div>
 </div>
 
-
       {error && (
         <div className="flex items-center gap-3 p-4 mb-6 border border-red-200 rounded-lg bg-red-50">
           <MdWarning className="flex-shrink-0 text-xl text-red-500" />

@@ -40,7 +40,7 @@ const AdjustRateModal = ({ show, handleClose, rates, handleSave }) => {
 
         try {
             // Sử dụng URL đúng từ API
-            const API_URL = "https://ems-toq5.onrender.com/ems/";
+            const API_URL = "https://ems-toq5.onrender.com/ems";
             
             const response = await axios.patch(
                 `${API_URL}/salary/payrate-edit`,

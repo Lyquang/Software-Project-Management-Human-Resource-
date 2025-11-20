@@ -37,6 +37,13 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import RootProvider from "./context/RootProvider";
 
+//import meeting room pages
+import MeetingRoomAdmin from "./Page/MeetingRoomAdmin";
+import EmployeeMeetingRoom from "./Page/EmployeeMeetingRoom";
+import ManagerMeetingRoom from "./Page/ManagerMeetingRoom";
+
+
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <RootProvider>
@@ -55,6 +62,7 @@ root.render(
           <Route path="admin-attendance" element={<AdminAttendance />} />
           <Route path="admin-salary" element={<AdminSalary />} />
           <Route path="department" element={<DepartmentPage />} />
+          <Route path="meeting-rooms" element={<MeetingRoomAdmin />} />
           <Route path="notification" element={<EmployeeNotification />} />
         </Route>
 
@@ -64,6 +72,7 @@ root.render(
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="submittask" element={<SubmitTask />} />
           <Route path="notification" element={<EmployeeNotification />} />
+          <Route path="meeting-rooms" element={<EmployeeMeetingRoom />} />
           <Route path="task" element={<TaskManagementPage />} />
           <Route path="task/:id" element={<TaskDetail />} />
           <Route path="task/:id/edit" element={<TaskEdit />} />
@@ -74,6 +83,7 @@ root.render(
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="department" element={<DepartmentPage />} />
           <Route path="project" element={<ManagerProject />} />
+          <Route path="meeting-rooms" element={<ManagerMeetingRoom />} />
           <Route
             path="project/:projectId/tasks"
             element={<ProjectTasksPage />}
