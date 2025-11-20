@@ -1,7 +1,7 @@
 const API_URL = "https://ems-toq5.onrender.com/ems";
 
 function getToken() {
-  return localStorage.getItem('accessToken') || localStorage.getItem('token');
+  return sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
 }
 
 function authHeaders(extra = {}) {

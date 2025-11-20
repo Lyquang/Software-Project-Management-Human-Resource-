@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   }, [selectedMonth, selectedYear]);
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     return {
       'Authorization': token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json'
