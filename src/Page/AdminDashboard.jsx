@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Users, Briefcase, CheckCircle, Calendar, TrendingUp, Clock, DollarSign, AlertCircle, RefreshCw } from 'lucide-react';
 
-// API Base URL
 const API_BASE_URL = 'https://ems-toq5.onrender.com/ems';
 
 const AdminDashboard = () => {
@@ -39,21 +38,18 @@ const AdminDashboard = () => {
     setError(null);
     
     try {
-      // 1. Fetch employees
       const employeesRes = await fetch(`${API_BASE_URL}/employees/all`, {
         headers: getAuthHeaders()
       });
       const employeesData = await employeesRes.json();
       const employees = employeesData.result || [];
 
-      // 2. Fetch departments
       const departmentsRes = await fetch(`${API_BASE_URL}/departments/all`, {
         headers: getAuthHeaders()
       });
       const departmentsData = await departmentsRes.json();
       const departments = departmentsData.result || [];
 
-      // 3. Fetch projects for each department
       let allProjects = [];
       for (const dept of departments) {
         try {
@@ -76,7 +72,6 @@ const AdminDashboard = () => {
         }
       }
 
-      // 4. Fetch tasks for each project
       let allTasks = [];
       for (const project of allProjects) {
         try {
@@ -96,7 +91,6 @@ const AdminDashboard = () => {
         }
       }
 
-      // 5. Fetch meetings
       let meetings = [];
       try {
         const meetingsRes = await fetch(`${API_BASE_URL}/api/bookings`, {
@@ -114,7 +108,6 @@ const AdminDashboard = () => {
         console.error('Error fetching meetings:', err);
       }
 
-      // 6. Fetch attendance summary
       let attendanceSummary = [];
       try {
         const attendanceRes = await fetch(
@@ -127,7 +120,6 @@ const AdminDashboard = () => {
         console.error('Error fetching attendance:', err);
       }
 
-      // 7. Fetch salary statistics
       let salaryStats = null;
       try {
         const salaryRes = await fetch(
@@ -168,8 +160,6 @@ const AdminDashboard = () => {
   if (!dateTimeString) return null;
 
   try {
-    // Kiểm tra xem chuỗi có khớp với định dạng "HH:mm:ss DD/MM/YYYY" không?
-    // Ví dụ: "09:30:00 05/01/2026"
     const pattern = /^(\d{2}):(\d{2}):(\d{2}) (\d{2})\/(\d{2})\/(\d{4})$/;
     const match = dateTimeString.match(pattern);
 
@@ -181,10 +171,8 @@ const AdminDashboard = () => {
       const month = parseInt(match[5], 10);
       const year = parseInt(match[6], 10);
 
-      // Tạo đối tượng Date. Lưu ý: tháng trong JavaScript bắt đầu từ 0 (0 là tháng 1)
       const date = new Date(year, month - 1, day, hours, minutes, seconds);
 
-      // Kiểm tra xem date có hợp lệ không
       if (isNaN(date.getTime())) {
         console.error('Invalid date from parsed components:', dateTimeString);
         return null;
@@ -205,11 +193,9 @@ const AdminDashboard = () => {
     return date.toISOString().split('T')[0];
   };
 
-  // Tính toán statistics - TÁCH RIÊNG PROJECT VÀ TASK STATUS
   const calculateStats = () => {
     const { employees, allProjects, allTasks, meetings, attendanceSummary } = dashboardData;
 
-    // PROJECT STATUS - TÁCH RIÊNG
     const plannedProjects = allProjects.filter(p => p.status === 'PLANNED').length;
     const inProgressProjects = allProjects.filter(p => p.status === 'IN_PROGRESS').length;
     const developedProjects = allProjects.filter(p => p.status === 'DEVELOPED').length;
@@ -218,7 +204,6 @@ const AdminDashboard = () => {
 
     const totalProjects = allProjects.length;
     
-    // TASK STATUS - TÁCH RIÊNG
     const pendingTasks = allTasks.filter(t => t.status === 'PENDING').length;
     const inProgressTasks = allTasks.filter(t => t.status === 'IN PROGRESS').length;
     const completedTasks = allTasks.filter(t => t.status === 'COMPLETED').length;
@@ -230,14 +215,12 @@ const AdminDashboard = () => {
     const taskCompletionRate = totalTasks > 0 ? 
       (((completedTasks + closeTasks) / totalTasks) * 100).toFixed(1) : 0;
 
-    // Filter today's meetings
     const today = formatDateForComparison(new Date());
     const todayMeetings = meetings.filter(m => {
       const startDate = parseApiDateTime(m.startTime);
       return startDate && formatDateForComparison(startDate) === today;
     }).length;
 
-    // Calculate attendance for today/this month
     const totalPresent = attendanceSummary.reduce((sum, emp) => sum + (emp.presentDays || 0), 0);
     const totalLate = attendanceSummary.reduce((sum, emp) => sum + (emp.lateDays || 0), 0);
     const totalAbsent = attendanceSummary.reduce((sum, emp) => sum + (emp.absentDays || 0), 0);
@@ -247,14 +230,12 @@ const AdminDashboard = () => {
 
     return {
       totalEmployees: employees.length,
-      // Project stats - TÁCH RIÊNG
       plannedProjects,
       inProgressProjects,
       developedProjects,
       closedProjects,
       onHoldProjects,
       totalProjects,
-      // Task stats - TÁCH RIÊNG
       taskCompletionRate,
       pendingTasks,
       inProgressTasks,
@@ -263,7 +244,6 @@ const AdminDashboard = () => {
       overdueTasks,
       canceledTasks,
       totalTasks,
-      // Other stats
       todayMeetings,
       attendanceRate: avgAttendanceRate,
       presentCount: totalPresent,
@@ -272,7 +252,6 @@ const AdminDashboard = () => {
     };
   };
 
-  // Dữ liệu cho department chart - CHỈ DÙNG PROJECT STATUS
   const getDepartmentProjectData = () => {
     const { departments, allProjects } = dashboardData;
     
@@ -282,7 +261,6 @@ const AdminDashboard = () => {
         p.departmentId === deptId || p.deptID === deptId
       );
       
-      // PROJECT STATUS ONLY - TÁCH RIÊNG
       const planned = deptProjects.filter(p => p.status === 'PLANNED').length;
       const inProgress = deptProjects.filter(p => p.status === 'IN_PROGRESS').length;
       const developed = deptProjects.filter(p => p.status === 'DEVELOPED').length;
@@ -303,11 +281,9 @@ const AdminDashboard = () => {
     });
   };
 
-  // Dữ liệu cho task status pie chart - CHỈ DÙNG TASK STATUS
   const getTaskStatusData = () => {
     const { allTasks } = dashboardData;
     
-    // TASK STATUS MAPPING ONLY - TÁCH RIÊNG
     const statusMap = {
       'PENDING': { name: 'Chờ xử lý', color: '#f59e0b' },
       'IN_PROGRESS': { name: 'Đang làm', color: '#3b82f6' },
@@ -330,7 +306,6 @@ const AdminDashboard = () => {
     }));
   };
 
-  // Top performers based on attendance
   const getTopPerformers = () => {
     const { attendanceSummary } = dashboardData;
     return attendanceSummary
@@ -342,7 +317,6 @@ const AdminDashboard = () => {
       .slice(0, 5);
   };
 
-  // Get today's meetings
   const getTodayMeetings = () => {
     const { meetings } = dashboardData;
   
@@ -407,14 +381,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600 mt-2">Tổng quan hoạt động công ty</p>
         </div>
         <div className="flex items-center gap-4">
-          {/* Month/Year Selector */}
           <div className="flex items-center gap-2">
             <select
               value={selectedMonth}
@@ -450,7 +422,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           icon={<Users className="w-8 h-8" />}
@@ -482,7 +453,6 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* Project Status Summary */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Tổng Quan Dự Án</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -494,7 +464,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Task Status Summary */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Tổng Quan Công Việc</h2>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -507,9 +476,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Department Projects Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Dự Án Theo Phòng Ban</h2>
           <ResponsiveContainer width="100%" height={350}>
@@ -538,7 +505,6 @@ const AdminDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Task Status Pie Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Phân Bố Công Việc</h2>
           {getTaskStatusData().length > 0 ? (
@@ -563,7 +529,6 @@ const AdminDashboard = () => {
                   <Tooltip formatter={(value) => [`${value} tasks`, 'Số lượng']} />
                 </PieChart>
               </ResponsiveContainer>
-              {/* Legend bên ngoài chart */}
               <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
                 {getTaskStatusData().map((entry, index) => (
                   <div key={index} className="flex items-center">
@@ -584,9 +549,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Top Performers */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
@@ -614,7 +577,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Meetings Today */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Clock className="w-5 h-5 mr-2 text-purple-600" />
@@ -645,9 +607,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Attendance & Salary */}
         <div className="space-y-6">
-          {/* Attendance */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
@@ -675,7 +635,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Salary Stats */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <DollarSign className="w-5 h-5 mr-2 text-green-600" />
@@ -709,7 +668,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Department Details Table */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4">Chi Tiết Phòng Ban</h2>
         <div className="overflow-x-auto">
@@ -765,7 +723,6 @@ const AdminDashboard = () => {
   );
 };
 
-// Stat Card Component
 const StatCard = ({ icon, title, value, subtitle, color }) => {
   const colorClasses = {
     blue: 'bg-blue-500',
@@ -790,7 +747,6 @@ const StatCard = ({ icon, title, value, subtitle, color }) => {
   );
 };
 
-// Status Badge Component
 const StatusBadge = ({ count, label, color }) => {
   const colorClasses = {
     yellow: 'bg-yellow-100 text-yellow-800',
