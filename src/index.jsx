@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 // import AdminTraining from "./components/Training/AdminTraining";
 // import Page
 import MainPage from "./Page/MainPage";
+import AdminDashboard from "./Page/AdminDashboard";
 import Home from "./components/Authentication/Home";
 import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
@@ -56,8 +57,8 @@ root.render(
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
-        <Route path="/login/admin" element={<MainPage />}>
+        <Route exact path="/login/admin" element={<MainPage />}>
+          <Route index element={<AdminDashboard />}></Route>
           <Route path="employee" element={<AllEmployee />} />
           <Route path="admin-attendance" element={<AdminAttendance />} />
           <Route path="admin-salary" element={<AdminSalary />} />
