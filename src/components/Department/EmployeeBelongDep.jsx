@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
-import { API_ROUTES } from "../../api/apiRoutes";
 import axiosInstance from "../../api/axiosInstance";
+import { API_ROUTES } from "../../api/apiRoutes";
+import { X } from "lucide-react";
+import AssignPersonel from "../Employee/AssignPersonel";
 
 export const EmployeeBelongDep = ({ departmentId, children }) => {
   const [show, setShow] = useState(false);
@@ -14,24 +14,16 @@ export const EmployeeBelongDep = ({ departmentId, children }) => {
   const handleClose = () => setShow(false);
 
   const handleShow = async () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       setError("No token found. Please log in again.");
       return;
     }
 
     try {
-      // const response = await axios.get(
-      //  API_ROUTES.DEPARTMENT.GET_DEPARTMENT_PERSONNEL(departmentId),
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
       const response = await axiosInstance.get(
         API_ROUTES.DEPARTMENT.GET_DEPARTMENT_PERSONNEL(departmentId)
       );
-      //       const response = await axiosInstance.get(
-      //   API_ROUTES.DEPARTMENT.GET_DEPARTMENT_PERSONNEL(departmentId)
-      // );
-      console.log("departmentid", departmentId);
 
       const result = response.data.result;
       setEmployees(result.employees || []);
@@ -46,88 +38,137 @@ export const EmployeeBelongDep = ({ departmentId, children }) => {
 
   return (
     <>
-      <div onClick={handleShow} style={{ cursor: "pointer" }}>
-        <span>{children || "👥 View Employees"}</span>
+      <div
+        onClick={handleShow}
+        className="inline-flex items-center gap-2 cursor-pointer text-indigo-600 hover:text-indigo-800 transition"
+      >
+        {children || (
+          <>
+            👥 <span className="font-medium">View Employees</span>
+          </>
+        )}
       </div>
 
-      <Modal show={show} onHide={handleClose} size="xl">
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Department:{" "}
-            <span className="text-primary fw-bold">
-              {departmentName || "Unknown"}
-            </span>
-          </Modal.Title>
-        </Modal.Header>
+      {show && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                Department:{" "}
+                <span className="text-indigo-600 font-bold">
+                  {departmentName || "Unknown"}
+                </span>
+              </h2>
+              <button
+                onClick={handleClose}
+                className="p-2 rounded-full hover:bg-gray-100 transition"
+              >
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
 
-        <Modal.Body style={{ maxHeight: "80vh", overflowY: "auto" }}>
-          {error && <div className="text-danger mb-3">Error: {error}</div>}
+            {/* Body */}
+            <div className="p-6 max-h-[75vh] overflow-y-auto">
+              {error && (
+                <div className="mb-4 bg-red-100 border border-red-300 text-red-700 px-4 py-2 rounded-lg">
+                  {error}
+                </div>
+              )}
 
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full border-collapse border border-gray-300">
-              <thead className="bg-gray-100">
-                <tr className="text-left">
-                  <th className="border p-2">Role</th>
-                  <th className="border p-2">Employee Code</th>
-                  <th className="border p-2">Name</th>
-                  <th className="border p-2">Gender</th>
-                  <th className="border p-2">Email</th>
-                  <th className="border p-2">Phone</th>
-                  <th className="border p-2">Start Managing Date</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {/* Manager Row */}
-                {manager && (
-                  <tr className="bg-green-50">
-                    <td className="border p-2 font-semibold text-green-700">
-                      Manager
-                    </td>
-                    <td className="border p-2">{manager.code}</td>
-                    <td className="border p-2">{manager.name}</td>
-                    <td className="border p-2">
-                      {manager.gender === "MALE" ? "Male" : "Female"}
-                    </td>
-                    <td className="border p-2">{manager.email}</td>
-                    <td className="border p-2">{manager.phone}</td>
-                    <td className="border p-2">{manager.manageDate || "—"}</td>
-                  </tr>
-                )}
-
-                {/* Employee Rows */}
-                {employees.length > 0 ? (
-                  employees.map((emp, index) => (
-                    <tr key={index}>
-                      <td className="border p-2 text-gray-600">Employee</td>
-                      <td className="border p-2">{emp.code}</td>
-                      <td className="border p-2">{emp.name}</td>
-                      <td className="border p-2">
-                        {emp.gender === "MALE" ? "Male" : "Female"}
-                      </td>
-                      <td className="border p-2">{emp.email}</td>
-                      <td className="border p-2">{emp.phone}</td>
-                      <td className="border p-2">—</td>
+              <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                <table className="min-w-full text-sm text-left border-collapse">
+                  <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                    <tr>
+                      <th className="py-3 px-4 border-b">Role</th>
+                      <th className="py-3 px-4 border-b">Employee Code</th>
+                      <th className="py-3 px-4 border-b">Name</th>
+                      <th className="py-3 px-4 border-b">Gender</th>
+                      <th className="py-3 px-4 border-b">Email</th>
+                      <th className="py-3 px-4 border-b">Phone</th>
+                      <th className="py-3 px-4 border-b">
+                        Start Managing Date
+                      </th>
+                      <th className="py-3 px-4 border-b">Action</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="border p-2 text-center" colSpan="7">
-                      No employees found in this department.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </Modal.Body>
+                  </thead>
+                  <tbody>
+                    {/* Manager Row */}
+                    {manager && (
+                      <tr className="bg-green-50 hover:bg-green-100 transition">
+                        <td className="py-3 px-4 font-semibold text-green-700">
+                          Manager
+                        </td>
+                        <td className="py-3 px-4">{manager.code}</td>
+                        <td className="py-3 px-4">{manager.name}</td>
+                        <td className="py-3 px-4">
+                          {manager.gender === "MALE" ? "Male" : "Female"}
+                        </td>
+                        <td className="py-3 px-4">{manager.email}</td>
+                        <td className="py-3 px-4">{manager.phone}</td>
+                        <td className="py-3 px-4">
+                          {manager.manageDate || "—"}
+                        </td>
+                        <td className="py-3 px-4">
+                          <AssignPersonel
+                            empCode={manager.code}
+                            role={"MANAGER"}
+                          />
+                        </td>
+                      </tr>
+                    )}
 
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                    {/* Employees */}
+                    {employees.length > 0 ? (
+                      employees.map((emp, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 border-t border-gray-100"
+                        >
+                          <td className="py-3 px-4 text-gray-600">Employee</td>
+                          <td className="py-3 px-4">{emp.code}</td>
+                          <td className="py-3 px-4">{emp.name}</td>
+                          <td className="py-3 px-4">
+                            {emp.gender === "MALE" ? "Male" : "Female"}
+                          </td>
+                          <td className="py-3 px-4">{emp.email}</td>
+                          <td className="py-3 px-4">{emp.phone}</td>
+                          <td className="py-3 px-4 text-gray-400">—</td>
+                          <td className="py-3 px-4">
+                            <AssignPersonel
+                              empCode={emp.code}
+                              role={"EMPLOYEE"}
+                            />
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          className="py-4 px-4 text-center text-gray-500"
+                          colSpan="7"
+                        >
+                          No employees found in this department.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end items-center gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={handleClose}
+                className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

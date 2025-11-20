@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
 import TaskModal from "./TaskModal";
 import MemberModal from "./EditMemberModal";
 import EditProject from "./EditProject";
+import { useNavigate } from 'react-router-dom';
 // import { DeleteProjectBtn } from "./DeleteProjectBtn";
 import "./ProjectCard.scss";
 import { IoIosAttach } from "react-icons/io";
+import axiosInstance from "../../../api/axiosInstance";
+import { API_ROUTES } from "../../../api/apiRoutes";
 
 export const ProjectCard = ({ index, projects, project, setProjects }) => {
+  const navigate = useNavigate();
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentProjectId, setCurrentProjectId] = useState(null);
@@ -15,19 +18,20 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
   const [tasks, setTasks] = useState([]);
   const progress = 50;
 
-  const fetchProjectDetails = async (id) => {
+  const fetchProjectDetails = async (code) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/ems/projects?id=${id}`
-      );
-      if (response.data && response.data.code === 1000) {
+      const response = await axiosInstance.get(API_ROUTES.PROJECT.GET_BY_CODE(code));
+      if (response.data && (response.data.code === 200 || response.data.code === 0)) {
         setCurrentProjectDetails(response.data.result);
-        setCurrentProjectId(id);
+        setCurrentProjectId(code);
+        return response.data.result;
       } else {
-        console.error("Error fetching project details:", response.data.message);
+        console.error("Error fetching project details:", response.data?.message);
+        return null;
       }
     } catch (error) {
       console.error("Error fetching project details:", error);
+      return null;
     }
   };
 
@@ -43,9 +47,15 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
     setIsMemberModalOpen(false);
   };
 
+  const openTasksForProject = async (projId) => {
+    // Fetch project details as requested, then navigate to tasks route
+    await fetchProjectDetails(projId);
+    navigate(`/project/${projId}/tasks`);
+  };
+
   return (
     <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6">
-      <div className="card">
+      <div className="card" onClick={() => openTasksForProject(project.id)} style={{ cursor: 'pointer' }}>
         <div className="card-header">
           <p className="company-name fw-bold">{project.name}</p>
         </div>
@@ -62,9 +72,8 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
           <div className="row g-2">
             <div
               className="col-6 d-flex align-items-center"
-              onClick={() => {
-                setSelectedProject(project);
-              }}
+              onClick={(e) => { e.stopPropagation(); openTasksForProject(project.id); }}
+              style={{ cursor: 'pointer' }}
             >
               <span style={{fontSize:'1.5rem'}}><IoIosAttach /></span>
               <span className="info fw-bold">{project.tasks} Tasks</span>
@@ -72,7 +81,7 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
 
             <div
               className="col-6 d-flex align-items-center"
-              onClick={() => handleMemberClick(project)}
+              onClick={(e) => { e.stopPropagation(); handleMemberClick(project); }}
             >
               <span className="logo">👥</span>
               <span className="info fw-bold">{project.members} Members</span>

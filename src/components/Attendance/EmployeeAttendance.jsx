@@ -8,6 +8,7 @@ import TimeDisplay from "./TimeDisplay";
 import { FaCalendarAlt, FaCheckCircle, FaClock, FaTimesCircle, FaHourglassHalf } from "react-icons/fa";
 import axios from "../../api/axiosInstance";
 import { API_ROUTES } from "../../api/apiRoutes";
+import { toast } from "react-toastify";
 
 const EmployeeAttendance = () => {
   const currentYear = new Date().getFullYear();
@@ -23,8 +24,13 @@ const EmployeeAttendance = () => {
   const [todayStatus, setTodayStatus] = useState({
     status: "...",
     clockIn: "--:--",
+    checkOut: "--:--",
     workingHours: "In Progress",
+    canCheckIn: true,
+    canCheckOut: false,
   });
+  const [checkInLoading, setCheckInLoading] = useState(false);
+  const [checkOutLoading, setCheckOutLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -49,7 +55,7 @@ const EmployeeAttendance = () => {
   };
 
   const parseApiDate = (s) => {
-    const d = new Date(s); // e.g. "14 Oct 2025"
+    const d = new Date(s);
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   };
 
@@ -58,65 +64,119 @@ const EmployeeAttendance = () => {
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 
+  const mapTodayStatus = (s) => {
+    switch ((s || "").toUpperCase()) {
+      case "LATE_ARRIVAL": return "Late";
+      case "PRESENT": return "Present";
+      case "ABSENT": return "Absent";
+      default: return "Present";
+    }
+  };
+
+  const computeWorkingHours = (inStr, outStr) => {
+    if (!inStr || !outStr) return "0m";
+    const [ih, im] = inStr.split(":").map(Number);
+    const [oh, om] = outStr.split(":").map(Number);
+    const inDate = new Date(); inDate.setHours(ih || 0, im || 0, 0, 0);
+    const outDate = new Date(); outDate.setHours(oh || 0, om || 0, 0, 0);
+    let diff = Math.max(0, outDate - inDate);
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    return h ? `${h}h ${m}m` : `${m}m`;
+  };
+
+  const fetchTodayStatus = async () => {
+    try {
+      const { data } = await axios.get(API_ROUTES.ATTENDANCE.TODAY_STATUS);
+      if (data?.code !== 200 || !data?.result) throw new Error("Invalid response");
+      const { status, checkIn, checkOut } = data.result;
+      setTodayStatus({
+        status: mapTodayStatus(status),
+        clockIn: checkIn ?? "--:--",
+        checkOut: checkOut ?? "--:--",
+        workingHours: checkOut ? computeWorkingHours(checkIn, checkOut) : "In Progress",
+        canCheckIn: !checkIn,
+        canCheckOut: !!checkIn && !checkOut,
+      });
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to load today status");
+    }
+  };
+
+  const fetchOverview = async (month, year) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await axios.get(API_ROUTES.ATTENDANCE.OVERVIEW, { params: { month, year } });
+      if (data?.code !== 200 || !data?.result) throw new Error("Invalid response");
+      const { totalDays, presentDays, lateDays, absentDays, averageHours, records } = data.result;
+
+      const tableData = (records || []).map((r) => ({
+        date: r.date,
+        day: r.day,
+        checkIn: r.checkIn ?? "--:--",
+        checkOut: r.checkOut ?? "--:--",
+        workHours: r.workHours,
+        status: mapStatus(r.status),
+        notes: r.notEnoughHour ? "Not enough hour" : "",
+      }));
+      setFilteredData(tableData);
+
+      setAttendanceStats({
+        totalDays: totalDays ?? tableData.length,
+        present: presentDays ?? 0,
+        late: lateDays ?? 0,
+        absent: absentDays ?? 0,
+        avgHours: typeof averageHours === "number" ? averageHours.toFixed(1) : "0.0",
+      });
+    } catch (e) {
+      setError("Failed to load attendance overview");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOverview = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data } = await axios.get(API_ROUTES.ATTENDANCE.OVERVIEW, {
-          params: { month: selectedMonth, year: selectedYear },
-        });
-        if (data?.code !== 200 || !data?.result) {
-          throw new Error("Invalid response");
-        }
-        const { totalDays, presentDays, lateDays, absentDays, averageHours, records } = data.result;
-
-        // Cập nhật bảng
-        const tableData = (records || []).map((r) => ({
-          date: r.date,
-          day: r.day,
-          checkIn: r.checkIn ?? "--:--",
-          checkOut: r.checkOut ?? "--:--",
-          workHours: r.workHours,
-          status: mapStatus(r.status),
-          notes: r.notEnoughHour ? "Not enough hour" : "",
-        }));
-        setFilteredData(tableData);
-
-        // Cập nhật thống kê
-        setAttendanceStats({
-          totalDays: totalDays ?? tableData.length,
-          present: presentDays ?? 0,
-          late: lateDays ?? 0,
-          absent: absentDays ?? 0,
-          avgHours: typeof averageHours === "number" ? averageHours.toFixed(1) : "0.0",
-        });
-
-        // Lọc thông tin hôm nay
-        const today = new Date();
-        const todayRec = (records || []).find((r) => isSameYMD(parseApiDate(r.date), today));
-        if (todayRec) {
-          setTodayStatus({
-            status: mapStatus(todayRec.status),
-            clockIn: todayRec.checkIn ?? "--:--",
-            workingHours: todayRec.workHours ?? "0m",
-          });
-        } else {
-          setTodayStatus({
-            status: "Absent",
-            clockIn: "--:--",
-            workingHours: "0m",
-          });
-        }
-      } catch (e) {
-        setError("Failed to load attendance overview");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOverview();
+    fetchOverview(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    fetchTodayStatus();
+  }, []);
+
+  const handleCheckIn = async () => {
+    if (!todayStatus.canCheckIn || checkInLoading) return;
+    setCheckInLoading(true);
+    try {
+      await axios.post(API_ROUTES.ATTENDANCE.CHECK_IN, {});
+      toast.success("Checked in successfully");
+      await Promise.all([
+        fetchOverview(selectedMonth, selectedYear),
+        fetchTodayStatus(),
+      ]);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Check in failed");
+    } finally {
+      setCheckInLoading(false);
+    }
+  };
+
+  const handleCheckOut = async () => {
+    if (!todayStatus.canCheckOut || checkOutLoading) return;
+    setCheckOutLoading(true);
+    try {
+      await axios.post(API_ROUTES.ATTENDANCE.CHECK_OUT, {});
+      toast.success("Checked out successfully");
+      await Promise.all([
+        fetchOverview(selectedMonth, selectedYear),
+        fetchTodayStatus(),
+      ]);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Check out failed");
+    } finally {
+      setCheckOutLoading(false);
+    }
+  };
 
   const summaryCards = useMemo(() => [
     { id: 1, title: "Total Days", value: attendanceStats.totalDays, icon: <FaCalendarAlt />, variant: "total" },
@@ -141,8 +201,28 @@ const EmployeeAttendance = () => {
           <h3 className="text-xl font-semibold">Timekeeping</h3>
           <TimeDisplay />
           <div className="grid grid-cols-2 gap-4">
-            <button className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors">Check In</button>
-            <button className="w-full py-3 bg-gray-200 text-gray-500 font-semibold rounded-lg cursor-not-allowed" disabled>Check Out</button>
+            <button
+              onClick={handleCheckIn}
+              disabled={!todayStatus.canCheckIn || checkInLoading}
+              className={`w-full py-3 font-semibold rounded-lg transition-colors ${
+                !todayStatus.canCheckIn || checkInLoading
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700"
+              }`}
+            >
+              {checkInLoading ? "Checking..." : "Check In"}
+            </button>
+            <button
+              onClick={handleCheckOut}
+              disabled={!todayStatus.canCheckOut || checkOutLoading}
+              className={`w-full py-3 font-semibold rounded-lg transition-colors ${
+                !todayStatus.canCheckOut || checkOutLoading
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700"
+              }`}
+            >
+              {checkOutLoading ? "Checking..." : "Check Out"}
+            </button>
           </div>
         </div>
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -156,6 +236,10 @@ const EmployeeAttendance = () => {
             <div className="flex justify-between items-center">
               <span className="text-gray-500">Clock In:</span>
               <span className="font-semibold">{todayStatus.clockIn}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-500">Clock Out:</span>
+              <span className="font-semibold">{todayStatus.checkOut}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-500">Working Hours:</span>

@@ -37,7 +37,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -55,7 +55,7 @@ const AttendanceAdmin = () => {
       if (!response.ok) {
         if (response.status === 401) {
           setError("Session expired. Please login again.");
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           return;
         }
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -107,7 +107,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -125,7 +125,7 @@ const AttendanceAdmin = () => {
       if (!response.ok) {
         if (response.status === 401) {
           setError("Session expired. Please login again.");
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           return;
         }
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -150,7 +150,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -187,7 +187,7 @@ const AttendanceAdmin = () => {
       if (!response.ok) {
         if (response.status === 401) {
           setError("Session expired. Please login again.");
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           return;
         }
         if (response.status === 404) {
@@ -229,7 +229,7 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -247,7 +247,7 @@ const AttendanceAdmin = () => {
       if (!response.ok) {
         if (response.status === 401) {
           setError("Session expired. Please login again.");
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           return;
         }
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -275,7 +275,8 @@ const AttendanceAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("token");
+
+  const token = sessionStorage.getItem("token");
       if (!token) {
         setError("No authentication token found. Please login again.");
         setLoading(false);
@@ -293,7 +294,7 @@ const AttendanceAdmin = () => {
       if (!response.ok) {
         if (response.status === 401) {
           setError("Session expired. Please login again.");
-          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
           return;
         }
         throw new Error(`HTTP error! status: ${response.status}`);

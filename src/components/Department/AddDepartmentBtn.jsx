@@ -1,11 +1,9 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_ROUTES } from "../../api/apiRoutes";
-import axiosInstance from "../../api/axiosInstance";
 
 export const AddDepartmentBtn = ({ setDepartments, children }) => {
   const [showForm, setShowForm] = useState(false);
@@ -13,52 +11,30 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
     name: "",
     manager_id: "",
   });
-  const [error, setError] = useState(null);
+// sessionStorage
+  const token = sessionStorage.getItem("token");
 
   const openForm = () => {
     setShowForm(true);
-    setFormData({
-      name: "",
-      manager_id: "",
-    });
+    setFormData({ name: "", manager_id: "" });
   };
 
   const closeForm = () => {
     setShowForm(false);
-    setFormData({
-      name: "",
-      manager_id: "",
-    });
+    setFormData({ name: "", manager_id: "" });
   };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    console.log("Form data updated:", formData);
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  const token = localStorage.getItem("token"); // or however you store it
 
   const createDepartment = async (e) => {
     e.preventDefault();
-
     try {
-      const payload = {
-        name: formData.name,
-        // manager_id: formData.manager_id ? formData.manager_id : null, // Ensure managerId is numeric or null
-      };
-
-      // Nếu có nhập manager_id thì thêm vào payload
-      if (formData.manager_id && formData.manager_id.trim() !== "") {
+      const payload = { name: formData.name };
+      if (formData.manager_id.trim())
         payload.manager_id = formData.manager_id.trim();
-      }
-
-      // const response = await axiosInstance.post(
-      //   API_ROUTES.DEPARTMENT.CREATE,
-      //   payload
-      // );
 
       const response = await axios.post(API_ROUTES.DEPARTMENT.CREATE, payload, {
         headers: {
@@ -67,94 +43,110 @@ export const AddDepartmentBtn = ({ setDepartments, children }) => {
         },
       });
 
-      if (response && response.data && response.data.result) {
-        // Add the newly created department to the state
-        setDepartments((prevDepartments) => [
-          ...prevDepartments,
-          response.data.result,
-        ]);
-        // alert("Department created successfully:", response.data.result);
+      if (response?.data?.result) {
+        setDepartments((prev) => [...prev, response.data.result]);
         toast.success("Department created successfully!");
       }
-    } catch (err) {
-      setError(err.message);
-      // alert("Error creating department:", err.message);
-      toast.error("Error creating department: ", err.message);
-    }
 
-    closeForm();
+      closeForm();
+    } catch (err) {
+      toast.error("Failed to create department!");
+      console.error(err);
+    }
   };
 
   return (
-    <div className="mt-4">
-      <ToastContainer />
-      <span className="btn btn-success" onClick={openForm}>
-        {children || "Thêm Phòng Ban"}
-      </span>
+    <div className="relative mt-4">
+      {/* Add Button */}
+      <div onClick={openForm} className="inline-block cursor-pointer">
+        {children || (
+          <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            ➕ Add Department
+          </button>
+        )}
+      </div>
 
-      {showForm && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          role="dialog"
-          style={{
-            backgroundColor: "rgba(0,0,0,0.5)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 1050,
-          }}
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Create New Department</h5>
-                <button type="button" className="close" onClick={closeForm}>
-                  <span>&times;</span>
+      {/* Modal */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md relative"
+              initial={{ y: -30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center border-b pb-2 mb-4">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  🏢 Create New Department
+                </h2>
+                <button
+                  onClick={closeForm}
+                  className="text-gray-500 hover:text-red-500 transition"
+                >
+                  ✕
                 </button>
               </div>
-              <div className="modal-body">
-                <form onSubmit={createDepartment}>
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Department Name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleFormChange}
-                      required
-                    />
 
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter ManagerID"
-                      name="manager_id"
-                      value={formData.manager_id}
-                      onChange={handleFormChange}
-                    />
-                  </div>
-                  <div className="d-flex justify-content-end">
-                    <button type="submit" className="btn btn-primary mr-2">
-                      Create
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={closeForm}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+              {/* Form */}
+              <form onSubmit={createDepartment} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Department Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleFormChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    placeholder="Enter department name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Manager ID
+                  </label>
+                  <input
+                    type="text"
+                    name="manager_id"
+                    value={formData.manager_id}
+                    onChange={handleFormChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeForm}
+                    className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md transition"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 };
