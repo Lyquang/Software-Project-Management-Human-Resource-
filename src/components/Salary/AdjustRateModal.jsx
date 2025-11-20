@@ -51,7 +51,7 @@ const AdjustRateModal = ({ show, handleClose, rates, handleSave }) => {
                         halfWorkPay: formData.halfShiftRate,
                     },
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
                         "Content-Type": "application/json",
                     }
                 }

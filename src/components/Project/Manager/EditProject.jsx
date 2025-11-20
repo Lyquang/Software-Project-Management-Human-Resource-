@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './EditProject.scss';
 import axios from 'axios';
+import { API_ROUTES } from '../../../api/apiRoutes';
 
 const EditProject = ({ onClose, onSave }) => {
     const [departments, setDepartments] = useState([]);
     const [project, setProject] = useState({
         name: '',
         description: '',
-        departmentId: ''
+        departmentId: '',
+        maxParticipants: ''
     });
 
     const [errors, setErrors] = useState({
@@ -18,11 +20,18 @@ const EditProject = ({ onClose, onSave }) => {
     useEffect(() => {
         const fetchDepartments = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/ems/departments/all');
-                if (response.data && response.data.code === 1000 && Array.isArray(response.data.result)) {
-                    setDepartments(response.data.result);
+                const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+                const response = await fetch(API_ROUTES.DEPARTMENT.GET_ALL, {
+                    headers: {
+                        Accept: 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                });
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && data && Array.isArray(data.result)) {
+                    setDepartments(data.result);
                 } else {
-                    console.error('Invalid data format:', response.data);
+                    console.error('Invalid data format:', data);
                     setDepartments([]);
                 }
             } catch (error) {
@@ -49,18 +58,29 @@ const EditProject = ({ onClose, onSave }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/ems/projects/create', {
-                projectName: project.name,
-                projectDescription: project.description,
-                departmentId: project.departmentId
+            const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+            const payload = {
+                name: project.name,
+                description: project.description,
+                department_id: Number(project.departmentId),
+                max_participants: project.maxParticipants === '' ? 0 : Number(project.maxParticipants),
+            };
+            const res = await fetch(API_ROUTES.PROJECT.CREATE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(payload),
             });
-
-            if (response.data && response.data.code === 1000) {
-                onSave(response.data.result);
-                onClose();
-            } else {
-                console.error('Error creating project:', response.data.message);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || (data && data.code !== 200 && data.code !== 0)) {
+                console.error('Error creating project:', data?.message || res.status);
+                return;
             }
+            onSave(data.result);
+            onClose();
         } catch (error) {
             console.error('Error creating project:', error);
         }
@@ -84,8 +104,8 @@ const EditProject = ({ onClose, onSave }) => {
                             >
                                 <option value="">Chọn phòng ban</option>
                                 {departments.map((department) => (
-                                    <option key={department.departmentId} value={department.departmentId}>
-                                        {department.departmentName}
+                                    <option key={department.departmentId || department.id} value={department.departmentId || department.id}>
+                                        {department.departmentName || department.name}
                                     </option>
                                 ))}
                             </select>
@@ -109,6 +129,17 @@ const EditProject = ({ onClose, onSave }) => {
                                 placeholder="Nhập mô tả dự án"
                                 value={project.description}
                                 onChange={handleChange}
+                            />
+                        </label>
+                        <label>
+                            Số lượng thành viên tối đa:
+                            <input
+                                type="number"
+                                name="maxParticipants"
+                                placeholder="Nhập số lượng tối đa"
+                                value={project.maxParticipants}
+                                onChange={handleChange}
+                                min={0}
                             />
                         </label>
                     </form>

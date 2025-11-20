@@ -20,6 +20,7 @@ const TimeDisplay = () => {
         second: "2-digit",
         hour12: false,
       })}
+      
     </div>
   );
 };

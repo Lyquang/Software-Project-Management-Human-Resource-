@@ -2,67 +2,74 @@
 import React, { useState, useEffect } from "react";
 import { CreateProjectBtn } from "./CreateProjectBtn";
 import { ProjectCard } from "./ProjectCard";
-import axios from "axios";
 import Loading from "../../Loading/Loading";
+import { API_ROUTES } from "../../../api/apiRoutes";
+import axiosInstance from "../../../api/axiosInstance";
 
 const ManagerProject = () => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]); // Thêm để tránh lỗi setTasks
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProjectsAndTasks = async () => {
-      setIsLoading(true);
-      try {
-        const [projectResponse, taskResponse] = await Promise.all([
-          axios.get("http://localhost:8080/ems/projects/all"),
-          axios.get("http://localhost:8080/ems/tasks/all"),
-        ]);
-
-        if (projectResponse.data.code === 1000) {
-          const fetchedProjects = projectResponse.data.result.map((project) => ({
-            id: project.projectId,
-            name: project.projectName,
-            company: project.departmentName,
-            attachments: project.attachments || 0,
-            members: project.participants || 0,
-            project_description: project.projectDescription,
-            duration: project.duration || "N/A",
-            comments: project.comments || 0,
-            daysLeft: project.daysLeft || 0,
-            progress: project.progress || 0,
-            icon: project.icon || "default-icon",
-            tasks: project.numberOfTasks || 0,
-          }));
-          setProjects(fetchedProjects);
-        } else {
-          console.error("Error fetching projects:", projectResponse.data.message);
-        }
-
-        if (taskResponse.data.code === 1000) {
-          setTasks(taskResponse.data.result || []);
-        } else {
-          console.error("Error fetching tasks:", taskResponse.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
+  const fetchProjects = async () => {
+    setIsLoading(true);
+    try {
+      const deptId = 1; // hard-coded as requested
+      const res = await axiosInstance.get(API_ROUTES.PROJECT.BY_DEPARTMENT(deptId));
+      const data = res.data;
+      if (data?.code === 200 && Array.isArray(data.result)) {
+        const mapped = data.result.map(p => ({
+          id: p.id,
+          name: p.name,
+          company: p.department_name,
+          project_description: p.description,
+          status: p.status,
+          members: p.participants || 0,
+          maxParticipants: p.max_participants || 0,
+          tasks: 0,
+          attachments: 0,
+          duration: "—",
+          comments: 0,
+          daysLeft: 0,
+          progress: 0,
+          icon: "default-icon",
+        }));
+        setProjects(mapped);
+      } else {
+        console.error("Fetch department projects failed", data?.message);
+        setProjects([]);
       }
-    };
+    } catch (e) {
+      console.error("Error fetching department projects", e);
+      setProjects([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchProjectsAndTasks();
+  useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+      await fetchProjects();
+    };
+    init();
   }, []);
 
   return (
     <div className="manager-projects bg-light">
       <div className="header d-flex align-items-center justify-content-between">
         <h2>Quản lý dự án</h2>
-        <CreateProjectBtn setProjects={setProjects} />
+        <div className="d-flex align-items-center gap-2">
+          <button onClick={fetchProjects} className="btn btn-outline-secondary">Refresh</button>
+          {/* CreateProjectBtn kept; you said stop creating projects but we leave button for potential future use */}
+          <CreateProjectBtn setProjects={setProjects} />
+        </div>
       </div>
 
       {isLoading ? (
         <div><Loading/></div>
+      ) : projects.length === 0 ? (
+        <div className="bg-white border rounded p-4 text-muted">No projects found for department 1.</div>
       ) : (
         <div className="row g-3 gy-5 py-3 row-deck">
           {projects.map((project, index) => (

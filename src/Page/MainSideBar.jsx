@@ -21,16 +21,21 @@ import {
 } from "react-icons/md";
 import { BsGraphUpArrow, BsBullseye } from "react-icons/bs";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
-import logo from "../components/assets/logo.jpg"
+import logo from "../components/assets/logo.jpg";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import ThemeSwitcher from "../components/common/ThemeSwitcher";
+import { useNotification } from "../context/NotificationContext";
 
-function MainSideBar() {
+const MainSideBar = () => {
+  const { unreadCount } = useNotification();
   const [expanded, setExpanded] = useState(true);
   const [role, setRole] = useState("");
+
   const navigate = useNavigate();
 
   // Decode role từ token
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
       navigate("/");
       return;
@@ -46,11 +51,11 @@ function MainSideBar() {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.clear();
     navigate("/");
   };
 
-  // Links theo role 
+  // Links theo role
   const linksByRole = {
     EMPLOYEE: [
       {
@@ -58,9 +63,14 @@ function MainSideBar() {
         items: [
           { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "/message",
-            icon: <HiOutlineDotsCircleHorizontal />,
+            to: "message",
+            icon: <BiChat />,
             text: "Message",
+          },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
           },
         ],
       },
@@ -74,13 +84,6 @@ function MainSideBar() {
           { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
-      {
-        group: "PERFORMANCE",
-        items: [
-          { to: "performance", icon: <BsGraphUpArrow />, text: "Performance" },
-          { to: "goals", icon: <BsBullseye />, text: "Goals" },
-        ],
-      },
     ],
     MANAGER: [
       {
@@ -89,14 +92,21 @@ function MainSideBar() {
           { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
           {
             to: "message",
-            icon: <HiOutlineDotsCircleHorizontal />,
+            icon: <BiChat />,
             text: "Message",
+          },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
           },
         ],
       },
       {
         group: "MANAGER",
         items: [
+          { to: "infor", icon: <FaRegUser />, text: "My information" },
+          { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
           { to: "notification", icon: <BiChat />, text: "Notifications" },
           { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
@@ -108,7 +118,11 @@ function MainSideBar() {
         group: "MAIN MENU",
         items: [
           { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard" },
-          { to: "notifications", icon: <MdDashboard />, text: "Notifications" },
+          {
+            to: "notification",
+            icon: <IoMdNotificationsOutline />,
+            text: "Notifications",
+          },
         ],
       },
       {
@@ -149,8 +163,8 @@ function MainSideBar() {
       <div>
         <div className="relative flex items-center justify-between px-5 py-5 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <img src ={logo}  alt="Logo" className="w-[8rem] h-[8rem]" />
-            {expanded }
+            <img src={logo} alt="Logo" className="w-[8rem] h-[8rem]" />
+            {expanded}
           </div>
 
           {/* Toggle button: functional updater + z-index cao + accessible */}
@@ -198,7 +212,26 @@ function MainSideBar() {
                       }`
                     }
                   >
-                    <span className="text-lg">{icon}</span>
+                    {/* <span className="text-lg">{icon}</span> */}
+                    {/* Icon + Badge */}
+
+                    <div className="relative">
+                      <span className="text-lg">{icon}</span>
+
+                      {/* 🔴 Hiển thị badge khi có thông báo chưa đọc */}
+                      {(role?.toLowerCase() === "employee" ||
+                        role?.toLocaleLowerCase() === "manager") &&
+                        text === "Notifications" &&
+                        Number(unreadCount) >= 0 && (
+                          <span
+                            className="absolute -top-2 -right-2 bg-red-500 text-white text-xs  
+                     rounded-full w-4 h-4 flex items-center justify-center"
+                          >
+                            {unreadCount}
+                          </span>
+                        )}
+                    </div>
+
                     {expanded && (
                       <span className="text-sm truncate">{text}</span>
                     )}
@@ -209,6 +242,7 @@ function MainSideBar() {
           ))}
         </div>
       </div>
+      <ThemeSwitcher />
 
       {/* Logout Section */}
       <div className="px-3 py-4 border-t border-gray-200">
@@ -224,6 +258,6 @@ function MainSideBar() {
       </div>
     </div>
   );
-}
+};
 
 export default MainSideBar;
