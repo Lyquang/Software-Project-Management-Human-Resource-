@@ -163,13 +163,15 @@ const AdminSalary = () => {
       if (response.data && response.data.result) {
         const data = response.data.result.content;
         
-        const headers = ["Employee Code", "Employee Name", "Position", "Month", "Year", "Gross Salary", "Net Salary", "Total Deductions"];
+        const headers = ["Mã NV", "Tên Nhân Viên", "Chức Vụ", "Tháng", "Năm", "Lương Gross", "Lương Net", "Khấu Trừ"];
+        
+        const BOM = '\uFEFF';
         const csvContent = [
           headers.join(","),
           ...data.map(item => [
             item.personnelCode,
-            `"${item.personnelName}"`,
-            `"${item.salaryDetailResponse?.position || "N/A"}"`,
+            `"${(item.personnelName || '').replace(/"/g, '""')}"`, // Escape quotes
+            `"${((item.salaryDetailResponse?.position) || "N/A").replace(/"/g, '""')}"`,
             item.month,
             item.year,
             item.grossSalary,
@@ -178,17 +180,22 @@ const AdminSalary = () => {
           ].join(","))
         ].join("\n");
         
-        const blob = new Blob([csvContent], { type: "text/csv" });
+        const blob = new Blob([BOM + csvContent], { 
+          type: "text/csv;charset=utf-8;" 
+        });
+        
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `salary-report-${filterMonth}-${filterYear}.csv`;
+        link.download = `bang-luong-${filterMonth}-${filterYear}.csv`;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       }
     } catch (err) {
       console.error("Export error:", err);
-      setError("Error exporting data");
+      setError("Lỗi khi xuất dữ liệu");
     }
   };
 
