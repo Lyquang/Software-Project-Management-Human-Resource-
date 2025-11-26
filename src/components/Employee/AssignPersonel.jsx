@@ -39,11 +39,13 @@ const AssignPersonel = ({ empCode, role }) => {
         await axiosInstance.put(
           API_ROUTES.PERSONNELS.ASSIGN_MANAGER(selectedDepartment, empCode)
         );
+        console.log("chuyen phong ban mana succcess");
         toast.success("Manager assigned successfully!");
       } else if (role === "EMPLOYEE") {
         await axiosInstance.put(
           API_ROUTES.PERSONNELS.ASSIGN_EMPLOYEE(selectedDepartment, empCode)
         );
+        console.log("chuyen phong ban employ succcess");
         toast.success("Employee assigned successfully!");
       }
 
@@ -65,6 +67,7 @@ const AssignPersonel = ({ empCode, role }) => {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
       {/* 🧩 Trigger Button */}
       <button
         onClick={() => setShowForm(true)}
@@ -154,7 +157,6 @@ const AssignPersonel = ({ empCode, role }) => {
           </div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </>
   );
 };

@@ -63,11 +63,6 @@ const MainSideBar = () => {
         items: [
           { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "message",
-            icon: <BiChat />,
-            text: "Message",
-          },
-          {
             to: "notification",
             icon: <IoMdNotificationsOutline />,
             text: "Notifications",
@@ -80,7 +75,6 @@ const MainSideBar = () => {
           { to: "infor", icon: <FaRegUser />, text: "My information" },
           { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "task", icon: <MdOutlineTaskAlt />, text: "Task" },
-          { to: "payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
           { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
@@ -90,11 +84,6 @@ const MainSideBar = () => {
         group: "MAIN MENU",
         items: [
           { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
-          {
-            to: "message",
-            icon: <BiChat />,
-            text: "Message",
-          },
           {
             to: "notification",
             icon: <IoMdNotificationsOutline />,
@@ -108,7 +97,6 @@ const MainSideBar = () => {
           { to: "infor", icon: <FaRegUser />, text: "My information" },
           { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
           { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
-          { to: "notification", icon: <BiChat />, text: "Notifications" },
           { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
         ],
       },
@@ -242,7 +230,6 @@ const MainSideBar = () => {
           ))}
         </div>
       </div>
-      <ThemeSwitcher />
 
       {/* Logout Section */}
       <div className="px-3 py-4 border-t border-gray-200">

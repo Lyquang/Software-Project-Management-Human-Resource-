@@ -12,7 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
     "@tailwindcss/vite": "^4.1.14",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
@@ -33,7 +33,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.3",
     "react-toastify": "^11.0.5",
-    "recharts": "^3.2.1",
+    "recharts": "^3.4.1",
     "tailwindcss": "^4.1.14",
     "web-vitals": "^5.1.0"
   },

@@ -16,7 +16,7 @@ import Login from "./components/Authentication/Login";
 import Signup from "./components/Authentication/Signup";
 // import component of employee
 import AllEmployee from "./components/Employee/AllEmployee";
-import EDashboard from "./Page/EDashboard";
+import EDashboard from "./Page/MainEmployeeDashBoard";
 import SubmitTask from "./components/Project/Employee/SubmitTask";
 import EmployeeAttendance from "./components/Attendance/EmployeeAttendance";
 import PersonelInfor from "./components/Information/PersonelInfor";
@@ -42,6 +42,10 @@ import RootProvider from "./context/RootProvider";
 import MeetingRoomAdmin from "./Page/MeetingRoomAdmin";
 import EmployeeMeetingRoom from "./Page/EmployeeMeetingRoom";
 import ManagerMeetingRoom from "./Page/ManagerMeetingRoom";
+import ManagerDashboard from "./components/MeetingRoom/Manager/ManagerDashboard";
+import EmployeeDashboard from "./components/MeetingRoom/Employee/EmployeeDashboard";
+import MainEmployeeDashBoard from "./Page/MainEmployeeDashBoard";
+import MainManagerDashBoard from "./Page/MainManagerDashBoard";
 
 
 
@@ -68,7 +72,7 @@ root.render(
         </Route>
 
         <Route path="/login/employee" element={<MainPage />}>
-          <Route index element={<EDashboard />}></Route>
+          <Route index element={<MainEmployeeDashBoard />}></Route>
           <Route path="infor" element={<PersonelInfor />} />
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="submittask" element={<SubmitTask />} />
@@ -80,6 +84,7 @@ root.render(
         </Route>
 
         <Route path="/login/manager" element={<MainPage />}>
+          <Route index element={<MainManagerDashBoard/>}></Route>
           <Route path="infor" element={<PersonelInfor />} />
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="department" element={<DepartmentPage />} />

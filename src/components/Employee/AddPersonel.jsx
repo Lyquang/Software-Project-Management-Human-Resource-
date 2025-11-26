@@ -8,6 +8,7 @@ export const AddPersonel = ({ children }) => {
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [errors, setErrors] = useState("");
+  const [dobError, setDobError] = useState("");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -45,6 +46,20 @@ export const AddPersonel = ({ children }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "dob") {
+      const birthday = new Date(value);
+      const today = new Date();
+
+      const age = today.getFullYear() - birthday.getFullYear();
+      const monthDiff = today.getMonth() - birthday.getMonth();
+      const dayDiff = today.getDate() - birthday.getDate();
+
+      const isUnder18 =
+        age < 18 ||
+        (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
+
+      setDobError(isUnder18 ? "Bạn phải đủ 18 tuổi!" : "");
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -54,8 +69,23 @@ export const AddPersonel = ({ children }) => {
   const validate = () => {
     const newError = {};
     const userNameRegex = /^[A-Za-z\s]+$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (name === "dob") {
+      const birthday = new Date(value);
+      const today = new Date();
+
+      const age = today.getFullYear() - birthday.getFullYear();
+      const monthDiff = today.getMonth() - birthday.getMonth();
+      const dayDiff = today.getDate() - birthday.getDate();
+
+      const isUnder18 =
+        age < 18 ||
+        (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
+
+      setDobError(isUnder18 ? "Bạn phải đủ 18 tuổi!" : "");
+    }
 
     if (!formData.username.trim()) {
       newError.username = "UserName must be require";
@@ -233,6 +263,10 @@ export const AddPersonel = ({ children }) => {
                     className="border rounded-lg px-3 py-2 focus:ring focus:ring-indigo-200"
                     required
                   />
+                  {dobError && (
+                    <p className="text-red-500 text-sm mt-1">{dobError}</p>
+                  )}
+
                   <select
                     name="gender"
                     value={formData.gender}

@@ -3,8 +3,11 @@ import React, { useContext } from "react";
 import { Search, Bell, MessageCircle, Sun, Moon } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import ThemeSwitcher from "../components/common/ThemeSwitcher";
+import { Link } from "react-router-dom";
+import { useNotification } from "../context/NotificationContext";
 
 const Header = ({ userName = "User", avatarUrl }) => {
+    const { unreadCount } = useNotification();
   return (
     <header className="w-full flex items-center justify-between bg-white dark:bg-gray-900 py-3 px-6 shadow-sm border-b border-gray-100 dark:border-gray-700 transition-colors duration-300">
       {/* Search */}
@@ -22,22 +25,31 @@ const Header = ({ userName = "User", avatarUrl }) => {
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        <ThemeSwitcher />
+        {/* <ThemeSwitcher /> */}
 
         {/* Notification */}
-        <button className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-          <Bell className="text-gray-600 dark:text-gray-300" size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        <Link
+          to="notification"
+          title="Thông báo"
+          aria-label={`Thông báo, ${unreadCount} chưa đọc`}
+        >
+          <button className="relative p-2 rounded-xl hover:bg-blue-100 transition">
+            <Bell className="text-black-900 dark:text-gray-300" size={30} />
+            {Number(unreadCount) > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-4 px-1 flex items-center justify-center text-xs font-semibold text-white bg-red-500 rounded-full">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </Link>
 
-        {/* Messages */}
-        <button className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+        {/* <button className="relative p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
           <MessageCircle
             className="text-gray-600 dark:text-gray-300"
             size={20}
           />
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        </button> */}
 
         {/* Avatar */}
         <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-orange-700 flex items-center justify-center overflow-hidden cursor-pointer">

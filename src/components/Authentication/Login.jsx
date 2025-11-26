@@ -52,6 +52,8 @@ function Login() {
         // dispatch(login({ user: decoded, token }));
         // 🧭 Điều hướng dựa trên scope
         const scope = decoded.scope;
+        const personelCode = decoded.code;
+        sessionStorage.setItem("personelCode", personelCode); 
         sessionStorage.setItem("scope", scope); // lưu scope để sử dụng sau này
         console.log("token,scope, user at login",token,scope );
 

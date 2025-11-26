@@ -28,7 +28,7 @@ export const EmployeeBelongDep = ({ departmentId, children }) => {
       const result = response.data.result;
       setEmployees(result.employees || []);
       setManager(result.manager || null);
-      setDepartmentName(result.department_name || "");
+      setDepartmentName(result.departmentName || "");
       setShow(true);
     } catch (err) {
       setError(err.message);
