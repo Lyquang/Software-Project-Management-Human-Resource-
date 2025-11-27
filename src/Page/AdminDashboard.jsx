@@ -285,12 +285,12 @@ const AdminDashboard = () => {
     const { allTasks } = dashboardData;
     
     const statusMap = {
-      'PENDING': { name: 'Chờ xử lý', color: '#f59e0b' },
-      'IN_PROGRESS': { name: 'Đang làm', color: '#3b82f6' },
-      'COMPLETED': { name: 'Hoàn thành', color: '#10b981' },
-      'CLOSE': { name: 'Đã đóng', color: '#059669' },
-      'OVERDUE': { name: 'Quá hạn', color: '#ef4444' },
-      'CANCELED': { name: 'Đã hủy', color: '#6b7280' }
+      'PENDING': { name: 'Pending', color: '#f59e0b' },
+      'IN_PROGRESS': { name: 'In progress', color: '#3b82f6' },
+      'COMPLETED': { name: 'Completed', color: '#10b981' },
+      'CLOSE': { name: 'Close', color: '#059669' },
+      'OVERDUE': { name: 'Overdue', color: '#ef4444' },
+      'CANCELED': { name: 'Canceled', color: '#6b7280' }
     };
 
     const statusCount = allTasks.reduce((acc, task) => {
@@ -325,7 +325,6 @@ const AdminDashboard = () => {
     }
 
     const today = formatDateForComparison(new Date());
-    console.log('Today:', today); // Debug log
     
     const todayMeetings = meetings.filter(meeting => {
       if (!meeting.startTime) return false;
@@ -334,12 +333,9 @@ const AdminDashboard = () => {
       if (!startDate) return false;
       
       const meetingDate = formatDateForComparison(startDate);
-      console.log('Meeting date:', meetingDate, 'Title:', meeting.title); // Debug log
       
       return meetingDate === today;
     });
-
-    console.log('Today meetings count:', todayMeetings.length); // Debug log
     
     return todayMeetings.sort((a, b) => {
       const dateA = parseApiDateTime(a.startTime);
@@ -353,7 +349,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Đang tải dữ liệu dashboard...</p>
+          <p className="mt-4 text-gray-600">Loading dashboard data...</p>
         </div>
       </div>
     );
@@ -364,13 +360,13 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Lỗi tải dữ liệu</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error loading data</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => fetchDashboardData()}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            Thử lại
+            Retry
           </button>
         </div>
       </div>
@@ -378,13 +374,17 @@ const AdminDashboard = () => {
   }
 
   const stats = calculateStats();
+  const monthNames = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-2">Tổng quan hoạt động công ty</p>
+          <p className="text-gray-600 mt-2">Company operations overview</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -393,9 +393,9 @@ const AdminDashboard = () => {
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                <option key={month} value={month}>
-                  Tháng {month}
+              {monthNames.map((name, index) => (
+                <option key={index + 1} value={index + 1}>
+                  {name}
                 </option>
               ))}
             </select>
@@ -417,7 +417,7 @@ const AdminDashboard = () => {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Làm mới
+            Refresh
           </button>
         </div>
       </div>
@@ -425,60 +425,60 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           icon={<Users className="w-8 h-8" />}
-          title="Tổng Nhân Viên"
+          title="Total number of employees"
           value={stats.totalEmployees}
-          subtitle={`${stats.presentCount} ngày công tháng này`}
+          subtitle={`${stats.presentCount} working days this month`}
           color="blue"
         />
         <StatCard
           icon={<Briefcase className="w-8 h-8" />}
-          title="Dự Án Đang Chạy"
+          title="Project is in progress"
           value={stats.inProgressProjects}
-          subtitle={`${stats.totalProjects} dự án • ${stats.closedProjects} đã đóng`}
+          subtitle={`${stats.totalProjects} task • ${stats.closedProjects} closed`}
           color="purple"
         />
         <StatCard
           icon={<CheckCircle className="w-8 h-8" />}
-          title="Hoàn Thành Task"
+          title="Completed tasks"
           value={`${stats.taskCompletionRate}%`}
           subtitle={`${stats.completedTasks + stats.closeTasks}/${stats.totalTasks} task`}
           color="green"
         />
         <StatCard
           icon={<Calendar className="w-8 h-8" />}
-          title="Cuộc Họp Hôm Nay"
+          title="Meetings today"
           value={stats.todayMeetings}
-          subtitle={`Tổng ${dashboardData.meetings.length} cuộc họp`}
+          subtitle={`Total of ${dashboardData.meetings.length} meetings`}
           color="orange"
         />
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Tổng Quan Dự Án</h2>
+        <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatusBadge count={stats.plannedProjects} label="Kế Hoạch" color="yellow" />
-          <StatusBadge count={stats.inProgressProjects} label="Đang Chạy" color="blue" />
-          <StatusBadge count={stats.developedProjects} label="Đã Phát Triển" color="green" />
-          <StatusBadge count={stats.closedProjects} label="Đã Đóng" color="gray" />
-          <StatusBadge count={stats.onHoldProjects} label="Tạm Dừng" color="red" />
+          <StatusBadge count={stats.plannedProjects} label="Planned" color="yellow" />
+          <StatusBadge count={stats.inProgressProjects} label="In Progress" color="blue" />
+          <StatusBadge count={stats.developedProjects} label="Developed" color="green" />
+          <StatusBadge count={stats.closedProjects} label="Closes" color="gray" />
+          <StatusBadge count={stats.onHoldProjects} label="On Hold" color="red" />
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Tổng Quan Công Việc</h2>
+        <h2 className="text-xl font-semibold mb-4">Task Overview</h2>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-          <StatusBadge count={stats.pendingTasks} label="Chờ Xử Lý" color="yellow" />
-          <StatusBadge count={stats.inProgressTasks} label="Đang Làm" color="blue" />
-          <StatusBadge count={stats.completedTasks} label="Hoàn Thành" color="green" />
-          <StatusBadge count={stats.closeTasks} label="Đã Đóng" color="gray" />
-          <StatusBadge count={stats.overdueTasks} label="Quá Hạn" color="red" />
-          <StatusBadge count={stats.canceledTasks} label="Đã Hủy" color="gray" />
+          <StatusBadge count={stats.pendingTasks} label="Pending" color="yellow" />
+          <StatusBadge count={stats.inProgressTasks} label="In Progress" color="blue" />
+          <StatusBadge count={stats.completedTasks} label="Completed" color="green" />
+          <StatusBadge count={stats.closeTasks} label="Closed" color="gray" />
+          <StatusBadge count={stats.overdueTasks} label="Overdue" color="red" />
+          <StatusBadge count={stats.canceledTasks} label="Canceled" color="gray" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Dự Án Theo Phòng Ban</h2>
+          <h2 className="text-xl font-semibold mb-4">Projects by Department</h2>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart
               data={getDepartmentProjectData()}
@@ -496,17 +496,17 @@ const AdminDashboard = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="planned" fill="#f59e0b" name="Kế hoạch" />
-              <Bar dataKey="inProgress" fill="#3b82f6" name="Đang chạy" />
-              <Bar dataKey="developed" fill="#10b981" name="Đã phát triển" />
-              <Bar dataKey="closed" fill="#6b7280" name="Đã đóng" />
-              <Bar dataKey="onHold" fill="#ef4444" name="Tạm dừng" />
+              <Bar dataKey="planned" fill="#f59e0b" name="Planned" />
+              <Bar dataKey="inProgress" fill="#3b82f6" name="In Progress" />
+              <Bar dataKey="developed" fill="#10b981" name="Developed" />
+              <Bar dataKey="closed" fill="#6b7280" name="Closed" />
+              <Bar dataKey="onHold" fill="#ef4444" name="On Hold" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Phân Bố Công Việc</h2>
+          <h2 className="text-xl font-semibold mb-4">Work Distribution</h2>
           {getTaskStatusData().length > 0 ? (
             <div className="flex flex-col items-center">
               <ResponsiveContainer width="100%" height={300}>
@@ -543,7 +543,7 @@ const AdminDashboard = () => {
             </div>
           ) : (
             <div className="flex items-center justify-center h-64 text-gray-500">
-              Chưa có dữ liệu công việc
+              Not have data yet
             </div>
           )}
         </div>
@@ -553,7 +553,7 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-            Top Nhân Viên
+            Top Employees
           </h2>
           <div className="space-y-3">
             {getTopPerformers().map((emp, idx) => (
@@ -567,12 +567,12 @@ const AdminDashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-blue-600">{emp.presentDays || 0}</p>
-                  <p className="text-xs text-gray-500">ngày công</p>
+                  <p className="text-xs text-gray-500">working days</p>
                 </div>
               </div>
             ))}
             {getTopPerformers().length === 0 && (
-              <p className="text-gray-500 text-center py-8">Chưa có dữ liệu</p>
+              <p className="text-gray-500 text-center py-8">No data yet</p>
             )}
           </div>
         </div>
@@ -580,7 +580,7 @@ const AdminDashboard = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Clock className="w-5 h-5 mr-2 text-purple-600" />
-            Lịch Họp Hôm Nay
+            Meetings today
           </h2>
           <div className="space-y-3 max-h-80 overflow-y-auto">
             {getTodayMeetings().map(meeting => (
@@ -602,7 +602,7 @@ const AdminDashboard = () => {
               </div>
             ))}
             {getTodayMeetings().length === 0 && (
-              <p className="text-gray-500 text-center py-8">Không có cuộc họp nào hôm nay</p>
+              <p className="text-gray-500 text-center py-8">There are no meetings today.</p>
             )}
           </div>
         </div>
@@ -611,24 +611,24 @@ const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
-              Chấm Công Tháng {selectedMonth}
+              {monthNames[selectedMonth - 1]} attendance
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Tổng ngày công:</span>
+                <span className="text-gray-600">Total working day:</span>
                 <span className="font-bold text-green-600">{stats.presentCount}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Đi muộn:</span>
+                <span className="text-gray-600">Go late:</span>
                 <span className="font-bold text-yellow-600">{stats.lateCount}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Vắng mặt:</span>
+                <span className="text-gray-600">Absent:</span>
                 <span className="font-bold text-red-600">{stats.absentCount}</span>
               </div>
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Tỷ lệ TB:</span>
+                  <span className="text-gray-600">Average rate:</span>
                   <span className="font-bold text-blue-600">{stats.attendanceRate}%</span>
                 </div>
               </div>
@@ -638,49 +638,49 @@ const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <DollarSign className="w-5 h-5 mr-2 text-green-600" />
-              Lương Tháng {selectedMonth}
+              Salary for {monthNames[selectedMonth - 1]}
             </h2>
             {dashboardData.salaryStats ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Tổng lương:</span>
+                  <span className="text-gray-600 text-sm">Total Salary:</span>
                   <span className="font-bold text-gray-900">
                     {(dashboardData.salaryStats.totalNetSalary / 1000000000).toFixed(2)}B
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">TB/người:</span>
+                  <span className="text-gray-600 text-sm">Avg/person:</span>
                   <span className="font-bold text-blue-600">
                     {(dashboardData.salaryStats.averageNetSalary / 1000000).toFixed(1)}M
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 text-sm">Tổng NV:</span>
+                  <span className="text-gray-600 text-sm">Total number of employees</span>
                   <span className="font-bold text-gray-900">
                     {dashboardData.salaryStats.totalEmployees}
                   </span>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-4">Chưa có dữ liệu lương</p>
+              <p className="text-gray-500 text-center py-4">No salary data available</p>
             )}
           </div>
         </div>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Chi Tiết Phòng Ban</h2>
+        <h2 className="text-xl font-semibold mb-4">Department Details</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phòng Ban</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tổng</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kế Hoạch</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Đang Chạy</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Đã Phát Triển</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Đã Đóng</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tạm Dừng</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Planned</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">In Progress</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Developed</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Closed</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">On Hold</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
