@@ -55,6 +55,7 @@ export const API_ROUTES = {
 
   DEPARTMENT: {
     CREATE: `${BASE_URL}/departments`,
+    DELETE: (departmentId) => `${BASE_URL}/departments/${departmentId}`,
     BASE: `${BASE_URL}/departments`,
     GET_ALL: `${BASE_URL}/departments/all`,
     GET_DEPARTMENT_PERSONNEL: (departmentId) =>

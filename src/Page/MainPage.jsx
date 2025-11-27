@@ -48,7 +48,7 @@ const MainPage = () => {
 
   return (
     <ThemeProvider>
-      <ToastContainer />
+      <ToastContainer position="top-right" autoClose={2000} />
       <div className="flex h-screen bg-gray-50 overflow-hidden">
         {/* Sidebar */}
         <MainSideBar
