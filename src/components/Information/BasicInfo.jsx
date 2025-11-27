@@ -114,6 +114,7 @@ const BasicInfo = () => {
       street: formData.address || '',
       description: formData.description || '',
       skills: formData.skills || '',
+      position: formData.position || '',
       privileges: Array.isArray(formData.privileges) ? formData.privileges : [],
     };
 

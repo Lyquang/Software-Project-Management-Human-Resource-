@@ -95,19 +95,13 @@ export const API_ROUTES = {
         projectId
       )}/assign?employeeCode=${encodeURIComponent(employeeCode)}`,
     // Remove employee from project
-    REMOVE: (projectId) => `${BASE_URL}/projects/${encodeURIComponent(projectId)}/remove`,
+    REMOVE: (projectId, employeeCode) =>
+      `${BASE_URL}/projects/${encodeURIComponent(
+        projectId
+      )}/remove?employeeCode=${encodeURIComponent(employeeCode)}`,
   },
 
-  UPLOAD: {
-    TASK_FILE: (uploaderCode, taskId) =>
-      `${BASE_URL}/files/upload-avatar?uploaderCode=${encodeURIComponent(
-        uploaderCode || ""
-      )}&taskId=${encodeURIComponent(taskId || "")}`,
-  },
-
-  FILES: {
-    BY_TASK: (taskId) => `${BASE_URL}/files/task/${encodeURIComponent(taskId)}`,
-  },
+  UPLOAD: {},
 
   ATTENDANCE: {
     OVERVIEW: `${BASE_URL}/attendance/overview`,
@@ -124,5 +118,8 @@ export const API_ROUTES = {
     BY_PROJECT: `${BASE_URL}/tasks/project`,
     UPDATE_STATUS: (taskId) =>
       `${BASE_URL}/tasks/status?taskId=${encodeURIComponent(taskId)}`,
+    UPLOAD_FILE: (taskId) =>
+      `${BASE_URL}/tasks/upload?taskId=${encodeURIComponent(taskId)}`,
+    GET_FILES: (taskId) => `${BASE_URL}/tasks/files/${encodeURIComponent(taskId)}`,
   },
 };

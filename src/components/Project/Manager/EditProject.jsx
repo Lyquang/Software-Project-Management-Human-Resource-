@@ -97,12 +97,12 @@ const EditProject = ({ onClose, onSave }) => {
             <div className="edit-modal" onClick={(e) => e.stopPropagation()} style={{ backgroundColor: '#ffffff', borderRadius: 12 }}>
                 <div className="modal-content" style={{ backgroundColor: '#ffffff' }}>
                     <div className="modal-header">
-                        <h2>Tạo dự án</h2>
+                        <h2>Create Project</h2>
                         <button type="button" className="btn-close btn-primary" aria-label="Close" onClick={onClose}></button>
                     </div>
                     <form className="form-container">
                         <label>
-                            Phòng ban:
+                            Department:
                             <input
                                 type="text"
                                 value={deptName || ''}
@@ -114,31 +114,31 @@ const EditProject = ({ onClose, onSave }) => {
                             {errors.departmentId && <p className="error">{errors.departmentId}</p>}
                         </label>
                         <label>
-                            Tên dự án:
+                            Project Name:
                             <input
                                 type="text"
                                 name="name"
-                                placeholder="Nhập tên dự án"
+                                placeholder="Enter project name"
                                 value={project.name}
                                 onChange={handleChange}
                             />
                             {errors.projectName && <p className="error">{errors.projectName}</p>}
                         </label>
                         <label>
-                            Mô tả dự án:
+                            Project Description:
                             <textarea
                                 name="description"
-                                placeholder="Nhập mô tả dự án"
+                                placeholder="Enter project description"
                                 value={project.description}
                                 onChange={handleChange}
                             />
                         </label>
                         <label>
-                            Số lượng thành viên tối đa:
+                            Max Participants:
                             <input
                                 type="number"
                                 name="maxParticipants"
-                                placeholder="Nhập số lượng tối đa"
+                                placeholder="Enter maximum number of participants"
                                 value={project.maxParticipants}
                                 onChange={handleChange}
                                 min={0}
@@ -147,7 +147,7 @@ const EditProject = ({ onClose, onSave }) => {
                     </form>
                     <div className="action-buttons">
                         <button onClick={handleSave} className="btn btn-primary btn-success">
-                            Lưu
+                            Save
                         </button>
                     </div>
                 </div>
