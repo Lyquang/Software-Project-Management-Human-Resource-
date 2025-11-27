@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, RefreshCw, ToggleLeft, ToggleRight, X, Calendar, Clock, MapPin, Users, FileText, Wrench, CheckCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, RefreshCw, ToggleLeft, ToggleRight, ArrowRight, X, Calendar, Clock, MapPin, Users, FileText, Wrench, CheckCircle, Building, Plus, Calendar1 } from 'lucide-react';
 import { 
   getRooms, 
   createRoom, 
@@ -53,6 +53,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ const AdminDashboard = () => {
       }, 3000);
       return () => clearTimeout(timer);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast.show]);
 
   const showToast = (message, type = 'success') => {
@@ -81,13 +83,11 @@ const AdminDashboard = () => {
 
       const today = formatDateForComparison(new Date());
       
-      // Sửa logic tính todayBookings
       const todayBookings = bookings.filter(booking => {
         const startDate = parseApiDateTime(booking.startTime);
         return startDate && formatDateForComparison(startDate) === today;
       }).length;
       
-      // Sửa logic tính activeBookings
       const now = new Date();
       const activeBookings = bookings.filter(booking => {
         const startTime = parseApiDateTime(booking.startTime);
@@ -95,7 +95,6 @@ const AdminDashboard = () => {
         return startTime && endTime && startTime <= now && endTime >= now;
       }).length;
 
-      // Cập nhật logic tính availableRooms: chỉ tính những phòng đang hoạt động (working) và có sẵn (isAvailable)
       const availableRooms = rooms.filter(room => room.working && room.isAvailable).length;
 
       setStats({
@@ -117,7 +116,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Hàm format hiển thị thời gian từ API
   const formatDisplayTime = (dateTimeString) => {
     const date = parseApiDateTime(dateTimeString);
     if (!date) return 'N/A';
@@ -130,7 +128,6 @@ const AdminDashboard = () => {
     });
   };
 
-  // Hàm format hiển thị chi tiết thời gian
   const formatDetailedTime = (dateTimeString) => {
     const date = parseApiDateTime(dateTimeString);
     if (!date) return 'N/A';
@@ -145,7 +142,6 @@ const AdminDashboard = () => {
     });
   };
 
-  // Hàm toggle trạng thái bảo trì (working)
   const toggleRoomMaintenance = async (roomId, currentWorkingStatus) => {
     try {
       const roomToUpdate = allRooms.find(room => room.id === roomId);
@@ -172,7 +168,6 @@ const AdminDashboard = () => {
         
         setAllRooms(updatedRooms);
         
-        // Cập nhật lại số phòng khả dụng
         const availableRooms = updatedRooms.filter(room => room.working && room.isAvailable).length;
         
         setStats(prev => ({
@@ -522,408 +517,376 @@ const AdminDashboard = () => {
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-  <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
-    {/* Header với gradient */}
-    <div className="sticky top-0 z-10 px-8 py-6 bg-gradient-to-r from-indigo-500 to-purple-600">
-      <div className="flex items-center justify-between">
-        <div className="text-white">
-          <h2 className="text-3xl font-bold">Quản lý Phòng Họp</h2>
-          <div className="flex flex-wrap items-center gap-3 mt-3 text-sm">
-            <span className="font-medium">
-              Tổng cộng: <span className="px-2 py-0.5 bg-white/20 rounded-md">{allRooms.length} phòng</span>
-            </span>
-            <span className="w-px h-4 bg-white/30"></span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-              <span className="font-medium">{allRooms.filter(r => r.working && r.isAvailable).length} khả dụng</span>
-            </span>
-            <span className="w-px h-4 bg-white/30"></span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
-              <span className="font-medium">{allRooms.filter(r => r.working && !r.isAvailable).length} đã đặt</span>
-            </span>
-            <span className="w-px h-4 bg-white/30"></span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-red-400 rounded-full"></span>
-              <span className="font-medium">{allRooms.filter(r => !r.working).length} bảo trì</span>
-            </span>
-          </div>
-        </div>
-        <button 
-          onClick={() => {
-            setShowRoomsModal(false);
-            setCurrentRoomsPage(1);
-          }} 
-          className="p-2 text-white transition-all duration-300 rounded-full hover:bg-white/20 hover:rotate-90"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    {/* Content area với scroll */}
-    <div className="flex-1 p-8 overflow-y-auto">
-      <div className="space-y-4">
-        {currentRooms.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            <p className="text-xl font-medium">Chưa có phòng nào</p>
-            <p className="mt-2 text-sm">Hãy thêm phòng họp đầu tiên</p>
-          </div>
-        ) : (
-          currentRooms.map((room) => (
-            <div 
-              key={room.id} 
-              className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-xl hover:border-indigo-300 hover:-translate-y-1"
-            >
-              {/* Gradient overlay khi hover */}
-              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 group-hover:opacity-100"></div>
-              
-              {/* Status indicator bar bên trái */}
-              <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 ${
-                !room.working 
-                  ? 'bg-red-500' 
-                  : room.isAvailable 
-                    ? 'bg-green-500' 
-                    : 'bg-yellow-500'
-              }`}></div>
-              
-              <div className="relative p-6 pl-8">
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1 min-w-0">
-                    {/* Title và badges */}
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                      <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
-                        {room.name}
-                      </h3>
-                      
-                      <div className="flex flex-wrap gap-2">
-                        {/* Badge trạng thái hoạt động */}
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${
-                          room.working 
-                            ? 'bg-green-100 text-green-800 ring-1 ring-green-200' 
-                            : 'bg-red-100 text-red-800 ring-1 ring-red-200'
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${room.working ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                          {room.working ? 'Đang hoạt động' : 'Đang bảo trì'}
-                        </span>
-                        
-                        {/* Badge trạng thái đặt phòng */}
-                        {room.working && (
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${
-                            room.isAvailable 
-                              ? 'bg-blue-100 text-blue-800 ring-1 ring-blue-200' 
-                              : 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-200'
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${room.isAvailable ? 'bg-blue-500' : 'bg-yellow-500'}`}></span>
-                            {room.isAvailable ? 'Có thể đặt' : 'Đã được đặt'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Thông tin chi tiết */}
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                      <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
-                        <svg className="flex-shrink-0 w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <div>
-                          <span className="text-xs text-gray-500">Sức chứa</span>
-                          <p className="font-semibold">{room.capacity} người</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
-                        <svg className="flex-shrink-0 w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <div>
-                          <span className="text-xs text-gray-500">Vị trí</span>
-                          <p className="font-semibold">{room.location}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
-                        <svg className="flex-shrink-0 w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <div>
-                          <span className="text-xs text-gray-500">Thiết bị</span>
-                          <p className="font-semibold">{room.equipment || 'Không có'}</p>
-                        </div>
-                      </div>
-                    </div>
+        <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Header đã sửa - không còn gradient */}
+          <div className="sticky top-0 z-10 px-8 py-6 bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="text-gray-800">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-3 rounded-xl bg-indigo-100">
+                    <Building className="w-6 h-6 text-indigo-600" />
                   </div>
-                  
-                  {/* Action button */}
-                  <div className="flex-shrink-0">
-                    <button
-                      onClick={() => toggleRoomMaintenance(room.id, room.working)}
-                      className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all duration-300 rounded-lg shadow-sm hover:shadow-md hover:scale-105 ${
-                        room.working
-                          ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700'
-                          : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700'
-                      }`}
-                    >
-                      {room.working ? (
-                        <>
-                          <Wrench className="w-4 h-4" />
-                          <span>Bảo trì</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-4 h-4" />
-                          <span>Kích hoạt</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <h2 className="text-3xl font-bold text-gray-800">Quản lý Phòng Họp</h2>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-gray-600">
+                  <span className="font-medium">
+                    Tổng cộng: <span className="px-2 py-0.5 bg-gray-100 rounded-md">{allRooms.length} phòng</span>
+                  </span>
+                  <span className="w-px h-4 bg-gray-300"></span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span className="font-medium">{allRooms.filter(r => r.working && r.isAvailable).length} khả dụng</span>
+                  </span>
+                  <span className="w-px h-4 bg-gray-300"></span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                    <span className="font-medium">{allRooms.filter(r => r.working && !r.isAvailable).length} đã đặt</span>
+                  </span>
+                  <span className="w-px h-4 bg-gray-300"></span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span className="font-medium">{allRooms.filter(r => !r.working).length} bảo trì</span>
+                  </span>
                 </div>
               </div>
+              <button 
+                onClick={() => {
+                  setShowRoomsModal(false);
+                  setCurrentRoomsPage(1);
+                }} 
+                className="p-2 text-gray-500 transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          ))
-        )}
-      </div>
-      
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-8">
-          <Pagination 
-            currentPage={currentRoomsPage} 
-            totalPages={totalPages} 
-            onPageChange={setCurrentRoomsPage} 
-          />
+          </div>
+          
+          {/* Content area với scroll */}
+          <div className="flex-1 p-8 overflow-y-auto">
+            <div className="space-y-4">
+              {currentRooms.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                  <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <p className="text-xl font-medium">Chưa có phòng nào</p>
+                  <p className="mt-2 text-sm">Hãy thêm phòng họp đầu tiên</p>
+                </div>
+              ) : (
+                currentRooms.map((room) => (
+                  <div 
+                    key={room.id} 
+                    className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-xl hover:border-indigo-300 hover:-translate-y-1"
+                  >
+                    <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 group-hover:opacity-100"></div>
+                    
+                    <div className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 ${
+                      !room.working 
+                        ? 'bg-red-500' 
+                        : room.isAvailable 
+                          ? 'bg-green-500' 
+                          : 'bg-yellow-500'
+                    }`}></div>
+                    
+                    <div className="relative p-6 pl-8">
+                      <div className="flex items-start justify-between gap-6">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
+                              {room.name}
+                            </h3>
+                            
+                            <div className="flex flex-wrap gap-2">
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${
+                                room.working 
+                                  ? 'bg-green-100 text-green-800 ring-1 ring-green-200' 
+                                  : 'bg-red-100 text-red-800 ring-1 ring-red-200'
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${room.working ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                {room.working ? 'Đang hoạt động' : 'Đang bảo trì'}
+                              </span>
+                              
+                              {room.working && (
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${
+                                  room.isAvailable 
+                                    ? 'bg-blue-100 text-blue-800 ring-1 ring-blue-200' 
+                                    : 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-200'
+                                }`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${room.isAvailable ? 'bg-blue-500' : 'bg-yellow-500'}`}></span>
+                                  {room.isAvailable ? 'Có thể đặt' : 'Đã được đặt'}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                            <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
+                              <svg className="flex-shrink-0 w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                              <div>
+                                <span className="text-xs text-gray-500">Sức chứa</span>
+                                <p className="font-semibold">{room.capacity} người</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
+                              <svg className="flex-shrink-0 w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <div>
+                                <span className="text-xs text-gray-500">Vị trí</span>
+                                <p className="font-semibold">{room.location}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 transition-colors bg-gray-50 rounded-lg group-hover:bg-white">
+                              <svg className="flex-shrink-0 w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <div>
+                                <span className="text-xs text-gray-500">Thiết bị</span>
+                                <p className="font-semibold">{room.equipment || 'Không có'}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex-shrink-0">
+                          <button
+                            onClick={() => toggleRoomMaintenance(room.id, room.working)}
+                            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all duration-300 rounded-lg border hover:shadow-md hover:scale-105 ${
+                              room.working
+                                ? 'bg-orange-100 text-orange-700 border-orange-300 hover:bg-orange-200'
+                                : 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200'
+                            }`}
+                          >
+                            {room.working ? (
+                              <>
+                                <Wrench className="w-4 h-4" />
+                                <span>Bảo trì</span>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Kích hoạt</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination 
+                  currentPage={currentRoomsPage} 
+                  totalPages={totalPages} 
+                  onPageChange={setCurrentRoomsPage} 
+                />
+              </div>
+            )}
+          </div>
         </div>
-      )}
-    </div>
-  </div>
-</div>
+      </div>
     );
   };
 
   const BookingsModal = () => {
-    const totalPages = Math.ceil(allBookings.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentBookings = allBookings.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(allBookings.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentBookings = allBookings.slice(startIndex, endIndex);
 
-    const Pagination = () => {
-      const pages = [];
-      const maxVisible = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-      
-      if (endPage - startPage < maxVisible - 1) {
-        startPage = Math.max(1, endPage - maxVisible + 1);
-      }
+  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    const pages = [];
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    
+    if (endPage - startPage < maxVisible - 1) {
+      startPage = Math.max(1, endPage - maxVisible + 1);
+    }
 
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
-
-      return (
-        <div className="flex items-center justify-center gap-2 mt-6">
-          <button
-            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-          >
-            ← Trước
-          </button>
-          
-          {startPage > 1 && (
-            <>
-              <button
-                onClick={() => setCurrentPage(1)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                1
-              </button>
-              {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
-            </>
-          )}
-          
-          {pages.map(page => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 text-sm font-medium transition-all rounded-lg ${
-                currentPage === page
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          {endPage < totalPages && (
-            <>
-              {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
-          
-          <button
-            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-          >
-            Sau →
-          </button>
-        </div>
-      );
-    };
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-  <div className="w-full max-w-5xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
-    {/* Header với gradient */}
-    <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-gradient-to-r from-indigo-500 to-purple-600">
-      <div className="text-white">
-        <h2 className="text-3xl font-bold">Tất cả Booking</h2>
-        <p className="mt-2 text-sm opacity-90">
-          Tổng cộng: <span className="font-semibold">{allBookings.length}</span> booking
-        </p>
-      </div>
-      <button 
-        onClick={() => {
-          setShowBookingsModal(false);
-          setCurrentPage(1);
-        }} 
-        className="p-2 text-white transition-all duration-300 rounded-full hover:bg-white/20 hover:rotate-90"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-    
-    {/* Content area với scroll */}
-    <div className="flex-1 p-8 overflow-y-auto">
-      <div className="space-y-4">
-        {currentBookings.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p className="text-xl font-medium">Chưa có booking nào</p>
-            <p className="mt-2 text-sm">Hãy tạo booking đầu tiên của bạn</p>
-          </div>
-        ) : (
-          currentBookings.map((booking) => (
-            <div 
-              key={booking.id} 
-              className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1"
+      <div className="flex items-center justify-center gap-2 mt-6">
+        <button
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        >
+          ← Trước
+        </button>
+        
+        {startPage > 1 && (
+          <>
+            <button
+              onClick={() => onPageChange(1)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              {/* Gradient overlay khi hover */}
-              <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50 to-purple-50 group-hover:opacity-100"></div>
-              
-              <div className="relative flex items-center justify-between p-6">
-                <div className="flex-1 min-w-0 space-y-3">
-                  <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
-                    {booking.title}
-                  </h3>
-                  
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-indigo-500">📍</span>
-                      <span className="font-medium">{booking.roomName}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-purple-500">🕐</span>
-                      <span className="font-medium">
-                        {formatDisplayTime(booking.startTime)} - {formatDisplayTime(booking.endTime)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 ml-6">
-                  <button 
-                    onClick={() => handleViewBookingDetail(booking.id)}
-                    disabled={bookingDetailLoading && currentBookingDetail?.id === booking.id}
-                    className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-lg hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
-                  >
-                    {bookingDetailLoading && currentBookingDetail?.id === booking.id ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                        <span>Đang tải...</span>
-                      </div>
-                    ) : (
-                      'Chi tiết'
-                    )}
-                  </button>
-                  
-                  <button 
-                    onClick={() => handleDeleteBooking(booking.id)}
-                    className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
-                  >
-                    Hủy
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
+              1
+            </button>
+            {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
+          </>
         )}
+        
+        {pages.map(page => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`px-4 py-2 text-sm font-medium transition-all rounded-lg ${
+              currentPage === page
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        
+        {endPage < totalPages && (
+          <>
+            {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
+            <button
+              onClick={() => onPageChange(totalPages)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              {totalPages}
+            </button>
+          </>
+        )}
+        
+        <button
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        >
+          Sau →
+        </button>
       </div>
-      
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            ← Trước
-          </button>
-          
-          <div className="flex gap-2">
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`w-10 h-10 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                  currentPage === i + 1
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg scale-110'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
-          
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Sau →
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
     );
   };
 
-    const BookingDetailModal = () => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-5xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-white border-b border-gray-200">
+          <div className="text-gray-800">
+            <h2 className="text-3xl font-bold text-gray-800">Tất cả Booking</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Tổng cộng: <span className="font-semibold">{allBookings.length}</span> booking
+            </p>
+          </div>
+          <button 
+            onClick={() => {
+              setShowBookingsModal(false);
+              setCurrentPage(1);
+            }} 
+            className="p-2 text-gray-500 transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="flex-1 p-8 overflow-y-auto">
+          <div className="space-y-4">
+            {currentBookings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-xl font-medium">Chưa có booking nào</p>
+                <p className="mt-2 text-sm">Hãy tạo booking đầu tiên của bạn</p>
+              </div>
+            ) : (
+              currentBookings.map((booking) => (
+                <div 
+                  key={booking.id} 
+                  className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1"
+                >
+                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50 to-purple-50 group-hover:opacity-100"></div>
+                  
+                  <div className="relative flex items-center justify-between p-6">
+                    <div className="flex-1 min-w-0 space-y-3">
+                      <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
+                        {booking.title}
+                      </h3>
+                      
+                      <div className="flex flex-wrap gap-4 text-sm">
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <span className="text-indigo-500">📍</span>
+                          <span className="font-medium">{booking.roomName}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <span className="text-purple-500">🕐</span>
+                          <span className="font-medium">
+                            {formatDisplayTime(booking.startTime)} - {formatDisplayTime(booking.endTime)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 ml-6">
+                      <button 
+                        onClick={() => handleViewBookingDetail(booking.id)}
+                        disabled={bookingDetailLoading && currentBookingDetail?.id === booking.id}
+                        className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-lg hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
+                      >
+                        {bookingDetailLoading && currentBookingDetail?.id === booking.id ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                            <span>Đang tải...</span>
+                          </div>
+                        ) : (
+                          'Chi tiết'
+                        )}
+                      </button>
+                      
+                      <button 
+                        onClick={() => handleDeleteBooking(booking.id)}
+                        className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          
+          {totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onPageChange={setCurrentPage} 
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+  const BookingDetailModal = () => {
     if (!currentBookingDetail) return null;
 
     const getTimeDuration = (startTime, endTime) => {
@@ -941,7 +904,6 @@ const AdminDashboard = () => {
       return `${durationMinutes} phút`;
     };
 
-    // Tính toán trạng thái dựa trên thời gian hiện tại
     const getBookingStatus = () => {
       const now = new Date();
       const startTime = parseApiDateTime(currentBookingDetail.startTime);
@@ -988,7 +950,6 @@ const AdminDashboard = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Header với tiêu đề và trạng thái */}
               <div className="p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl">
                 <div className="flex items-start justify-between">
                   <div>
@@ -1006,9 +967,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Grid thông tin chính */}
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Thời gian */}
                 <div className="p-4 border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -1038,7 +997,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Phòng họp */}
                 <div className="p-4 border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-green-100 rounded-lg">
@@ -1051,7 +1009,6 @@ const AdminDashboard = () => {
                       <span>Tên phòng:</span>
                       <span className="font-medium text-gray-800">{currentBookingDetail.roomName}</span>
                     </div>
-                    {/* Tìm thông tin phòng từ allRooms để lấy capacity và location */}
                     {(() => {
                       const roomInfo = allRooms.find(room => room.name === currentBookingDetail.roomName);
                       return (
@@ -1074,7 +1031,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Người đặt */}
                 <div className="p-4 border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-purple-100 rounded-lg">
@@ -1087,11 +1043,9 @@ const AdminDashboard = () => {
                       <span>Họ tên:</span>
                       <span className="font-medium text-gray-800">{currentBookingDetail.organizerName}</span>
                     </div>
-                    {/* Các trường không có trong API sẽ được ẩn */}
                   </div>
                 </div>
 
-                {/* Thông tin khác */}
                 <div className="p-4 border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-orange-100 rounded-lg">
@@ -1116,7 +1070,6 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Mô tả */}
               {currentBookingDetail.description && currentBookingDetail.description !== 'string' && (
                 <div className="p-4 border border-gray-200 rounded-xl">
                   <div className="flex items-center gap-3 mb-3">
@@ -1131,7 +1084,6 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              {/* Danh sách người tham dự */}
               {currentBookingDetail.attendeeNames && 
               currentBookingDetail.attendeeNames.length > 0 && 
               !(currentBookingDetail.attendeeNames.length === 1 && currentBookingDetail.attendeeNames[0] === currentBookingDetail.organizerName) && (
@@ -1158,7 +1110,6 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              {/* Actions */}
               <div className="flex gap-3 pt-4 border-t border-gray-200">
                 <button
                   onClick={() => {
@@ -1169,7 +1120,6 @@ const AdminDashboard = () => {
                 >
                   Đóng
                 </button>
-                {/* Chỉ cho phép hủy booking nếu chưa diễn ra hoặc đang diễn ra */}
                 {(statusInfo.status === 'UPCOMING' || statusInfo.status === 'ONGOING') && (
                   <button
                     onClick={() => {
@@ -1248,26 +1198,25 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Recent Bookings */}
+        {/* Recent Bookings - ĐÃ SỬA HEADER */}
         <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-lg rounded-2xl hover:shadow-2xl group">
-          {/* Gradient border effect */}
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 group-hover:opacity-100"></div>
           
           <div className="relative">
-            {/* Header */}
-            <div className="p-6 bg-gradient-to-r from-indigo-500 to-purple-600">
+            {/* Header đã sửa - không còn gradient */}
+            <div className="p-6 bg-white border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-white">
-                  <div className="p-2 rounded-lg bg-white/20">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-3 text-gray-800">
+                  <div className="p-2 rounded-lg bg-indigo-100">
+                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold">Booking gần đây</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">Booking gần đây</h2>
                 </div>
                 <button
                   onClick={() => setShowBookingsModal(true)}
-                  className="flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-white/20 hover:bg-white/30 hover:scale-105"
+                  className="flex items-center gap-1 px-4 py-2 text-sm font-semibold text-indigo-600 transition-all duration-300 rounded-lg bg-indigo-50 hover:bg-indigo-100 hover:scale-105"
                 >
                   <span>Xem tất cả</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1277,7 +1226,6 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-6">
               {recentBookings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-gray-400">
@@ -1294,7 +1242,6 @@ const AdminDashboard = () => {
                       key={booking.id} 
                       className="relative overflow-hidden transition-all duration-300 border border-gray-200 group/item rounded-xl hover:shadow-md hover:border-indigo-300 hover:-translate-y-0.5"
                     >
-                      {/* Status indicator */}
                       <div className="absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 bg-green-500 group-hover/item:w-1.5"></div>
                       
                       <div className="flex items-center justify-between p-4 pl-5">
@@ -1336,28 +1283,25 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - ĐÃ SỬA HEADER */}
         <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-lg rounded-2xl hover:shadow-2xl group">
-          {/* Gradient border effect */}
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 group-hover:opacity-100"></div>
           
           <div className="relative">
-            {/* Header */}
-            <div className="p-6 bg-gradient-to-r from-purple-500 to-pink-600">
-              <div className="flex items-center gap-3 text-white">
-                <div className="p-2 rounded-lg bg-white/20">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Header đã sửa - không còn gradient */}
+            <div className="p-6 bg-white border-b border-gray-200">
+              <div className="flex items-center gap-3 text-gray-800">
+                <div className="p-2 rounded-lg bg-purple-100">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold">Thao tác nhanh</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Thao tác nhanh</h2>
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-6">
               <div className="space-y-3">
-                {/* Thêm phòng mới */}
                 <button 
                   onClick={() => setShowAddRoomModal(true)}
                   className="relative flex items-center w-full p-5 overflow-hidden text-left transition-all duration-300 border-2 border-gray-200 group/action rounded-xl hover:border-indigo-400 hover:shadow-lg hover:-translate-y-1"
@@ -1366,9 +1310,9 @@ const AdminDashboard = () => {
                   
                   <div className="relative flex items-center flex-1">
                     <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 group-hover/action:scale-110 group-hover/action:rotate-6">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
+                      <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 group-hover/action:scale-110 group-hover/action:rotate-6">
+                        <Plus className="w-6 h-6 text-purple-500" />
+                      </div>
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-indigo-600">
@@ -1376,13 +1320,10 @@ const AdminDashboard = () => {
                       </h3>
                       <p className="mt-0.5 text-sm text-gray-600">Tạo phòng họp trong hệ thống</p>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400 transition-all duration-300 group-hover/action:text-indigo-600 group-hover/action:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
+                    <ArrowRight className="w-5 h-5 text-gray-400 transition-all duration-300 group-hover/action:text-indigo-600 group-hover/action:translate-x-1" />
                   </div>
                 </button>
 
-                {/* Quản lý phòng */}
                 <button 
                   onClick={() => setShowRoomsModal(true)}
                   className="relative flex items-center w-full p-5 overflow-hidden text-left transition-all duration-300 border-2 border-gray-200 group/action rounded-xl hover:border-blue-400 hover:shadow-lg hover:-translate-y-1"
@@ -1391,9 +1332,7 @@ const AdminDashboard = () => {
                   
                   <div className="relative flex items-center flex-1">
                     <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 group-hover/action:scale-110 group-hover/action:rotate-6">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
+                      <Building className="w-6 h-6 text-blue-600" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-blue-600">
@@ -1407,7 +1346,6 @@ const AdminDashboard = () => {
                   </div>
                 </button>
                 
-                {/* Quản lý booking */}
                 <button 
                   onClick={() => setShowBookingsModal(true)}
                   className="relative flex items-center w-full p-5 overflow-hidden text-left transition-all duration-300 border-2 border-gray-200 group/action rounded-xl hover:border-green-400 hover:shadow-lg hover:-translate-y-1"
@@ -1416,9 +1354,7 @@ const AdminDashboard = () => {
                   
                   <div className="relative flex items-center flex-1">
                     <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-green-500 to-teal-600 group-hover/action:scale-110 group-hover/action:rotate-6">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
+                      <Calendar className="w-6 h-6 text-green-600" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-green-600">
@@ -1462,25 +1398,8 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
-      
-      <style>{`
-        @keyframes toast-in {
-          0% {
-            opacity: 0;
-            transform: translateY(-20px) scale(0.95);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .animate-toast-in {
-          animation: toast-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-      `}</style>
     </div>
   );
 };
 
 export default AdminDashboard;
-
