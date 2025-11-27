@@ -39,8 +39,8 @@ const CreateTask = () => {
       title: form.title,
       description: form.description,
       due: toIso(form.dueDateTime),
-      project_id: form.projectId,
-      assignee_code: form.assigneeCode,
+      projectId: form.projectId,
+      assigneeCode: form.assigneeCode,
     };
 
     try {

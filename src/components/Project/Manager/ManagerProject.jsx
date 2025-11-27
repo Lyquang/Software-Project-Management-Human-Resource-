@@ -8,13 +8,24 @@ import axiosInstance from "../../../api/axiosInstance";
 
 const ManagerProject = () => {
   const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]); // Thêm để tránh lỗi setTasks
   const [isLoading, setIsLoading] = useState(true);
+  const [deptInfo, setDeptInfo] = useState({ id: null, name: "" });
 
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
-      const deptId = 1; // hard-coded as requested
+      // Get current user's department from myInfo
+      const me = await axiosInstance.get(API_ROUTES.PERSONNELS.MY_INFO);
+      const deptId = me?.data?.result?.departmentId;
+      const deptName = me?.data?.result?.departmentName;
+      setDeptInfo({ id: deptId || null, name: deptName || "" });
+
+      if (!deptId) {
+        console.error("No departmentId found in myInfo response");
+        setProjects([]);
+        return;
+      }
+
       const res = await axiosInstance.get(API_ROUTES.PROJECT.BY_DEPARTMENT(deptId));
       const data = res.data;
       if (data?.code === 200 && Array.isArray(data.result)) {
@@ -58,7 +69,7 @@ const ManagerProject = () => {
   return (
     <div className="manager-projects bg-light">
       <div className="header d-flex align-items-center justify-content-between">
-        <h2>Quản lý dự án</h2>
+        <h2>Quản lý dự án {deptInfo.name ? `— ${deptInfo.name}` : ""}</h2>
         <div className="d-flex align-items-center gap-2">
           <button onClick={fetchProjects} className="btn btn-outline-secondary">Refresh</button>
           {/* CreateProjectBtn kept; you said stop creating projects but we leave button for potential future use */}
@@ -69,7 +80,11 @@ const ManagerProject = () => {
       {isLoading ? (
         <div><Loading/></div>
       ) : projects.length === 0 ? (
-        <div className="bg-white border rounded p-4 text-muted">No projects found for department 1.</div>
+        <div className="bg-white border rounded p-4 text-muted">
+          {deptInfo.id || deptInfo.name
+            ? `No projects found for department ${deptInfo.name || deptInfo.id}.`
+            : "No projects found."}
+        </div>
       ) : (
         <div className="row g-3 gy-5 py-3 row-deck">
           {projects.map((project, index) => (

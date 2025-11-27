@@ -25,6 +25,7 @@ import EmployeeNotification from "./components/Notification/Employee/EmployeeNot
 import ManagerProject from "./components/Project/Manager/ManagerProject";
 import CreateTask from "./components/Project/Manager/CreateTask";
 import ProjectTasksPage from "./components/Project/Manager/ProjectTasksPage";
+import ProjectTaskCreate from "./components/Project/Manager/ProjectTaskCreate";
 // import component of admin
 import DepartmentPage from "./components/Department/DepartmentPage";
 import AdminAttendance from "./components/Attendance/AdminAttendance";
@@ -58,6 +59,7 @@ root.render(
         {/* Project tasks route with layout to keep Header/Sidebar */}
         <Route path="/project" element={<MainPage />}>
           <Route path=":id/tasks" element={<ProjectTasksPage />} />
+          <Route path=":id/tasks/create" element={<ProjectTaskCreate />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -94,6 +96,7 @@ root.render(
             path="project/:projectId/tasks"
             element={<ProjectTasksPage />}
           />
+          <Route path="project/:projectId/tasks/create" element={<ProjectTaskCreate />} />
           <Route path="notification" element={<EmployeeNotification />} />
         </Route>
       </Routes>

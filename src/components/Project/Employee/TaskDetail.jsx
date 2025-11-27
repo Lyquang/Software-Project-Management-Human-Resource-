@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BsFileEarmarkText, BsCheck2Circle, BsPencil } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
 import { API_ROUTES } from '../../../api/apiRoutes';
+import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
 
 // --- DỮ LIỆU MOCK ---
@@ -146,12 +147,19 @@ const formatDue = (iso) => {
   return `${y}-${m}-${day}`;
 };
 
+const allowedStatuses = ['CANCELED', 'CLOSE', 'COMPLETED', 'IN_PROGRESS', 'OVERDUE', 'PENDING'];
+
 // --- COMPONENT TRANG CHÍNH ---
 
 const TaskDetailsPage = () => {
   const { id } = useParams();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [attachmentsLoading, setAttachmentsLoading] = useState(false);
+  const [statusUpdating, setStatusUpdating] = useState(false);
+  const [statusValue, setStatusValue] = useState(allowedStatuses[allowedStatuses.length - 1]);
 
   // Parse từ API -> state, giữ lại comments/references mock
   const fetchTask = async () => {
@@ -170,6 +178,10 @@ const TaskDetailsPage = () => {
         throw new Error(data?.message || `Failed (${res.status})`);
       }
       const r = data.result;
+      const normalizedStatus = (r.status || '').toUpperCase();
+      const nextStatusValue = allowedStatuses.includes(normalizedStatus)
+        ? normalizedStatus
+        : allowedStatuses[allowedStatuses.length - 1];
       setTask({
         id: r.id,
         estimatedHours: mockTaskData.estimatedHours ?? '—',
@@ -184,9 +196,11 @@ const TaskDetailsPage = () => {
         description: r.description || '—',
         references: mockTaskData.references || [],
         comments: mockTaskData.comments || [],
-        status: r.status || '—',
+        status: normalizedStatus || '—',
         projectId: r.project_id || '—',
+        attachments: [], // initialize attachments list
       });
+      setStatusValue(nextStatusValue);
     } catch (e) {
       toast.error(e.message || 'Failed to load task');
     } finally {
@@ -198,6 +212,159 @@ const TaskDetailsPage = () => {
     fetchTask();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Derive uploaderCode from stored user info or token
+  const getUploaderCode = () => {
+    try {
+      const storedUser = sessionStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        return (
+          parsed?.code ||
+          parsed?.personnelCode ||
+          parsed?.empCode ||
+          parsed?.employeeCode ||
+          ''
+        );
+      }
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      if (token) {
+        const decoded = jwtDecode(token);
+        return (
+          decoded?.code ||
+          decoded?.personnelCode ||
+          decoded?.empCode ||
+          decoded?.sub ||
+          ''
+        );
+      }
+    } catch (e) {
+      return '';
+    }
+    return '';
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!task?.id) {
+      toast.error('Task not loaded yet');
+      return;
+    }
+    const uploaderCode = getUploaderCode();
+    if (!uploaderCode) {
+      toast.error('Cannot determine uploader code');
+      return;
+    }
+    setUploading(true);
+    setUploadError('');
+    try {
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(
+        API_ROUTES.UPLOAD.TASK_FILE(uploaderCode, task.id),
+        {
+          method: 'POST',
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: formData,
+        }
+      );
+      const data = await res.json().catch(() => ({}));
+      // Success code per spec is 0
+      if (!res.ok || data?.code !== 0 || !data?.result) {
+        throw new Error(data?.message || `Upload failed (${res.status})`);
+      }
+      const fileMeta = data.result;
+      // Refresh full list after upload to ensure consistency
+      await fetchAttachments(task.id);
+      toast.success(`Uploaded: ${fileMeta.fileName || file.name}`);
+      e.target.value = '';
+    } catch (err) {
+      const msg = err.message || 'Upload failed';
+      setUploadError(msg);
+      toast.error(msg);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const fetchAttachments = async (taskId) => {
+    if (!taskId) return;
+    setAttachmentsLoading(true);
+    try {
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      const res = await fetch(API_ROUTES.FILES.BY_TASK(taskId), {
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      // Accept either array or object.result style; success codes may vary (0 or 200)
+      const isOk = res.ok && (data?.code === 0 || data?.code === 200);
+      const list = Array.isArray(data?.result) ? data.result : Array.isArray(data) ? data : [];
+      if (!isOk) throw new Error(data?.message || `Failed to load attachments (${res.status})`);
+      setTask((prev) => ({
+        ...prev,
+        attachments: list,
+      }));
+    } catch (err) {
+      // Silent fail, optional toast
+      console.warn('Attachments fetch failed:', err.message);
+    } finally {
+      setAttachmentsLoading(false);
+    }
+  };
+
+  const updateStatus = async () => {
+    if (!task?.id) {
+      toast.error('Task not loaded yet');
+      return;
+    }
+    const normalized = (statusValue || '').toUpperCase();
+    if (!allowedStatuses.includes(normalized)) {
+      toast.error('Invalid status value');
+      return;
+    }
+    if ((task?.status || '').toUpperCase() === normalized) {
+      toast.info('Status is already up to date');
+      return;
+    }
+    setStatusUpdating(true);
+    try {
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      const res = await fetch(API_ROUTES.TASK.UPDATE_STATUS(task.id), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ status: normalized }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || (data?.code !== 200 && data?.code !== 0)) {
+        throw new Error(data?.message || `Failed (${res.status})`);
+      }
+      setTask((prev) => (prev ? { ...prev, status: normalized } : prev));
+      toast.success('Task status updated');
+    } catch (err) {
+      toast.error(err.message || 'Failed to update status');
+    } finally {
+      setStatusUpdating(false);
+    }
+  };
+
+  // Fetch attachments whenever task id changes (after initial task load)
+  useEffect(() => {
+    if (task?.id) {
+      fetchAttachments(task.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task?.id]);
 
   // Hiển thị dùng state task (giữ phần Comments/Reference)
   return (
@@ -234,6 +401,31 @@ const TaskDetailsPage = () => {
             <div className="mt-5">
               <InfoField label="Name of task" value={task?.name ?? '—'} />
             </div>
+
+            {/* Status Update */}
+            <div className="mt-5">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <div className="flex items-center gap-3">
+                <select
+                  value={statusValue}
+                  onChange={(e) => setStatusValue(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                >
+                  {allowedStatuses.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={updateStatus}
+                  disabled={statusUpdating}
+                  className="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-semibold disabled:opacity-60"
+                >
+                  {statusUpdating ? 'Updating...' : 'Update Status'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Current: {task?.status || '—'}</p>
+            </div>
             
             {/* Mô tả */}
             <div className="mt-5">
@@ -257,6 +449,58 @@ const TaskDetailsPage = () => {
                   />
                 ))}
               </ul>
+            </div>
+
+            {/* File Attachments Upload */}
+            <div className="mt-8">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Attachments</h4>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <input
+                    type="file"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                  />
+                  {uploading && (
+                    <p className="text-xs text-blue-600 mt-1">Uploading...</p>
+                  )}
+                  {uploadError && (
+                    <p className="text-xs text-red-600 mt-1">{uploadError}</p>
+                  )}
+                  {attachmentsLoading && !uploading && (
+                    <p className="text-xs text-gray-600 mt-1">Loading attachments...</p>
+                  )}
+                </div>
+                <ul className="space-y-2">
+                  {(task?.attachments || []).map((f) => (
+                    <li
+                      key={f.fileId || f.fileUrl || f.fileName}
+                      className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <BsFileEarmarkText className="text-blue-600 flex-shrink-0" />
+                        <span className="text-sm text-gray-700 truncate">
+                          {f.fileName || f.fileUrl || 'Unnamed file'}
+                        </span>
+                      </div>
+                      {f.fileUrl && (
+                        <a
+                          href={f.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-medium text-blue-600 hover:underline"
+                        >
+                          View
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                  {!task?.attachments?.length && (
+                    <li className="text-xs text-gray-500">No attachments yet.</li>
+                  )}
+                </ul>
+              </div>
             </div>
           </>
         )}

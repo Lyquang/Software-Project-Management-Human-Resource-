@@ -20,7 +20,7 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
 
   const fetchProjectDetails = async (code) => {
     try {
-      const response = await axiosInstance.get(API_ROUTES.PROJECT.GET_BY_CODE(code));
+      const response = await axiosInstance.get(API_ROUTES.PROJECT.GET_BY_ID(code));
       if (response.data && (response.data.code === 200 || response.data.code === 0)) {
         setCurrentProjectDetails(response.data.result);
         setCurrentProjectId(code);

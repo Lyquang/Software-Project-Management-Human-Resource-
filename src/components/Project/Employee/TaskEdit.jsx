@@ -3,20 +3,26 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { API_ROUTES } from '../../../api/apiRoutes';
 import { toast, ToastContainer } from 'react-toastify';
 
-const mapStatusUi = (s) => {
-  const v = (s || '').toUpperCase();
-  if (v === 'PENDING' || v === 'TODO') return 'Todo';
-  if (v === 'IN_PROGRESS') return 'In Progress';
-  if (v === 'REVIEW' || v === 'PENDING_REVIEW') return 'Review';
-  if (v === 'DONE' || v === 'COMPLETED') return 'Done';
-  return 'Todo';
+const statusMap = {
+  PENDING: 'Pending',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+  CANCELED: 'Canceled',
+  OVERDUE: 'Overdue',
+  CLOSE: 'Close',
 };
-const mapStatusApi = (ui) => {
-  const v = (ui || '').toUpperCase();
-  if (v === 'TODO') return 'PENDING';
-  if (v === 'IN PROGRESS') return 'IN_PROGRESS';
-  if (v === 'REVIEW') return 'REVIEW';
-  if (v === 'DONE') return 'DONE';
+
+const mapStatusToUi = (apiStatus) => {
+  const upperCased = (apiStatus || '').toUpperCase();
+  return statusMap[upperCased] || 'Pending';
+};
+
+const mapUiToStatus = (uiStatus) => {
+  for (const [api, ui] of Object.entries(statusMap)) {
+    if (ui === uiStatus) {
+      return api;
+    }
+  }
   return 'PENDING';
 };
 
@@ -44,7 +50,7 @@ const TaskEdit = () => {
   const [form, setForm] = useState({
     title: '',
     dueDate: '',
-    statusUi: 'Todo',
+    statusUi: 'Pending',
     description: '',
   });
 
@@ -71,7 +77,7 @@ const TaskEdit = () => {
       setForm({
         title: r.title || '',
         dueDate: formatDueYMD(r.due),
-        statusUi: mapStatusUi(r.status),
+        statusUi: mapStatusToUi(r.status),
         description: r.description || '',
       });
     } catch (e) {
@@ -95,10 +101,10 @@ const TaskEdit = () => {
       const payload = {
         title: form.title,
         description: form.description,
-        status: mapStatusApi(form.statusUi),
-        ...(form.dueDate ? { due: toIsoFromYMD(form.dueDate) } : {}),
+        status: mapUiToStatus(form.statusUi),
+        due: form.dueDate ? toIsoFromYMD(form.dueDate) : '',
       };
-      const res = await fetch(API_ROUTES.TASK.UPDATE(id), {
+      const res = await fetch(API_ROUTES.TASK.UPDATE_STATUS(id), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,11 +114,11 @@ const TaskEdit = () => {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || data?.code !== 200) {
+      if (!res.ok || (data?.code !== 200 && data?.code !== 0)) {
         throw new Error(data?.message || `Update failed (${res.status})`);
       }
       toast.success('Task updated');
-      nav(`/login/employee/task/${id}`);
+      nav(-1);
     } catch (e2) {
       toast.error(e2.message || 'Update failed');
     } finally {
@@ -174,10 +180,9 @@ const TaskEdit = () => {
                   onChange={onChange}
                   className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option>Todo</option>
-                  <option>In Progress</option>
-                  <option>Review</option>
-                  <option>Done</option>
+                  {Object.values(statusMap).map((ui) => (
+                    <option key={ui} value={ui}>{ui}</option>
+                  ))}
                 </select>
               </div>
 
