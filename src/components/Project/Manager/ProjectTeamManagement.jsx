@@ -146,15 +146,16 @@ const ProjectTeamManagement = ({ projectId, isOpen, onClose }) => {
     setRemoving(true);
     try {
       const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
-      const res = await fetch(API_ROUTES.PROJECT.REMOVE(projectId), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ employeeCode }),
-      });
+      const res = await fetch(
+        API_ROUTES.PROJECT.REMOVE(projectId, employeeCode),
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
       const data = await res.json().catch(() => ({}));
       if (!res.ok || (data?.code !== 0 && data?.code !== 200)) {
         throw new Error(data?.message || `Remove failed (${res.status})`);

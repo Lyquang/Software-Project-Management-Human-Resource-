@@ -251,34 +251,27 @@ const TaskDetailsPage = () => {
       toast.error('Task not loaded yet');
       return;
     }
-    const uploaderCode = getUploaderCode();
-    if (!uploaderCode) {
-      toast.error('Cannot determine uploader code');
-      return;
-    }
     setUploading(true);
     setUploadError('');
     try {
       const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetch(
-        API_ROUTES.UPLOAD.TASK_FILE(uploaderCode, task.id),
-        {
-          method: 'POST',
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: formData,
-        }
-      );
+
+      const res = await fetch(API_ROUTES.TASK.UPLOAD_FILE(task.id), {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+      });
+
       const data = await res.json().catch(() => ({}));
-      // Success code per spec is 0
-      if (!res.ok || data?.code !== 0 || !data?.result) {
+      if (!res.ok || (data?.code !== 0 && data?.code !== 200)) {
         throw new Error(data?.message || `Upload failed (${res.status})`);
       }
       const fileMeta = data.result;
-      // Refresh full list after upload to ensure consistency
       await fetchAttachments(task.id);
       toast.success(`Uploaded: ${fileMeta.fileName || file.name}`);
       e.target.value = '';
@@ -296,23 +289,21 @@ const TaskDetailsPage = () => {
     setAttachmentsLoading(true);
     try {
       const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
-      const res = await fetch(API_ROUTES.FILES.BY_TASK(taskId), {
+      const res = await fetch(API_ROUTES.TASK.GET_FILES(taskId), {
         headers: {
           Accept: 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
       const data = await res.json().catch(() => ({}));
-      // Accept either array or object.result style; success codes may vary (0 or 200)
       const isOk = res.ok && (data?.code === 0 || data?.code === 200);
       const list = Array.isArray(data?.result) ? data.result : Array.isArray(data) ? data : [];
       if (!isOk) throw new Error(data?.message || `Failed to load attachments (${res.status})`);
       setTask((prev) => ({
-        ...prev,
+        ...(prev || {}),
         attachments: list,
       }));
     } catch (err) {
-      // Silent fail, optional toast
       console.warn('Attachments fetch failed:', err.message);
     } finally {
       setAttachmentsLoading(false);
