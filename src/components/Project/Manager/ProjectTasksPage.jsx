@@ -2,10 +2,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { BsFillGridFill, BsArrowRepeat, BsClockHistory, BsCheckCircleFill } from 'react-icons/bs';
+import { AiOutlineTeam } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 import { API_ROUTES } from '../../../api/apiRoutes';
 import TaskCard from '../Employee/TaskCard';
 import StatCard from '../Employee/StatCard';
+import ProjectTeamManagement from './ProjectTeamManagement';
 
 const mapStatusUi = (s) => {
   const v = (s || '').toUpperCase();
@@ -43,6 +45,7 @@ const ProjectTasksPage = () => {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [teamModalOpen, setTeamModalOpen] = useState(false);
 
   const fetchTasks = async () => {
     if (!effectiveProjectId) return;
@@ -96,6 +99,13 @@ const ProjectTasksPage = () => {
         </div>
         <div className="flex gap-3 mt-4 sm:mt-0">
           <button
+            onClick={() => setTeamModalOpen(true)}
+            className="bg-purple-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-purple-700 transition duration-200 flex items-center gap-2"
+          >
+            <AiOutlineTeam size={18} />
+            Manage Team
+          </button>
+          <button
             onClick={fetchTasks}
             className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-200"
           >
@@ -139,6 +149,12 @@ const ProjectTasksPage = () => {
           <TaskCard key={t.id} task={t} />
         ))}
       </div>
+
+      <ProjectTeamManagement
+        projectId={effectiveProjectId}
+        isOpen={teamModalOpen}
+        onClose={() => setTeamModalOpen(false)}
+      />
     </div>
   );
 };

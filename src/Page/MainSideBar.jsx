@@ -63,7 +63,12 @@ const MainSideBar = () => {
         items: [
           { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "notification",
+            to: "/login/employee/message",
+            icon: <BiChat />,
+            text: "Message",
+          },
+          {
+            to: "/login/employee/notification",
             icon: <IoMdNotificationsOutline />,
             text: "Notifications",
           },
@@ -72,10 +77,10 @@ const MainSideBar = () => {
       {
         group: "EMPLOYEES",
         items: [
-          { to: "infor", icon: <FaRegUser />, text: "My information" },
-          { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
-          { to: "task", icon: <MdOutlineTaskAlt />, text: "Task" },
-          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
+          { to: "/login/employee/infor", icon: <FaRegUser />, text: "My information" },
+          { to: "/login/employee/attendance", icon: <FaRegUser />, text: "My attendance" },
+          { to: "/login/employee/task", icon: <MdOutlineTaskAlt />, text: "Task" },
+          { to: "/login/employee/payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
         ],
       },
     ],
@@ -85,7 +90,12 @@ const MainSideBar = () => {
         items: [
           { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "notification",
+            to: "/login/manager/message",
+            icon: <BiChat />,
+            text: "Message",
+          },
+          {
+            to: "/login/manager/notification",
             icon: <IoMdNotificationsOutline />,
             text: "Notifications",
           },
@@ -94,10 +104,9 @@ const MainSideBar = () => {
       {
         group: "MANAGER",
         items: [
-          { to: "infor", icon: <FaRegUser />, text: "My information" },
-          { to: "attendance", icon: <FaRegUser />, text: "My attendance" },
-          { to: "project", icon: <FaProjectDiagram />, text: "Projects" },
-          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
+          { to: "/login/manager/infor", icon: <FaRegUser />, text: "My information" },
+          { to: "/login/manager/attendance", icon: <FaRegUser />, text: "My attendance" },
+          { to: "/login/manager/project", icon: <FaProjectDiagram />, text: "Projects" },
         ],
       },
     ],
@@ -107,7 +116,7 @@ const MainSideBar = () => {
         items: [
           { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard" },
           {
-            to: "notification",
+            to: "/login/admin/notification",
             icon: <IoMdNotificationsOutline />,
             text: "Notifications",
           },
@@ -116,19 +125,19 @@ const MainSideBar = () => {
       {
         group: "ADMIN",
         items: [
-          { to: "employee", icon: <FaRegUser />, text: "All Employees" },
+          { to: "/login/admin/employee", icon: <FaRegUser />, text: "All Employees" },
           {
-            to: "department",
+            to: "/login/admin/department",
             icon: <PiNotePencilDuotone />,
             text: "Departments",
           },
           {
-            to: "admin-attendance",
+            to: "/login/admin/admin-attendance",
             icon: <IoMdCloudUpload />,
             text: "Attendance",
           },
           {
-            to: "admin-salary",
+            to: "/login/admin/admin-salary",
             icon: <MdOutlineAttachMoney />,
             text: "Salary & Benefits",
           },
@@ -152,7 +161,6 @@ const MainSideBar = () => {
         <div className="relative flex items-center justify-between px-5 py-5 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Logo" className="w-[8rem] h-[8rem]" />
-            {expanded}
           </div>
 
           {/* Toggle button: functional updater + z-index cao + accessible */}

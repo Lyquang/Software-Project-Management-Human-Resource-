@@ -59,6 +59,9 @@ export const API_ROUTES = {
     GET_ALL: `${BASE_URL}/departments/all`,
     GET_DEPARTMENT_PERSONNEL: (departmentId) =>
       `${BASE_URL}/departments/${departmentId}/employees`,
+    // Get department employees with manager info
+    GET_EMPLOYEES: (departmentId) =>
+      `${BASE_URL}/departments/${encodeURIComponent(departmentId)}/employees`,
   },
 
   EMPLOYEES: {
@@ -79,8 +82,30 @@ export const API_ROUTES = {
     CREATE: `${BASE_URL}/projects`,
     BY_DEPARTMENT: (deptId) =>
       `${BASE_URL}/projects/department?deptID=${deptId}`,
-    GET_BY_CODE: (code) =>
-      `${BASE_URL}/projects?code=${encodeURIComponent(code)}`,
+    // Fetch a project by its unique projectId using RESTful path /projects/{id}
+    GET_BY_ID: (projectId) =>
+      `${BASE_URL}/projects/${encodeURIComponent(projectId)}`,
+    UPDATE: (projectId) =>
+      `${BASE_URL}/projects/${encodeURIComponent(projectId)}`,
+    EMPLOYEES: (projectId) => `${BASE_URL}/projects/${projectId}/employees`,
+    // Assign employee to project
+    ASSIGN: (projectId, employeeCode) =>
+      `${BASE_URL}/projects/${encodeURIComponent(
+        projectId
+      )}/assign?employeeCode=${encodeURIComponent(employeeCode)}`,
+    // Remove employee from project
+    REMOVE: (projectId) => `${BASE_URL}/projects/${encodeURIComponent(projectId)}/remove`,
+  },
+
+  UPLOAD: {
+    TASK_FILE: (uploaderCode, taskId) =>
+      `${BASE_URL}/files/upload-avatar?uploaderCode=${encodeURIComponent(
+        uploaderCode || ""
+      )}&taskId=${encodeURIComponent(taskId || "")}`,
+  },
+
+  FILES: {
+    BY_TASK: (taskId) => `${BASE_URL}/files/task/${encodeURIComponent(taskId)}`,
   },
 
   ATTENDANCE: {
@@ -89,11 +114,14 @@ export const API_ROUTES = {
     CHECK_OUT: `${BASE_URL}/attendance/checkOut`,
     TODAY_STATUS: `${BASE_URL}/attendance/today/status`,
   },
+
   TASK: {
     EMPLOYEE: `${BASE_URL}/tasks/employee`,
     CREATE: `${BASE_URL}/tasks`,
     GET_ONE: (id) => `${BASE_URL}/tasks/${id}`,
     UPDATE: (id) => `${BASE_URL}/tasks/${id}`,
     BY_PROJECT: `${BASE_URL}/tasks/project`,
+    UPDATE_STATUS: (taskId) =>
+      `${BASE_URL}/tasks/status?taskId=${encodeURIComponent(taskId)}`,
   },
 };
