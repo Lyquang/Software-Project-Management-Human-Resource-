@@ -31,7 +31,7 @@ const MainEmployeeDashBoard = () => {
   const [loading, setLoading] = useState(true);
 
   // State cho bộ lọc tìm kiếm
-// Javascript's getMonth() returns 0-11, so we add 1 to get 1-12
+  // Javascript's getMonth() returns 0-11, so we add 1 to get 1-12
   const [searchMonth, setSearchMonth] = useState(new Date().getMonth() + 1);
   const [searchYear, setSearchYear] = useState(new Date().getFullYear());
 
@@ -43,7 +43,7 @@ const MainEmployeeDashBoard = () => {
     try {
       const token = sessionStorage.getItem("token");
       const personelCode = sessionStorage.getItem("personelCode");
-      console.log("personelCode  at dashboard",personelCode );
+      console.log("personelCode  at dashboard", personelCode);
       // Sử dụng template literals để đưa searchMonth và searchYear vào URL https://ems-toq5.onrender.com/ems/salary/my-salaries?month=11&year=2025&page=0&size=10
       const response = await axios.get(
         `https://ems-toq5.onrender.com/ems/salary/personnel/${personelCode}?month=${searchMonth}&year=${searchYear}&page=0&size=10`,
@@ -117,7 +117,7 @@ const MainEmployeeDashBoard = () => {
         { name: "Net Salary", value: detail.netSalary },
         {
           name: "Deductions",
-          value: Math.abs(detail.totalDeductions) + Math.abs(detail.penalty),
+          value: Math.abs(detail.totalDeductions),
         },
       ]
     : [];
@@ -125,6 +125,7 @@ const MainEmployeeDashBoard = () => {
   const attendanceLineData = data
     ? [
         { name: "Full Days", count: detail.fullDayWork },
+         { name: "Half Days", count: detail.halfDayWork },
         { name: "Late Days", count: detail.lateDays },
         { name: "Low Hour", count: detail.notEnoughHourDays },
         { name: "Absence", count: detail.absenceDays },
@@ -309,10 +310,17 @@ const MainEmployeeDashBoard = () => {
           </div>
 
           {/* --- Middle Section: Attendance Breakdown --- */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             <StatCard
               title="Full Days"
               value={detail.fullDayWork}
+              total={30}
+              color="#34D399"
+              icon={CheckCircle}
+            />
+              <StatCard
+              title="Half Days"
+              value={detail.halfDayWork}
               total={30}
               color="#34D399"
               icon={CheckCircle}
@@ -465,15 +473,42 @@ const MainEmployeeDashBoard = () => {
                     {formatCurrency(detail.grossSalary)}
                   </span>
                 </div>
+
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Deductions</span>
+                  <span className="text-gray-500">Social Insurerance</span>
                   <span className="font-medium text-red-500">
-                    -{" "}
-                    {formatCurrency(
-                      detail.totalDeductions + Math.abs(detail.penalty)
-                    )}
+                    - {formatCurrency(detail.socialInsurance)}
                   </span>
                 </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Health Insurerance</span>
+                  <span className="font-medium text-red-500">
+                    - {formatCurrency(detail.healthInsurance)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Unemployment Insurerance</span>
+                  <span className="font-medium text-red-500">
+                    - {formatCurrency(detail.unemploymentInsurance)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Personel Income Tax</span>
+                  <span className="font-medium text-red-500">
+                    - {formatCurrency(detail.personalIncomeTax)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Total Deductions</span>
+                  <span className="font-medium text-red-500">
+                    - {formatCurrency(detail.totalDeductions)}
+                  </span>
+                </div>
+
                 <div className="w-full bg-gray-100 h-px"></div>
                 <div className="flex justify-between text-sm mt-2">
                   <span className="font-bold text-gray-700">Net Salary</span>
@@ -483,6 +518,7 @@ const MainEmployeeDashBoard = () => {
                 </div>
               </div>
             </div>
+
           </div>
         </>
       )}
