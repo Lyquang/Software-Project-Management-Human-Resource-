@@ -3,7 +3,7 @@ import TaskModal from "./TaskModal";
 import MemberModal from "./EditMemberModal";
 import EditProject from "./EditProject";
 import { useNavigate } from 'react-router-dom';
-// import { DeleteProjectBtn } from "./DeleteProjectBtn";
+import { DeleteProjectBtn } from "./DeleteProjectBtn";
 import "./ProjectCard.scss";
 import { IoIosAttach } from "react-icons/io";
 import axiosInstance from "../../../api/axiosInstance";
@@ -55,12 +55,12 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
 
   return (
     <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6">
-      <div className="card" onClick={() => openTasksForProject(project.id)} style={{ cursor: 'pointer' }}>
+      <div className="card" onClick={() => openTasksForProject(project.id)} style={{ cursor: 'pointer', position: 'relative' }}>
         <div className="card-header">
           <p className="company-name fw-bold">{project.name}</p>
         </div>
 
-        {/* <DeleteProjectBtn projectId={project.id} setProjects={setProjects} /> */}
+        <DeleteProjectBtn projectId={project.id} projectName={project.name} setProjects={setProjects} />
 
         <div className="card-body">
           <div className="project-description-section">

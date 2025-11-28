@@ -88,6 +88,8 @@ export const API_ROUTES = {
       `${BASE_URL}/projects/${encodeURIComponent(projectId)}`,
     UPDATE: (projectId) =>
       `${BASE_URL}/projects/${encodeURIComponent(projectId)}`,
+    DELETE: (projectId) =>
+      `${BASE_URL}/projects/${encodeURIComponent(projectId)}`,
     EMPLOYEES: (projectId) => `${BASE_URL}/projects/${projectId}/employees`,
     // Assign employee to project
     ASSIGN: (projectId, employeeCode) =>
