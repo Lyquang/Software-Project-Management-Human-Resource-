@@ -8,7 +8,9 @@ const EditProject = ({ onClose, onSave }) => {
         name: '',
         description: '',
         departmentId: '',
-        maxParticipants: ''
+        maxParticipants: '',
+        startDate: '',
+        endDate: ''
     });
 
     const [deptName, setDeptName] = useState('');
@@ -65,8 +67,9 @@ const EditProject = ({ onClose, onSave }) => {
             const payload = {
                 name: project.name,
                 description: project.description,
-                department_id: Number(project.departmentId),
-                max_participants: project.maxParticipants === '' ? 0 : Number(project.maxParticipants),
+                maxParticipants: project.maxParticipants === '' ? 0 : Number(project.maxParticipants),
+                startDate: project.startDate,
+                endDate: project.endDate,
             };
             const res = await fetch(API_ROUTES.PROJECT.CREATE, {
                 method: 'POST',
@@ -142,6 +145,24 @@ const EditProject = ({ onClose, onSave }) => {
                                 value={project.maxParticipants}
                                 onChange={handleChange}
                                 min={0}
+                            />
+                        </label>
+                        <label>
+                            Start Date:
+                            <input
+                                type="date"
+                                name="startDate"
+                                value={project.startDate}
+                                onChange={handleChange}
+                            />
+                        </label>
+                        <label>
+                            End Date:
+                            <input
+                                type="date"
+                                name="endDate"
+                                value={project.endDate}
+                                onChange={handleChange}
                             />
                         </label>
                     </form>
