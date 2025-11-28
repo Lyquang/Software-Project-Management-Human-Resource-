@@ -121,5 +121,6 @@ export const API_ROUTES = {
     UPLOAD_FILE: (taskId) =>
       `${BASE_URL}/tasks/upload?taskId=${encodeURIComponent(taskId)}`,
     GET_FILES: (taskId) => `${BASE_URL}/tasks/files/${encodeURIComponent(taskId)}`,
+    GET_GUIDE: (taskId) => `${BASE_URL}/tasks/${encodeURIComponent(taskId)}/guide`,
   },
 };

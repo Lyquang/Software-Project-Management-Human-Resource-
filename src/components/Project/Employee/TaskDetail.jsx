@@ -1,6 +1,7 @@
 // src/components/TaskDetailsPage.jsx
 import React, { useEffect, useState } from 'react';
-import { BsFileEarmarkText, BsCheck2Circle, BsPencil } from 'react-icons/bs';
+import { BsFileEarmarkText, BsCheck2Circle, BsPencil, BsRobot } from 'react-icons/bs';
+import AIReviewModal from './AIReviewModal';
 import { useParams } from 'react-router-dom';
 import { API_ROUTES } from '../../../api/apiRoutes';
 import { jwtDecode } from 'jwt-decode';
@@ -160,6 +161,10 @@ const TaskDetailsPage = () => {
   const [attachmentsLoading, setAttachmentsLoading] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [statusValue, setStatusValue] = useState(allowedStatuses[allowedStatuses.length - 1]);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [guide, setGuide] = useState(null);
+  const [guideLoading, setGuideLoading] = useState(false);
 
   // Parse từ API -> state, giữ lại comments/references mock
   const fetchTask = async () => {
@@ -208,8 +213,32 @@ const TaskDetailsPage = () => {
     }
   };
 
+  const fetchGuide = async () => {
+    if (!id) return;
+    setGuideLoading(true);
+    try {
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      const res = await fetch(API_ROUTES.TASK.GET_GUIDE(id), {
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.code !== 200 || !data?.result) {
+        throw new Error(data?.message || `Failed (${res.status})`);
+      }
+      setGuide(data.result);
+    } catch (e) {
+      console.warn('Guide fetch failed:', e.message);
+    } finally {
+      setGuideLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchTask();
+    fetchGuide();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -272,9 +301,25 @@ const TaskDetailsPage = () => {
         throw new Error(data?.message || `Upload failed (${res.status})`);
       }
       const fileMeta = data.result;
-      await fetchAttachments(task.id);
+      
+      // Optimistically update the UI with the new file
+      setTask(prev => {
+        if (!prev) return null;
+        // Create a new list with the new file added
+        const newAttachments = [...(prev.attachments || []), fileMeta];
+        return { ...prev, attachments: newAttachments };
+      });
+
       toast.success(`Uploaded: ${fileMeta.fileName || file.name}`);
+      
+      // Clear the file input so the same file can be re-uploaded if needed
       e.target.value = '';
+
+      // Open the modal with the new review data if it exists
+      if (fileMeta.aiReviewResponse) {
+        setSelectedReview(fileMeta.aiReviewResponse);
+        setReviewModalOpen(true);
+      }
     } catch (err) {
       const msg = err.message || 'Upload failed';
       setUploadError(msg);
@@ -426,6 +471,45 @@ const TaskDetailsPage = () => {
               </div>
             </div>
             
+            {/* Task Guide */}
+            {guideLoading && (
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-600">Loading guide...</p>
+              </div>
+            )}
+            {!guideLoading && guide && (
+              <div className="mt-6 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6">
+                <h4 className="text-lg font-bold text-indigo-900 mb-3">📘 Task Guide</h4>
+                <p className="text-sm text-gray-700 leading-relaxed mb-4">{guide.guide}</p>
+                
+                {guide.steps && guide.steps.length > 0 && (
+                  <div className="mb-4">
+                    <h5 className="text-sm font-semibold text-indigo-800 mb-2">Steps:</h5>
+                    <ol className="space-y-2 list-decimal list-inside">
+                      {guide.steps.map((step, idx) => (
+                        <li key={idx} className="text-sm text-gray-700 leading-relaxed">
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+
+                {guide.notes && guide.notes.length > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4">
+                    <h5 className="text-sm font-semibold text-yellow-800 mb-2">⚠️ Important Notes:</h5>
+                    <ul className="space-y-1 list-disc list-inside">
+                      {guide.notes.map((note, idx) => (
+                        <li key={idx} className="text-xs text-gray-700 leading-relaxed">
+                          {note}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Tài liệu tham khảo */}
             <div className="mt-6">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Reference</h4>
@@ -475,16 +559,30 @@ const TaskDetailsPage = () => {
                           {f.fileName || f.fileUrl || 'Unnamed file'}
                         </span>
                       </div>
-                      {f.fileUrl && (
-                        <a
-                          href={f.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-medium text-blue-600 hover:underline"
-                        >
-                          View
-                        </a>
-                      )}
+                      <div className="flex items-center gap-3">
+                        {f.aiReviewResponse && (
+                          <button
+                            onClick={() => {
+                              setSelectedReview(f.aiReviewResponse);
+                              setReviewModalOpen(true);
+                            }}
+                            className="text-xs font-medium text-purple-600 hover:underline flex items-center gap-1"
+                          >
+                            <BsRobot />
+                            AI Review
+                          </button>
+                        )}
+                        {f.fileUrl && (
+                          <a
+                            href={f.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-medium text-blue-600 hover:underline"
+                          >
+                            View
+                          </a>
+                        )}
+                      </div>
                     </li>
                   ))}
                   {!task?.attachments?.length && (
@@ -525,6 +623,12 @@ const TaskDetailsPage = () => {
       
       {/* Nút hành động */}
       <ActionButtons />
+
+      <AIReviewModal
+        isOpen={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        reviewData={selectedReview}
+      />
     </div>
   );
 };
