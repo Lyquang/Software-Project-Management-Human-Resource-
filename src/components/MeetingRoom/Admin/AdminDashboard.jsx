@@ -780,10 +780,10 @@ const AdminDashboard = () => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
         <div className="w-full max-w-5xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-white border-b border-gray-200">
-            <div className="text-gray-800">
-              <h2 className="text-3xl font-bold text-gray-800">All Bookings</h2>
-              <p className="mt-2 text-sm text-gray-600">
+          <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-blue-600 border-b border-gray-200">
+            <div className="text-white">
+              <h2 className="text-3xl font-bold text-white">All Bookings</h2>
+              <p className="mt-2 text-sm text-white">
                 Total: <span className="font-semibold">{allBookings.length}</span> bookings
               </p>
             </div>
@@ -792,7 +792,7 @@ const AdminDashboard = () => {
                 setShowBookingsModal(false);
                 setCurrentPage(1);
               }} 
-              className="p-2 text-gray-500 transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
+              className="p-2 text-white transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -843,7 +843,9 @@ const AdminDashboard = () => {
                         <button 
                           onClick={() => handleViewBookingDetail(booking.id)}
                           disabled={bookingDetailLoading && currentBookingDetail?.id === booking.id}
-                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-lg hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
+                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg 
+                                    bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:scale-105
+                                    disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
                         >
                           {bookingDetailLoading && currentBookingDetail?.id === booking.id ? (
                             <div className="flex items-center gap-2">
@@ -857,7 +859,8 @@ const AdminDashboard = () => {
                         
                         <button 
                           onClick={() => handleDeleteBooking(booking.id)}
-                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
+                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg 
+                                    bg-red-600 hover:bg-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
                         >
                           Cancel
                         </button>
@@ -1170,27 +1173,27 @@ const AdminDashboard = () => {
           icon="🏢" 
           value={stats.totalRooms} 
           label="Total Rooms" 
-          color="from-blue-400 to-blue-600"
+          color="bg-blue-500"
           trend={stats.trend.rooms}
         />
         <StatCard 
           icon="✅" 
           value={stats.availableRooms} 
           label="Available Rooms" 
-          color="from-green-400 to-green-600"
+          color="bg-green-500"
         />
         <StatCard 
           icon="📅" 
           value={stats.todayBookings} 
           label="Today's Bookings" 
-          color="from-purple-400 to-purple-600"
+          color="bg-purple-500"
           trend={stats.trend.bookings}
         />
         <StatCard 
           icon="🔴" 
           value={stats.activeBookings} 
           label="Active Now" 
-          color="from-orange-400 to-red-500"
+          color="bg-orange-500"
         />
       </div>
 

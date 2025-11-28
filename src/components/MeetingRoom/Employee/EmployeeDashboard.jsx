@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Clock, MapPin, Users, List, TrendingUp, RefreshCw, X, AlertCircle, Plus } from 'lucide-react';
 import { getRooms, getMyBookings, createBooking, deleteBooking } from '../../../services/meetingRoomApi';
 
-// ===== MODAL HỦY BOOKING =====
+// ===== CANCEL BOOKING MODAL =====
 const CancelBookingModal = ({ 
   show, 
   onClose, 
@@ -34,7 +34,7 @@ const CancelBookingModal = ({
 
   const handleConfirm = () => {
     if (!cancelReason.trim()) {
-      alert('Vui lòng nhập lý do hủy');
+      alert('Please enter cancellation reason');
       return;
     }
     onConfirm(booking.id, cancelReason);
@@ -46,7 +46,7 @@ const CancelBookingModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="w-full max-w-md bg-white shadow-xl rounded-2xl">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Hủy Booking</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Cancel Booking</h2>
           <button
             onClick={onClose}
             className="p-2 text-gray-500 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-700"
@@ -61,9 +61,9 @@ const CancelBookingModal = ({
               <div className="flex items-start">
                 <AlertCircle className="w-5 h-5 mr-3 text-red-600 mt-0.5" />
                 <div>
-                  <p className="font-medium text-red-800">Cảnh báo: Cuộc họp đang diễn ra!</p>
+                  <p className="font-medium text-red-800">Warning: Meeting in progress!</p>
                   <p className="mt-1 text-sm text-red-700">
-                    Bạn đang hủy một cuộc họp đang diễn ra. Hành động này có thể ảnh hưởng đến người tham dự.
+                    You are canceling a meeting that is currently in progress. This action may affect attendees.
                   </p>
                 </div>
               </div>
@@ -74,7 +74,7 @@ const CancelBookingModal = ({
             <div className="flex items-start">
               <AlertCircle className="w-5 h-5 mr-3 text-yellow-600 mt-0.5" />
               <div>
-                <p className="font-medium text-yellow-800">Bạn sắp hủy booking:</p>
+                <p className="font-medium text-yellow-800">You are about to cancel:</p>
                 <p className="mt-1 text-sm text-yellow-700">{booking.title}</p>
                 <p className="text-sm text-yellow-600">{booking.roomName}</p>
               </div>
@@ -83,12 +83,12 @@ const CancelBookingModal = ({
           
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Lý do hủy booking <span className="text-red-500">*</span>
+              Cancellation reason <span className="text-red-500">*</span>
             </label>
             <textarea
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
-              placeholder="Nhập lý do hủy booking..."
+              placeholder="Enter cancellation reason..."
               rows="4"
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
             />
@@ -99,13 +99,13 @@ const CancelBookingModal = ({
               onClick={onClose}
               className="px-6 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200"
             >
-              Quay lại
+              Back
             </button>
             <button
               onClick={handleConfirm}
               className="px-6 py-3 font-medium text-white transition-all bg-red-600 rounded-xl hover:bg-red-700"
             >
-              Xác nhận hủy
+              Confirm Cancel
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@ const CancelBookingModal = ({
   );
 };
 
-// ===== MODAL ĐẶT PHÒNG =====
+// ===== BOOK ROOM MODAL =====
 const BookRoomModal = ({ 
   show, 
   onClose, 
@@ -123,31 +123,13 @@ const BookRoomModal = ({
   setBookingForm,
   onSubmit 
 }) => {
-  // const handleAttendeeChange = (index, value) => {
-  //   const newAttendeeCodes = [...bookingForm.attendeeCodes];
-  //   newAttendeeCodes[index] = value;
-  //   setBookingForm({...bookingForm, attendeeCodes: newAttendeeCodes});
-  // };
-
-  // const addAttendeeField = () => {
-  //   setBookingForm({
-  //     ...bookingForm,
-  //     attendeeCodes: [...bookingForm.attendeeCodes, '']
-  //   });
-  // };
-
-  // const removeAttendeeField = (index) => {
-  //   const newAttendeeCodes = bookingForm.attendeeCodes.filter((_, i) => i !== index);
-  //   setBookingForm({...bookingForm, attendeeCodes: newAttendeeCodes});
-  // };
-
   if (!show) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="w-full max-w-2xl p-8 bg-white shadow-2xl rounded-3xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Đặt Phòng Họp Mới</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Book New Meeting Room</h2>
           <button 
             onClick={onClose}
             className="p-2 text-gray-500 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-700"
@@ -158,48 +140,48 @@ const BookRoomModal = ({
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">Phòng họp *</label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Meeting Room *</label>
             <select
               required
               value={bookingForm.roomId}
               onChange={(e) => setBookingForm({...bookingForm, roomId: e.target.value})}
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             >
-              <option value="">Chọn phòng...</option>
+              <option value="">Select room...</option>
               {rooms.filter(room => room.working && room.isAvailable).map(room => (
                 <option key={room.id} value={room.id}>
-                  {room.name} - {room.location} ({room.capacity} người)
+                  {room.name} - {room.location} ({room.capacity} people)
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">Tiêu đề cuộc họp *</label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Meeting Title *</label>
             <input
               type="text"
               required
               value={bookingForm.title}
               onChange={(e) => setBookingForm({...bookingForm, title: e.target.value})}
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Nhập tiêu đề cuộc họp..."
+              placeholder="Enter meeting title..."
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">Mô tả</label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Description</label>
             <textarea
               value={bookingForm.description}
               onChange={(e) => setBookingForm({...bookingForm, description: e.target.value})}
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               rows="3"
-              placeholder="Mô tả chi tiết về cuộc họp..."
+              placeholder="Detailed description of the meeting..."
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">Thời gian bắt đầu *</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">Start Time *</label>
               <input
                 type="datetime-local"
                 required
@@ -210,7 +192,7 @@ const BookRoomModal = ({
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">Thời gian kết thúc *</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">End Time *</label>
               <input
                 type="datetime-local"
                 required
@@ -221,57 +203,19 @@ const BookRoomModal = ({
             </div>
           </div>
 
-          {/* <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">Mã nhân viên tham dự</label>
-              <button
-                type="button"
-                onClick={addAttendeeField}
-                className="text-sm text-indigo-600 hover:text-indigo-800"
-              >
-                + Thêm người
-              </button>
-            </div>
-            <div className="space-y-2">
-              {bookingForm.attendeeCodes.map((code, index) => (
-                <div key={index} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={code}
-                    onChange={(e) => handleAttendeeChange(index, e.target.value)}
-                    className="flex-1 px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Nhập mã nhân viên..."
-                  />
-                  {bookingForm.attendeeCodes.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => removeAttendeeField(index)}
-                      className="px-4 py-3 text-red-600 transition-all bg-red-50 rounded-xl hover:bg-red-100"
-                    >
-                      Xóa
-                    </button>
-                  )}
-                </div>
-              ))}
-              {bookingForm.attendeeCodes.length === 0 && (
-                <p className="text-sm text-gray-500">Chưa có người tham dự nào được thêm</p>
-              )}
-            </div>
-          </div> */}
-
           <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
               className="flex-1 px-6 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 font-medium text-white transition-all bg-indigo-600 rounded-xl hover:bg-indigo-700"
             >
-              Đặt phòng
+              Book Room
             </button>
           </div>
         </form>
@@ -280,7 +224,7 @@ const BookRoomModal = ({
   );
 };
 
-// ===== MODAL QUẢN LÝ BOOKING =====
+// ===== MY BOOKINGS MODAL =====
 const MyBookingsModal = ({ 
   show, 
   onClose, 
@@ -311,7 +255,7 @@ const MyBookingsModal = ({
   const parseApiDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return null;
     const [timePart, datePart] = dateTimeStr.split(' ');
-    const [hours, minutes, seconds] = timePart.split(':').map(Number);
+       const [hours, minutes, seconds] = timePart.split(':').map(Number);
     const [day, month, year] = datePart.split('/').map(Number);
     return new Date(year, month - 1, day, hours, minutes, seconds);
   };
@@ -330,7 +274,7 @@ const MyBookingsModal = ({
 
   const handleCancelClick = (booking) => {
     if (!canCancelBooking(booking)) {
-      alert('Booking này không thể hủy');
+      alert('This booking cannot be cancelled');
       return;
     }
     setSelectedBooking(booking);
@@ -343,11 +287,11 @@ const MyBookingsModal = ({
       if (!date) return { time: 'N/A', fullDate: 'N/A' };
 
       return {
-        time: date.toLocaleTimeString('vi-VN', { 
+        time: date.toLocaleTimeString('en-US', { 
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        fullDate: date.toLocaleDateString('vi-VN', {
+        fullDate: date.toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -357,7 +301,7 @@ const MyBookingsModal = ({
     };
 
     const { time, fullDate } = formatDateTime(booking.startTime);
-    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('vi-VN', { 
+    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit' 
     }) || 'N/A';
@@ -368,19 +312,19 @@ const MyBookingsModal = ({
       const endTimeDate = parseApiDateTime(booking.endTime);
       
       if (!startTime || !endTimeDate) {
-        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Không xác định' };
+        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Unknown' };
       }
       
       if (booking.status === 'CANCELLED') {
-        return { bg: 'bg-red-100', text: 'text-red-800', label: 'Đã hủy' };
+        return { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' };
       }
       
       if (now < startTime) {
-        return { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Sắp diễn ra' };
+        return { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Upcoming' };
       } else if (now >= startTime && now <= endTimeDate) {
-        return { bg: 'bg-green-100', text: 'text-green-800', label: 'Đang diễn ra' };
+        return { bg: 'bg-green-100', text: 'text-green-800', label: 'In Progress' };
       } else {
-        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Đã kết thúc' };
+        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Completed' };
       }
     };
 
@@ -414,7 +358,7 @@ const MyBookingsModal = ({
               {booking.attendeeNames && booking.attendeeNames.length > 0 && (
                 <div className="flex items-center text-sm text-gray-600">
                   <Users className="w-4 h-4 mr-2" />
-                  <span>{booking.attendeeNames.length} người tham dự</span>
+                  <span>{booking.attendeeNames.length} attendees</span>
                 </div>
               )}
             </div>
@@ -431,7 +375,7 @@ const MyBookingsModal = ({
                   onClick={() => handleCancelClick(booking)}
                   className="px-3 py-1 text-xs font-medium text-red-600 transition-all rounded-lg bg-red-50 hover:bg-red-100"
                 >
-                  Hủy booking
+                  Cancel booking
                 </button>
               </div>
             )}
@@ -448,9 +392,9 @@ const MyBookingsModal = ({
       <div className="w-full max-w-4xl p-8 bg-white shadow-2xl rounded-3xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Quản Lý Booking Của Tôi</h2>
+            <h2 className="text-2xl font-bold text-gray-800">My Bookings Management</h2>
             <p className="mt-1 text-sm text-gray-600">
-              {loading ? 'Đang tải...' : `Tổng cộng: ${myAllBookings.length} booking`}
+              {loading ? 'Loading...' : `Total: ${myAllBookings.length} bookings`}
             </p>
           </div>
           <button 
@@ -472,7 +416,7 @@ const MyBookingsModal = ({
           ) : myAllBookings.length === 0 ? (
             <div className="py-12 text-center text-gray-400">
               <List className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg font-medium text-gray-500">Chưa có booking nào</p>
+              <p className="text-lg font-medium text-gray-500">No bookings yet</p>
             </div>
           ) : (
             myAllBookings.map((booking) => (
@@ -485,7 +429,7 @@ const MyBookingsModal = ({
   );
 };
 
-// ===== COMPONENT CHÍNH =====
+// ===== MAIN COMPONENT =====
 const EmployeeDashboard = () => {
   const [stats, setStats] = useState({
     totalRooms: 0,
@@ -596,7 +540,7 @@ const EmployeeDashboard = () => {
       setRecentBookings(recent);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      showToast('Lỗi khi tải dữ liệu dashboard', 'error');
+      showToast('Error loading dashboard data', 'error');
     } finally {
       setLoading(false);
     }
@@ -626,7 +570,7 @@ const EmployeeDashboard = () => {
       const response = await createBooking(bookingData);
       
       if (response && response.code === 200) {
-        showToast('Đặt phòng thành công!', 'success');
+        showToast('Room booked successfully!', 'success');
         setShowBookRoomModal(false);
         setBookingForm({
           roomId: '',
@@ -638,24 +582,24 @@ const EmployeeDashboard = () => {
         });
         loadDashboardData();
       } else {
-        throw new Error(response?.message || 'Lỗi khi đặt phòng');
+        throw new Error(response?.message || 'Error booking room');
       }
     } catch (error) {
       console.error('Error booking room:', error);
-      showToast(error.message || 'Lỗi khi đặt phòng', 'error');
+      showToast(error.message || 'Error booking room', 'error');
     }
   }, [bookingForm]);
 
   const handleCancelBooking = async (bookingId, reason) => {
     try {
       await deleteBooking(bookingId, reason);
-      showToast('Đã hủy booking thành công', 'success');
+      showToast('Booking cancelled successfully', 'success');
       loadDashboardData();
       setShowCancelModal(false);
       setSelectedBooking(null);
     } catch (error) {
       console.error('Error canceling booking:', error);
-      const errorMessage = error.response?.data?.message || 'Không thể hủy booking';
+      const errorMessage = error.response?.data?.message || 'Unable to cancel booking';
       showToast(errorMessage, 'error');
     }
   };
@@ -669,7 +613,7 @@ const EmployeeDashboard = () => {
 
   const handleCancelClick = (booking) => {
     if (!canCancelBooking(booking)) {
-      showToast('Booking này không thể hủy', 'error');
+      showToast('This booking cannot be cancelled', 'error');
       return;
     }
     setSelectedBooking(booking);
@@ -680,7 +624,7 @@ const EmployeeDashboard = () => {
     <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-lg rounded-2xl hover:shadow-xl hover:scale-105">
       <div className="p-6">
         <div className="flex items-start justify-between">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-md`}>
+          <div className={`p-3 rounded-xl ${color} shadow-md`}>
             <span className="text-3xl text-white">{icon}</span>
           </div>
         </div>
@@ -691,7 +635,7 @@ const EmployeeDashboard = () => {
           </p>
         </div>
       </div>
-      <div className={`h-1 bg-gradient-to-r ${color}`}></div>
+      <div className={`h-1 ${color}`}></div>
     </div>
   );
 
@@ -701,16 +645,16 @@ const EmployeeDashboard = () => {
       if (!date) return { date: 'N/A', time: 'N/A', fullDate: 'N/A' };
 
       return {
-        date: date.toLocaleDateString('vi-VN', { 
+        date: date.toLocaleDateString('en-US', { 
           weekday: 'short',
           day: '2-digit', 
           month: '2-digit' 
         }),
-        time: date.toLocaleTimeString('vi-VN', { 
+        time: date.toLocaleTimeString('en-US', { 
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        fullDate: date.toLocaleDateString('vi-VN', {
+        fullDate: date.toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -720,7 +664,7 @@ const EmployeeDashboard = () => {
     };
 
     const { date, time, fullDate } = formatDateTime(booking.startTime);
-    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('vi-VN', { 
+    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit' 
     }) || 'N/A';
@@ -731,19 +675,19 @@ const EmployeeDashboard = () => {
       const endTimeDate = parseApiDateTime(booking.endTime);
       
       if (!startTime || !endTimeDate) {
-        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Không xác định' };
+        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Unknown' };
       }
       
       if (booking.status === 'CANCELLED') {
-        return { bg: 'bg-red-100', text: 'text-red-800', label: 'Đã hủy' };
+        return { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' };
       }
       
       if (now < startTime) {
-        return { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Sắp diễn ra' };
+        return { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Upcoming' };
       } else if (now >= startTime && now <= endTimeDate) {
-        return { bg: 'bg-green-100', text: 'text-green-800', label: 'Đang diễn ra' };
+        return { bg: 'bg-green-100', text: 'text-green-800', label: 'In Progress' };
       } else {
-        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Đã kết thúc' };
+        return { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Completed' };
       }
     };
 
@@ -784,7 +728,7 @@ const EmployeeDashboard = () => {
                   onClick={() => handleCancelClick(booking)}
                   className="px-3 py-1 text-xs font-medium text-red-600 transition-all rounded-lg bg-red-50 hover:bg-red-100"
                 >
-                  Hủy booking
+                  Cancel booking
                 </button>
               </div>
             )}
@@ -803,13 +747,12 @@ const EmployeeDashboard = () => {
     );
   };
 
-  // eslint-disable-next-line no-unused-vars
   const QuickActionCard = ({ icon: Icon, title, description, onClick, color }) => (
     <button 
       onClick={onClick}
-      className={`flex items-center w-full p-4 transition-all border-2 border-transparent rounded-xl bg-gradient-to-r ${color} hover:shadow-lg hover:scale-105 group`}
+      className={`flex items-center w-full p-4 transition-all border-2 border-transparent rounded-xl ${color} hover:shadow-lg hover:scale-105 group`}
     >
-      <div className="flex items-center justify-center w-12 h-12 mr-4 bg-opacity-20 rounded-xl">
+      <div className="flex items-center justify-center w-12 h-12 mr-4 bg-black/10 rounded-xl">
         <Icon className="w-6 h-6 text-white" />
       </div>
       <div className="text-left">
@@ -844,7 +787,7 @@ const EmployeeDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen from-blue-50 via-white">
+      <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="relative">
           <div className="w-20 h-20 border-4 border-blue-200 rounded-full"></div>
           <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-blue-600 rounded-full animate-spin"></div>
@@ -859,15 +802,15 @@ const EmployeeDashboard = () => {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-gray-800">Dashboard Cá Nhân</h1>
-          <p className="mt-2 text-gray-600">Tổng quan về đặt phòng và lịch trình của bạn</p>
+          <h1 className="text-4xl font-bold text-gray-800">Personal Dashboard</h1>
+          <p className="mt-2 text-gray-600">Overview of your bookings and schedule</p>
         </div>
         <button
           onClick={loadDashboardData}
           className="flex items-center gap-2 px-6 py-3 font-medium text-white transition-all bg-indigo-600 shadow-lg rounded-xl hover:bg-indigo-700 hover:shadow-xl"
         >
           <RefreshCw className="w-5 h-5" />
-          Làm mới
+          Refresh
         </button>
       </div>
 
@@ -875,36 +818,36 @@ const EmployeeDashboard = () => {
         <StatCard 
           icon="🏢" 
           value={stats.totalRooms} 
-          label="Tổng số phòng" 
-          color="from-blue-400 to-blue-600"
+          label="Total Rooms" 
+          color="bg-blue-500"
         />
         <StatCard 
           icon="✅" 
           value={stats.availableRooms} 
-          label="Phòng khả dụng" 
-          color="from-green-400 to-green-600"
+          label="Available Rooms" 
+          color="bg-green-500"
         />
         <StatCard 
           icon="📅" 
           value={stats.myBookings} 
-          label="Booking của tôi" 
-          color="from-purple-400 to-purple-600"
+          label="My Bookings" 
+          color="bg-purple-500"
         />
         <StatCard 
           icon="🔴" 
           value={stats.todayBookings} 
-          label="Booking hôm nay" 
-          color="from-orange-400 to-red-500"
+          label="Today's Bookings" 
+          color="bg-orange-500"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="overflow-hidden transition-all bg-white border border-gray-100 shadow-lg rounded-3xl hover:shadow-xl">
-          <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
+          <div className="p-6 border-b border-gray-100 bg-green-50">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-800">📅 Booking sắp tới</h2>
+              <h2 className="text-2xl font-bold text-gray-800">📅 Upcoming Bookings</h2>
               <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-                {upcomingBookings.length} booking
+                {upcomingBookings.length} bookings
               </span>
             </div>
           </div>
@@ -912,8 +855,8 @@ const EmployeeDashboard = () => {
             {upcomingBookings.length === 0 ? (
               <div className="py-12 text-center text-gray-400">
                 <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg font-medium text-gray-500">Không có booking sắp tới</p>
-                <p className="mt-1 text-sm text-gray-400">Hãy đặt phòng cho cuộc họp tiếp theo của bạn</p>
+                <p className="text-lg font-medium text-gray-500">No upcoming bookings</p>
+                <p className="mt-1 text-sm text-gray-400">Book a room for your next meeting</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -927,56 +870,56 @@ const EmployeeDashboard = () => {
 
         <div className="space-y-6">
           <div className="overflow-hidden transition-all bg-white border border-gray-100 shadow-lg rounded-3xl hover:shadow-xl">
-            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
+            <div className="p-6 border-b border-gray-100 bg-purple-50">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">📋 Booking gần đây</h2>
+                <h2 className="text-2xl font-bold text-gray-800">📋 Recent Bookings</h2>
                 <button
                   onClick={() => setShowMyBookingsModal(true)}
                   className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-700"
                 >
-                  Xem tất cả →
+                  View all →
                 </button>
               </div>
             </div>
             <div className="p-6">
-      {recentBookings.length === 0 ? (
-        <div className="py-12 text-center text-gray-400">
-          <List className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <p className="text-lg font-medium text-gray-500">Chưa có booking nào</p>
-          <p className="mt-1 text-sm text-gray-400">
-            Các booking bạn tạo gần đây sẽ hiển thị tại đây
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {recentBookings.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} type="recent" />
-          ))}
-        </div>
-      )}
-    </div>
+              {recentBookings.length === 0 ? (
+                <div className="py-12 text-center text-gray-400">
+                  <List className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg font-medium text-gray-500">No bookings yet</p>
+                  <p className="mt-1 text-sm text-gray-400">
+                    Your recent bookings will appear here
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentBookings.map((booking) => (
+                    <BookingCard key={booking.id} booking={booking} type="recent" />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="overflow-hidden transition-all bg-white border border-gray-100 shadow-lg rounded-3xl hover:shadow-xl">
-            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-red-50">
-              <h2 className="text-2xl font-bold text-gray-800">⚡ Thao tác nhanh</h2>
+            <div className="p-6 border-b border-gray-100 bg-orange-50">
+              <h2 className="text-2xl font-bold text-gray-800">⚡ Quick Actions</h2>
             </div>
             <div className="p-6">
               <div className="space-y-3">
                 <QuickActionCard
                   icon={Plus}
-                  title="Đặt phòng mới"
-                  description="Tìm và đặt phòng họp mới"
+                  title="Book New Room"
+                  description="Find and book a new meeting room"
                   onClick={() => setShowBookRoomModal(true)}
-                  color="from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                  color="bg-indigo-500 hover:bg-indigo-600"
                 />
                 
                 <QuickActionCard
                   icon={List}
-                  title="Quản lý booking"
-                  description="Xem và quản lý tất cả booking của bạn"
+                  title="Manage Bookings"
+                  description="View and manage all your bookings"
                   onClick={() => setShowMyBookingsModal(true)}
-                  color="from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600"
+                  color="bg-green-500 hover:bg-green-600"
                 />
               </div>
             </div>
@@ -996,10 +939,7 @@ const EmployeeDashboard = () => {
       <MyBookingsModal 
         show={showMyBookingsModal}
         onClose={() => setShowMyBookingsModal(false)}
-        onCancelBooking={handleCancelBooking}
-        showCancelModal={showCancelModal}
         setShowCancelModal={setShowCancelModal}
-        selectedBooking={selectedBooking}
         setSelectedBooking={setSelectedBooking}
       />
 

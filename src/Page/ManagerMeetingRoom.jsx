@@ -12,7 +12,7 @@ const ManagerMeetingRoom = () => {
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
     { id: 'team-bookings', icon: '👥', label: 'Booking Team' },
     { id: 'my-bookings', icon: '📋', label: 'My Booking' },
-    { id: 'book-room', icon: '➕', label: 'Đặt phòng' },
+    { id: 'book-room', icon: '➕', label: 'Book Room' },
     { id: 'rooms', icon: '🚪', label: 'Meeting Room Management' },
   ];
 

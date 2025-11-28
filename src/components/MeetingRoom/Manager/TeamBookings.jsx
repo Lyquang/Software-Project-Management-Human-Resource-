@@ -79,28 +79,28 @@ const TeamBookings = () => {
       if (!date) return { date: 'N/A', time: 'N/A', fullDate: 'N/A', day: 'N/A', month: 'N/A' };
 
       return {
-        date: date.toLocaleDateString('vi-VN', { 
+        date: date.toLocaleDateString('en-US', { 
           weekday: 'short',
           day: '2-digit', 
           month: '2-digit' 
         }),
-        time: date.toLocaleTimeString('vi-VN', { 
+        time: date.toLocaleTimeString('en-US', { 
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        fullDate: date.toLocaleDateString('vi-VN', {
+        fullDate: date.toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         }),
         day: date.getDate(),
-        month: date.toLocaleDateString('vi-VN', { month: 'short' })
+        month: date.toLocaleDateString('en-US', { month: 'short' })
       };
     };
 
     const { time, fullDate, day, month } = formatDateTime(booking.startTime);
-    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('vi-VN', { 
+    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit' 
     }) || 'N/A';
@@ -112,22 +112,19 @@ const TeamBookings = () => {
 
     return (
       <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-xl hover:border-indigo-200 group">
-        {/* Status bar */}
-        <div className={`h-1.5 ${isUpcoming() ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' : 'bg-gradient-to-r from-gray-300 to-gray-400'}`}></div>
+        <div className={`h-1.5 ${isUpcoming() ? 'bg-emerald-500' : 'bg-gray-400'}`}></div>
         
         <div className="p-6">
           <div className="flex gap-6">
-            {/* Date badge */}
             <div className={`flex-shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center ${
               isUpcoming() 
-                ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white' 
-                : 'bg-gradient-to-br from-gray-400 to-gray-500 text-white'
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-gray-500 text-white'
             } shadow-lg`}>
               <div className="text-2xl font-bold leading-none">{day}</div>
               <div className="text-xs font-medium uppercase opacity-90">{month}</div>
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="flex-1 min-w-0">
@@ -139,19 +136,18 @@ const TeamBookings = () => {
                       ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20' 
                       : 'bg-gray-100 text-gray-700 ring-1 ring-gray-600/20'
                   }`}>
-                    {isUpcoming() ? '🟢 Sắp diễn ra' : '⚫ Đã kết thúc'}
+                    {isUpcoming() ? '🟢 Upcoming' : '⚫ Completed'}
                   </span>
                 </div>
               </div>
               
-              {/* Info grid */}
               <div className="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2">
                 <div className="flex items-center gap-3 text-gray-700">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-50">
                     <MapPin className="w-4 h-4 text-indigo-600" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Phòng họp</div>
+                    <div className="text-xs text-gray-500">Meeting Room</div>
                     <div className="font-semibold">{booking.roomName}</div>
                   </div>
                 </div>
@@ -161,7 +157,7 @@ const TeamBookings = () => {
                     <Users className="w-4 h-4 text-purple-600" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Người tổ chức</div>
+                    <div className="text-xs text-gray-500">Organizer</div>
                     <div className="font-semibold">{booking.organizerName}</div>
                   </div>
                 </div>
@@ -171,7 +167,7 @@ const TeamBookings = () => {
                     <Calendar className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Ngày</div>
+                    <div className="text-xs text-gray-500">Date</div>
                     <div className="font-semibold">{fullDate}</div>
                   </div>
                 </div>
@@ -181,7 +177,7 @@ const TeamBookings = () => {
                     <Clock className="w-4 h-4 text-amber-600" />
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500">Thời gian</div>
+                    <div className="text-xs text-gray-500">Time</div>
                     <div className="font-semibold">{time} - {endTime}</div>
                   </div>
                 </div>
@@ -198,7 +194,7 @@ const TeamBookings = () => {
               {booking.attendeeNames && booking.attendeeNames.length > 0 && (
                 <div className="pt-4 border-t border-gray-100">
                   <p className="mb-2 text-xs font-semibold text-gray-500 uppercase">
-                    Người tham dự ({booking.attendeeNames.length})
+                    Attendees ({booking.attendeeNames.length})
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {booking.attendeeNames.map((name, index) => (
@@ -221,7 +217,7 @@ const TeamBookings = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen from-indigo-50 via-white">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="relative">
           <div className="w-16 h-16 border-4 border-indigo-100 rounded-full"></div>
           <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-indigo-600 rounded-full animate-spin"></div>
@@ -231,11 +227,13 @@ const TeamBookings = () => {
   }
 
   return (
-    <div className="min-h-screen from-indigo-50 via-white">
+    <div className="min-h-screen">
       <div className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {/* Header */}
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">Booking của Team</h1>
-          <p className="text-lg text-gray-600">Theo dõi và quản lý tất cả booking trong phòng ban của bạn</p>
+        <div className="mb-8">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">Team Bookings</h1>
+          <p className="text-lg text-gray-600">Monitor and manage all bookings in your department</p>
+        </div>
 
         {/* Filters */}
         <div className="p-6 mb-8 bg-white shadow-lg rounded-2xl">
@@ -246,40 +244,40 @@ const TeamBookings = () => {
                 onClick={() => setFilter('all')}
                 className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   filter === 'all'
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
+                    ? 'bg-indigo-600 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Tất cả
+                All
               </button>
               <button
                 onClick={() => setFilter('upcoming')}
                 className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   filter === 'upcoming'
-                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/50'
+                    ? 'bg-emerald-600 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Sắp tới
+                Upcoming
               </button>
               <button
                 onClick={() => setFilter('past')}
                 className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   filter === 'past'
-                    ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg shadow-gray-500/50'
+                    ? 'bg-gray-600 text-white shadow-lg'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Đã kết thúc
+                Completed
               </button>
             </div>
 
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 left-4 top-1/2" />
+              <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1 left-4 top-1/2" />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tên, phòng hoặc người tổ chức..."
+                placeholder="Search by title, room or organizer..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full py-3 pl-12 pr-4 text-sm transition-all border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -298,12 +296,12 @@ const TeamBookings = () => {
         {/* Bookings List */}
         {filteredBookings.length === 0 ? (
           <div className="py-20 text-center bg-white shadow-lg rounded-2xl">
-            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100">
+            <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-indigo-100 rounded-full">
               <Calendar className="w-10 h-10 text-indigo-600" />
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-900">Không tìm thấy booking nào</h3>
+            <h3 className="mb-2 text-xl font-bold text-gray-900">No bookings found</h3>
             <p className="text-gray-600">
-              {searchTerm ? 'Thử tìm kiếm với từ khóa khác hoặc điều chỉnh bộ lọc' : 'Tất cả booking sẽ hiển thị ở đây'}
+              {searchTerm ? 'Try searching with different keywords or adjust the filter' : 'All bookings will appear here'}
             </p>
           </div>
         ) : (
@@ -318,7 +316,7 @@ const TeamBookings = () => {
             {totalPages > 1 && (
               <div className="flex items-center justify-between p-6 mt-8 bg-white shadow-lg rounded-2xl">
                 <div className="text-sm text-gray-600">
-                  Hiển thị <span className="font-semibold text-gray-900">{startIndex + 1}</span> - <span className="font-semibold text-gray-900">{Math.min(endIndex, filteredBookings.length)}</span> trong tổng số <span className="font-semibold text-gray-900">{filteredBookings.length}</span> booking
+                  Showing <span className="font-semibold text-gray-900">{startIndex + 1}</span> - <span className="font-semibold text-gray-900">{Math.min(endIndex, filteredBookings.length)}</span> of <span className="font-semibold text-gray-900">{filteredBookings.length}</span> bookings
                 </div>
                 
                 <div className="flex gap-2">
@@ -331,7 +329,7 @@ const TeamBookings = () => {
                         : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-500 hover:text-indigo-600'
                     }`}
                   >
-                    ← Trước
+                    ← Previous
                   </button>
                   
                   <div className="flex gap-2">
@@ -349,7 +347,7 @@ const TeamBookings = () => {
                             onClick={() => setCurrentPage(pageNumber)}
                             className={`w-10 h-10 rounded-xl font-semibold text-sm transition-all ${
                               currentPage === pageNumber
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
+                                ? 'bg-indigo-600 text-white shadow-lg'
                                 : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-500 hover:text-indigo-600'
                             }`}
                           >
@@ -379,7 +377,7 @@ const TeamBookings = () => {
                         : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-500 hover:text-indigo-600'
                     }`}
                   >
-                    Sau →
+                    Next →
                   </button>
                 </div>
               </div>

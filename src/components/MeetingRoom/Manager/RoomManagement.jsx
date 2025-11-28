@@ -19,7 +19,7 @@ const RoomManagement = () => {
 
   useEffect(() => {
     filterRooms();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, rooms]);
 
   const loadRooms = async () => {
@@ -38,7 +38,7 @@ const RoomManagement = () => {
     let result = rooms;
 
     if (filters.status) {
-      result = result.filter(room => 
+      result = result.filter(room =>
         filters.status === 'available' ? room.isAvailable : !room.isAvailable
       );
     }
@@ -53,13 +53,13 @@ const RoomManagement = () => {
     }
 
     if (filters.location) {
-      result = result.filter(room => 
+      result = result.filter(room =>
         room.location.toLowerCase().includes(filters.location.toLowerCase())
       );
     }
 
     if (filters.equipment) {
-      result = result.filter(room => 
+      result = result.filter(room =>
         room.equipment.toLowerCase().includes(filters.equipment.toLowerCase())
       );
     }
@@ -96,20 +96,20 @@ const RoomManagement = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Meeting Room Management</h1>
-          <p className="mt-2 text-gray-600">Theo dõi tình trạng các phòng họp</p>
+          <p className="mt-2 text-gray-600">Monitor the status of meeting rooms</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            <span className="mr-2">🔍</span> Lọc
+            <span className="mr-2">🔍</span> Filter
           </button>
           <button
             onClick={clearFilters}
             className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800"
           >
-            Xóa bộ lọc
+            Clear filters
           </button>
         </div>
       </div>
@@ -117,8 +117,8 @@ const RoomManagement = () => {
       <div className="mb-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-800">Danh sách phòng họp</h2>
-            <span className="text-sm text-gray-600">{filteredRooms.length} phòng</span>
+            <h2 className="text-xl font-semibold text-gray-800">Meeting room list</h2>
+            <span className="text-sm text-gray-600">{filteredRooms.length} rooms</span>
           </div>
         </div>
 
@@ -126,48 +126,48 @@ const RoomManagement = () => {
           <div className="p-6 border-b border-gray-200 bg-gray-50">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Trạng thái</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Status</label>
                 <select
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="">Tất cả</option>
-                  <option value="available">Có sẵn</option>
-                  <option value="unavailable">Không khả dụng</option>
+                  <option value="">All</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
                 </select>
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Sức chứa</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Capacity</label>
                 <select
                   value={filters.capacity}
                   onChange={(e) => handleFilterChange('capacity', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="">Tất cả</option>
-                  <option value="1-5">1-5 người</option>
-                  <option value="6-10">6-10 người</option>
-                  <option value="11-20">11-20 người</option>
-                  <option value="20+">Trên 20 người</option>
+                  <option value="">All</option>
+                  <option value="1-5">1-5 people</option>
+                  <option value="6-10">6-10 people</option>
+                  <option value="11-20">11-20 people</option>
+                  <option value="20+">More than 20 people</option>
                 </select>
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Vị trí</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Location</label>
                 <input
                   type="text"
                   value={filters.location}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
-                  placeholder="Nhập vị trí..."
+                  placeholder="Enter location..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Thiết bị</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Equipment</label>
                 <input
                   type="text"
                   value={filters.equipment}
                   onChange={(e) => handleFilterChange('equipment', e.target.value)}
-                  placeholder="Nhập thiết bị..."
+                  placeholder="Enter equipment..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -178,7 +178,10 @@ const RoomManagement = () => {
         <div className="p-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredRooms.map((room) => (
-              <div key={room.id} className="p-6 transition-all border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md">
+              <div
+                key={room.id}
+                className="p-6 transition-all border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md"
+              >
                 <h3 className="mb-2 text-lg font-semibold text-gray-800">{room.name}</h3>
                 <div className="space-y-2 text-sm text-gray-600">
                   <p className="flex items-center">
@@ -187,7 +190,7 @@ const RoomManagement = () => {
                   </p>
                   <p className="flex items-center">
                     <span className="mr-2">👥</span>
-                    {room.capacity} người
+                    {room.capacity} people
                   </p>
                   <p className="flex items-center">
                     <span className="mr-2">🛠️</span>
@@ -195,12 +198,14 @@ const RoomManagement = () => {
                   </p>
                 </div>
                 <div className="mt-4">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                    room.isAvailable 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {room.isAvailable ? 'Có sẵn' : 'Không khả dụng'}
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                      room.isAvailable
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {room.isAvailable ? 'Available' : 'Unavailable'}
                   </span>
                 </div>
               </div>

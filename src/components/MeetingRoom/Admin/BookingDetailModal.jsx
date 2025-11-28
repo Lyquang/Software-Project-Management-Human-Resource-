@@ -30,13 +30,13 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
       onUpdateBooking(updatedBooking);
     } catch (error) {
       console.error('Error updating booking:', error);
-      alert('Lỗi khi cập nhật booking');
+      alert('Error updating booking');
     }
   };
 
   const handleCancelBooking = async () => {
     if (!cancelReason.trim()) {
-      alert('Vui lòng nhập lý do hủy');
+      alert('Please enter reason for cancellation');
       return;
     }
 
@@ -46,7 +46,7 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
       onClose();
     } catch (error) {
       console.error('Error canceling booking:', error);
-      alert('Lỗi khi hủy booking');
+      alert('Error when canceling booking');
     }
   };
 
@@ -56,7 +56,7 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">
-              {isEditing ? 'Chỉnh sửa Booking' : 'Chi tiết Booking'}
+              {isEditing ? 'Edit Booking' : 'Booking Details'}
             </h2>
             <button
               onClick={onClose}
@@ -90,7 +90,7 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Thời gian bắt đầu</label>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Start time</label>
                   <input
                     type="datetime-local"
                     value={editForm.startTime}
@@ -99,7 +99,7 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">Thời gian kết thúc</label>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">End time</label>
                   <input
                     type="datetime-local"
                     value={editForm.endTime}
@@ -112,28 +112,28 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
           ) : (
             <>
               <div>
-                <h3 className="mb-3 text-lg font-semibold text-gray-800">Thông tin chung</h3>
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">General information</h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Tiêu đề</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Title</label>
                     <p className="text-gray-800">{booking.title}</p>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Mô tả</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Description</label>
                     <p className="text-gray-800">{booking.description}</p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h3 className="mb-3 text-lg font-semibold text-gray-800">Thông tin phòng</h3>
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">Room information</h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Phòng</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Room</label>
                     <p className="text-gray-800">{booking.roomName}</p>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Thời gian</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Time</label>
                     <p className="text-gray-800">
                       {startTime.toLocaleDateString('vi-VN')} {startTime.toLocaleTimeString('vi-VN')} - {endTime.toLocaleTimeString('vi-VN')}
                     </p>
@@ -142,14 +142,14 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
               </div>
               
               <div>
-                <h3 className="mb-3 text-lg font-semibold text-gray-800">Thông tin người đặt</h3>
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">Booker information</h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Người đặt</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Booked by</label>
                     <p className="text-gray-800">{booking.organizerName}</p>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-600">Thời gian đặt</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-600">Booking time</label>
                     <p className="text-gray-800">
                       {createdAt.toLocaleDateString('vi-VN')} {createdAt.toLocaleTimeString('vi-VN')}
                     </p>
@@ -158,7 +158,7 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
               </div>
               
               <div>
-                <h3 className="mb-3 text-lg font-semibold text-gray-800">Người tham dự</h3>
+                <h3 className="mb-3 text-lg font-semibold text-gray-800">Attendees</h3>
                 <div className="p-4 rounded-lg bg-gray-50">
                   <div className="flex flex-wrap gap-2">
                     {booking.attendeeNames.map((attendee, index) => (
@@ -184,13 +184,13 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
                   onClick={() => setIsEditing(false)}
                   className="px-6 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-100"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   onClick={handleUpdate}
                   className="px-6 py-2 text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700"
                 >
-                  Lưu thay đổi
+                  Save changes
                 </button>
               </>
             ) : (
@@ -199,13 +199,13 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
                   onClick={() => setShowCancelModal(true)}
                   className="px-6 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                 >
-                  Hủy Booking
+                  Cancel Booking
                 </button>
                 <button
                   onClick={() => setIsEditing(true)}
                   className="px-6 py-2 text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700"
                 >
-                  Chỉnh sửa
+                  Edit
                 </button>
               </>
             )}
@@ -217,17 +217,17 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md bg-white shadow-2xl rounded-xl">
             <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Xác nhận hủy Booking</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Confirm cancellation of Booking</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Lý do hủy
+                  Reason for cancellation
                 </label>
                 <textarea
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Nhập lý do hủy booking..."
+                  placeholder="Enter reason for cancellation..."
                   rows="3"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
@@ -237,13 +237,13 @@ const BookingDetailModal = ({ booking, onClose, onUpdateBooking }) => {
                   onClick={() => setShowCancelModal(false)}
                   className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   onClick={handleCancelBooking}
                   className="px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                 >
-                  Xác nhận hủy
+                  Confirm cancellation
                 </button>
               </div>
             </div>
