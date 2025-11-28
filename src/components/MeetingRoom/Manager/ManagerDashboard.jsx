@@ -83,7 +83,7 @@ const ManagerDashboard = () => {
     const date = parseApiDateTime(dateString);
     if (!date) return 'N/A';
 
-    return date.toLocaleDateString('vi-VN', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -101,8 +101,8 @@ const ManagerDashboard = () => {
     <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-lg rounded-2xl hover:shadow-xl hover:scale-105">
       <div className="p-6">
         <div className="flex items-start justify-between">
-          <div className={`p-3 rounded-xl bg-gradient-to-br ${color} shadow-md`}>
-            <span className="text-3xl">{icon}</span>
+          <div className={`p-3 rounded-xl ${color} shadow-md`}>
+            <span className="text-3xl text-white">{icon}</span>
           </div>
           {trend !== undefined && (
             <div className={`flex items-center text-sm font-medium ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -118,13 +118,13 @@ const ManagerDashboard = () => {
           </p>
         </div>
       </div>
-      <div className={`h-1 bg-gradient-to-r ${color}`}></div>
+      <div className={`h-1 ${color}`}></div>
     </div>
   );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen from-indigo-50 via-white">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="relative">
           <div className="w-20 h-20 border-4 border-indigo-200 rounded-full"></div>
           <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-indigo-600 rounded-full animate-spin"></div>
@@ -134,19 +134,19 @@ const ManagerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen p-8 from-indigo-50 via-white">
+    <div className="min-h-screen p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-2 text-lg text-gray-600">Tổng quan về phòng họp và booking của team</p>
+          <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
+          <p className="mt-2 text-lg text-gray-600">Overview of meeting rooms and team bookings</p>
         </div>
         <button
           onClick={loadDashboardData}
-          className="flex items-center gap-2 px-6 py-3 font-semibold text-white transition-all shadow-lg bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:shadow-xl hover:scale-105"
+          className="flex items-center gap-2 px-6 py-3 font-semibold text-white transition-all shadow-lg bg-indigo-600 rounded-xl hover:shadow-xl hover:scale-105 hover:bg-indigo-700"
         >
           <RefreshCw className="w-5 h-5" />
-          Làm mới
+          Refresh
         </button>
       </div>
 
@@ -155,34 +155,34 @@ const ManagerDashboard = () => {
         <StatCard 
           icon="🏢" 
           value={stats.totalRooms} 
-          label="Tổng số phòng" 
-          color="from-blue-400 to-blue-600"
+          label="Total Rooms" 
+          color="bg-blue-500"
         />
         <StatCard 
           icon="✅" 
           value={stats.availableRooms} 
-          label="Phòng khả dụng" 
-          color="from-green-400 to-green-600"
+          label="Available Rooms" 
+          color="bg-green-500"
         />
         <StatCard 
           icon="📅" 
           value={stats.todayBookings} 
-          label="Booking hôm nay" 
-          color="from-purple-400 to-purple-600"
+          label="Today's Bookings" 
+          color="bg-purple-500"
           trend={stats.trend.bookings}
         />
         <StatCard 
           icon="👥" 
           value={stats.teamBookings} 
-          label="Tổng booking team" 
-          color="from-orange-400 to-red-500"
+          label="Total Team Bookings" 
+          color="bg-orange-500"
         />
       </div>
 
       {/* Recent Bookings - Full Width */}
       <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-100 shadow-lg rounded-2xl hover:shadow-xl">
-        {/* Header with gradient */}
-        <div className="p-6 bg-gradient-to-r from-indigo-500 to-purple-600">
+        {/* Header */}
+        <div className="p-6 bg-indigo-500">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-white">
               <div className="p-3 rounded-xl bg-white/20">
@@ -191,8 +191,8 @@ const ManagerDashboard = () => {
                 </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Booking gần đây</h2>
-                <p className="mt-1 text-sm text-indigo-100">5 booking mới nhất của team</p>
+                <h2 className="text-2xl font-bold">Recent Bookings</h2>
+                <p className="mt-1 text-sm text-indigo-100">5 latest team bookings</p>
               </div>
             </div>
             <span className="px-4 py-2 text-lg font-bold rounded-xl bg-white/20">
@@ -205,13 +205,13 @@ const ManagerDashboard = () => {
         <div className="p-6">
           {recentBookings.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100">
+              <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-indigo-100">
                 <svg className="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <p className="text-xl font-semibold text-gray-900">Chưa có booking nào</p>
-              <p className="mt-2 text-gray-600">Các booking của team sẽ hiển thị tại đây</p>
+              <p className="text-xl font-semibold text-gray-900">No bookings yet</p>
+              <p className="mt-2 text-gray-600">Team bookings will appear here</p>
             </div>
           ) : (
             <>
@@ -224,22 +224,22 @@ const ManagerDashboard = () => {
                     {/* Status bar */}
                     <div className={`h-1.5 ${
                       isUpcoming(booking) 
-                        ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' 
-                        : 'bg-gradient-to-r from-gray-300 to-gray-400'
+                        ? 'bg-emerald-500' 
+                        : 'bg-gray-400'
                     }`}></div>
                     
                     <div className="flex items-center p-5">
                       {/* Date Badge */}
                       <div className={`flex-shrink-0 w-16 h-16 rounded-xl flex flex-col items-center justify-center mr-5 ${
                         isUpcoming(booking) 
-                          ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md' 
-                          : 'bg-gradient-to-br from-gray-400 to-gray-500 text-white shadow-md'
+                          ? 'bg-indigo-600 text-white shadow-md' 
+                          : 'bg-gray-500 text-white shadow-md'
                       }`}>
                         <div className="text-2xl font-bold leading-none">
                           {parseApiDateTime(booking.startTime)?.getDate() || '-'}
                         </div>
                         <div className="text-xs font-medium uppercase opacity-90">
-                          {parseApiDateTime(booking.startTime)?.toLocaleDateString('vi-VN', { month: 'short' }) || '-'}
+                          {parseApiDateTime(booking.startTime)?.toLocaleDateString('en-US', { month: 'short' }) || '-'}
                         </div>
                       </div>
 
@@ -257,7 +257,7 @@ const ManagerDashboard = () => {
                             <span className={`w-1.5 h-1.5 rounded-full ${
                               isUpcoming(booking) ? 'bg-emerald-500 animate-pulse' : 'bg-gray-500'
                             }`}></span>
-                            {isUpcoming(booking) ? 'Sắp diễn ra' : 'Đã kết thúc'}
+                            {isUpcoming(booking) ? 'Upcoming' : 'Completed'}
                           </span>
                         </div>
 

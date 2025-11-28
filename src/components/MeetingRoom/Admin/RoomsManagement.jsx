@@ -34,7 +34,7 @@ const RoomsManagement = () => {
     filterRooms();
   }, [filters, rooms]);
 
-  // Tự động ẩn toast sau 3 giây
+  // Auto hide toast after 3 seconds
   useEffect(() => {
     if (toast.show) {
       const timer = setTimeout(() => {
@@ -55,7 +55,7 @@ const RoomsManagement = () => {
       setRooms(response.result || []);
     } catch (error) {
       console.error('Error loading rooms:', error);
-      showToast('Lỗi khi tải danh sách phòng', 'error');
+      showToast('Error loading room list', 'error');
     } finally {
       setLoading(false);
     }
@@ -133,14 +133,14 @@ const RoomsManagement = () => {
   };
 
   const handleDeleteRoom = async (roomId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa phòng này?')) {
+    if (window.confirm('Are you sure you want to delete this room?')) {
       try {
         await deleteRoom(roomId);
         await loadRooms();
-        showToast('Xóa phòng thành công', 'success');
+        showToast('Room deleted successfully', 'success');
       } catch (error) {
         console.error('Error deleting room:', error);
-        showToast('Lỗi khi xóa phòng', 'error');
+        showToast('Error deleting room', 'error');
       }
     }
   };
@@ -148,32 +148,32 @@ const RoomsManagement = () => {
   const handleSubmitRoom = async () => {
     // Validate form
     if (!roomForm.name.trim()) {
-      showToast('Vui lòng nhập tên phòng', 'error');
+      showToast('Please enter room name', 'error');
       return;
     }
     if (!roomForm.location.trim()) {
-      showToast('Vui lòng nhập vị trí phòng', 'error');
+      showToast('Please enter room location', 'error');
       return;
     }
     if (roomForm.capacity < 1) {
-      showToast('Sức chứa phải lớn hơn 0', 'error');
+      showToast('Capacity must be greater than 0', 'error');
       return;
     }
 
     try {
       if (editingRoom) {
         await updateRoom(editingRoom.id, roomForm);
-        showToast('Cập nhật phòng thành công', 'success');
+        showToast('Room updated successfully', 'success');
       } else {
         await createRoom(roomForm);
-        showToast('Thêm phòng mới thành công', 'success');
+        showToast('New room added successfully', 'success');
       }
       setShowRoomModal(false);
       await loadRooms();
     } catch (error) {
       console.error('Error saving room:', error);
       showToast(
-        editingRoom ? 'Lỗi khi cập nhật phòng' : 'Lỗi khi thêm phòng mới', 
+        editingRoom ? 'Error updating room' : 'Error adding new room', 
         'error'
       );
     }
@@ -218,33 +218,33 @@ const RoomsManagement = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Quản lý Phòng họp</h1>
-          <p className="mt-2 text-gray-600">Quản lý và theo dõi tất cả phòng họp trong hệ thống</p>
+          <h1 className="text-3xl font-bold text-gray-800">Meeting Room Management</h1>
+          <p className="mt-2 text-gray-600">Manage and track all meeting rooms in the system</p>
         </div>
         <button 
           onClick={handleAddRoom}
           className="flex items-center px-6 py-3 font-medium text-white transition-all bg-indigo-600 rounded-lg hover:bg-indigo-700 hover:shadow-lg"
         >
-          <span className="mr-2">+</span> Thêm phòng mới
+          <span className="mr-2">+</span> Add New Room
         </button>
       </div>
 
       <div className="mb-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-800">Danh sách phòng họp</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Meeting Room List</h2>
             <div className="flex space-x-3">
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center px-4 py-2 text-gray-700 transition-all border border-gray-300 rounded-lg hover:bg-gray-50 hover:shadow-sm"
               >
-                <span className="mr-2">🔍</span> Lọc
+                <span className="mr-2">🔍</span> Filter
               </button>
               <button
                 onClick={clearFilters}
                 className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800"
               >
-                Xóa bộ lọc
+                Clear Filters
               </button>
             </div>
           </div>
@@ -254,48 +254,48 @@ const RoomsManagement = () => {
           <div className="p-6 border-b border-gray-200 bg-gray-50">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Trạng thái</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Status</label>
                 <select
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="">Tất cả</option>
-                  <option value="available">Có sẵn</option>
-                  <option value="unavailable">Không khả dụng</option>
+                  <option value="">All</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
                 </select>
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Sức chứa</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Capacity</label>
                 <select
                   value={filters.capacity}
                   onChange={(e) => handleFilterChange('capacity', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="">Tất cả</option>
-                  <option value="1-5">1-5 người</option>
-                  <option value="6-10">6-10 người</option>
-                  <option value="11-20">11-20 người</option>
-                  <option value="20-1000">Trên 20 người</option>
+                  <option value="">All</option>
+                  <option value="1-5">1-5 people</option>
+                  <option value="6-10">6-10 people</option>
+                  <option value="11-20">11-20 people</option>
+                  <option value="20-1000">Over 20 people</option>
                 </select>
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Vị trí</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Location</label>
                 <input
                   type="text"
                   value={filters.location}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
-                  placeholder="Nhập vị trí..."
+                  placeholder="Enter location..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Thiết bị</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Equipment</label>
                 <input
                   type="text"
                   value={filters.equipment}
                   onChange={(e) => handleFilterChange('equipment', e.target.value)}
-                  placeholder="Nhập thiết bị..."
+                  placeholder="Enter equipment..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -308,31 +308,31 @@ const RoomsManagement = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Tên phòng</th>
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Sức chứa</th>
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Vị trí</th>
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Thiết bị</th>
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Trạng thái</th>
-                  <th className="py-3 text-sm font-medium text-left text-gray-600">Hành động</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Room Name</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Capacity</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Location</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Equipment</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Status</th>
+                  <th className="py-3 text-sm font-medium text-left text-gray-600">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredRooms.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="py-8 text-center text-gray-500">
-                      Không tìm thấy phòng nào phù hợp
+                      No matching rooms found
                     </td>
                   </tr>
                 ) : (
                   filteredRooms.map((room) => (
                     <tr key={room.id} className="transition-colors border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-4 font-medium text-gray-800">{room.name}</td>
-                      <td className="py-4 text-sm text-gray-600">{room.capacity} người</td>
+                      <td className="py-4 text-sm text-gray-600">{room.capacity} people</td>
                       <td className="py-4 text-sm text-gray-600">{room.location}</td>
-                      <td className="py-4 text-sm text-gray-600">{room.equipment || 'Không có'}</td>
+                      <td className="py-4 text-sm text-gray-600">{room.equipment || 'None'}</td>
                       <td className="py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${room.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {room.isAvailable ? '🟢 Có sẵn' : '🔴 Không khả dụng'}
+                          {room.isAvailable ? '🟢 Available' : '🔴 Unavailable'}
                         </span>
                       </td>
                       <td className="py-4">
@@ -340,14 +340,14 @@ const RoomsManagement = () => {
                           <button 
                             onClick={() => handleEditRoom(room)}
                             className="p-2 text-indigo-600 transition-all rounded-lg hover:bg-indigo-50 hover:text-indigo-800"
-                            title="Chỉnh sửa"
+                            title="Edit"
                           >
                             <span className="text-lg">✏️</span>
                           </button>
                           <button 
                             onClick={() => handleDeleteRoom(room.id)}
                             className="p-2 text-red-600 transition-all rounded-lg hover:bg-red-50 hover:text-red-800"
-                            title="Xóa"
+                            title="Delete"
                           >
                             <span className="text-lg">🗑️</span>
                           </button>
@@ -367,37 +367,37 @@ const RoomsManagement = () => {
           <div className="w-full max-w-md bg-white shadow-2xl rounded-xl">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">
-                {editingRoom ? 'Chỉnh sửa Phòng' : 'Thêm Phòng Mới'}
+                {editingRoom ? 'Edit Room' : 'Add New Room'}
               </h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Tên phòng <span className="text-red-500">*</span>
+                  Room Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={roomForm.name}
                   onChange={(e) => setRoomForm(prev => ({...prev, name: e.target.value}))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Nhập tên phòng"
+                  placeholder="Enter room name"
                 />
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Vị trí <span className="text-red-500">*</span>
+                  Location <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={roomForm.location}
                   onChange={(e) => setRoomForm(prev => ({...prev, location: e.target.value}))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Nhập vị trí"
+                  placeholder="Enter location"
                 />
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Sức chứa <span className="text-red-500">*</span>
+                  Capacity <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -408,13 +408,13 @@ const RoomsManagement = () => {
                 />
               </div>
               <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700">Thiết bị</label>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Equipment</label>
                 <input
                   type="text"
                   value={roomForm.equipment}
                   onChange={(e) => setRoomForm(prev => ({...prev, equipment: e.target.value}))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Nhập thiết bị (phân cách bằng dấu phẩy)"
+                  placeholder="Enter equipment (separate with commas)"
                 />
               </div>
               <div className="flex justify-end pt-4 space-x-3">
@@ -422,13 +422,13 @@ const RoomsManagement = () => {
                   onClick={() => setShowRoomModal(false)}
                   className="px-4 py-2 text-gray-700 transition-all border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Hủy
+                  Cancel
                 </button>
                 <button
                   onClick={handleSubmitRoom}
                   className="px-4 py-2 text-white transition-all bg-indigo-600 rounded-lg hover:bg-indigo-700"
                 >
-                  {editingRoom ? 'Cập nhật' : 'Thêm mới'}
+                  {editingRoom ? 'Update' : 'Add New'}
                 </button>
               </div>
             </div>

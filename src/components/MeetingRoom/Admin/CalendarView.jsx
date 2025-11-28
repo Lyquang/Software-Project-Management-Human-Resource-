@@ -37,23 +37,23 @@ const CalendarView = () => {
   const filterRooms = () => {
     let filtered = rooms;
 
-    // Lọc theo phòng được chọn
+    // Filter by selected room
     if (selectedRoom) {
       filtered = filtered.filter(room => room.id == selectedRoom);
     }
 
-    // Lọc các phòng available
+    // Filter available rooms
     filtered = filtered.filter(room => room.isAvailable);
 
     setFilteredRooms(filtered);
   };
 
-  // Hàm chuyển đổi định dạng ngày từ API sang Date object
+  // Function to convert date format from API to Date object
   const parseApiDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return null;
     
     try {
-      // Định dạng: "15:00:00 22/11/2025"
+      // Format: "15:00:00 22/11/2025"
       const [timePart, datePart] = dateTimeStr.split(' ');
       const [hours, minutes, seconds] = timePart.split(':').map(Number);
       const [day, month, year] = datePart.split('/').map(Number);
@@ -65,7 +65,7 @@ const CalendarView = () => {
     }
   };
 
-  // Hàm chuyển đổi selectedDate sang định dạng dd/MM/yyyy để so sánh
+  // Function to convert selectedDate to dd/MM/yyyy format for comparison
   const formatDateToCompare = (dateStr) => {
     const date = new Date(dateStr);
     const day = date.getDate().toString().padStart(2, '0');
@@ -78,7 +78,7 @@ const CalendarView = () => {
     return bookings.filter(booking => {
       if (booking.roomName !== roomName) return false;
       
-      const bookingDate = booking.startTime.split(' ')[1]; // Lấy phần ngày "22/11/2025"
+      const bookingDate = booking.startTime.split(' ')[1]; // Get date part "22/11/2025"
       const selectedDateFormatted = formatDateToCompare(selectedDate);
       
       return bookingDate === selectedDateFormatted;
@@ -130,15 +130,15 @@ const CalendarView = () => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Lịch Phòng họp</h1>
-        <p className="mt-2 text-gray-600">Theo dõi lịch trình và tình trạng phòng họp</p>
+        <h1 className="text-3xl font-bold text-gray-800">Meeting Room Calendar</h1>
+        <p className="mt-2 text-gray-600">Track meeting room schedules and status</p>
       </div>
 
       <div className="mb-6 bg-white border border-gray-200 shadow-sm rounded-xl">
         <div className="p-6 border-b border-gray-200">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">Ngày xem</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">View Date</label>
               <input
                 type="date"
                 value={selectedDate}
@@ -147,13 +147,13 @@ const CalendarView = () => {
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-700">Phòng</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">Room</label>
               <select
                 value={selectedRoom}
                 onChange={(e) => setSelectedRoom(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="">Tất cả phòng</option>
+                <option value="">All rooms</option>
                 {rooms.map(room => (
                   <option key={room.id} value={room.id}>{room.name}</option>
                 ))}
@@ -164,7 +164,7 @@ const CalendarView = () => {
                 onClick={filterRooms}
                 className="flex items-center justify-center w-full px-4 py-2 font-medium text-white transition-colors bg-indigo-600 rounded-lg hover:bg-indigo-700"
               >
-                <span className="mr-2">🔍</span> Kiểm tra lịch
+                <span className="mr-2">🔍</span> Check Schedule
               </button>
             </div>
           </div>
@@ -177,7 +177,7 @@ const CalendarView = () => {
             </div>
           ) : filteredRooms.length === 0 ? (
             <div className="py-8 text-center text-gray-500">
-              {selectedRoom ? 'Không tìm thấy phòng phù hợp.' : 'Không có phòng nào khả dụng trong ngày này.'}
+              {selectedRoom ? 'No matching rooms found.' : 'No available rooms for this day.'}
             </div>
           ) : (
             <div className="space-y-6">
@@ -187,7 +187,7 @@ const CalendarView = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-800">{room.name}</h3>
-                        <p className="text-sm text-gray-600">{room.location} • {room.capacity} người</p>
+                        <p className="text-sm text-gray-600">{room.location} • {room.capacity} people</p>
                         {room.equipment && (
                           <p className="text-sm text-gray-500 mt-1">🛠️ {room.equipment}</p>
                         )}
@@ -197,17 +197,17 @@ const CalendarView = () => {
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {room.isAvailable ? '🟢 Có sẵn' : '🔴 Không khả dụng'}
+                        {room.isAvailable ? '🟢 Available' : '🔴 Unavailable'}
                       </span>
                     </div>
                   </div>
                   <div className="p-6">
                     <div className="mb-4">
-                      <h4 className="font-medium text-gray-800 mb-2">Lịch trình ngày {new Date(selectedDate).toLocaleDateString('vi-VN')}:</h4>
+                      <h4 className="font-medium text-gray-800 mb-2">Schedule for {new Date(selectedDate).toLocaleDateString('en-US')}:</h4>
                       <div className="text-sm text-gray-600">
                         {getRoomBookings(room.name).length > 0 
-                          ? `${getRoomBookings(room.name).length} booking trong ngày`
-                          : 'Không có booking nào'
+                          ? `${getRoomBookings(room.name).length} bookings today`
+                          : 'No bookings'
                         }
                       </div>
                     </div>
@@ -225,13 +225,13 @@ const CalendarView = () => {
                                 ? 'bg-red-50 border-red-200 text-red-800 hover:bg-red-100'
                                 : 'bg-green-50 border-green-200 text-green-800 hover:bg-green-100'
                             }`}
-                            title={booking ? `Booked: ${booking.title}` : 'Trống'}
+                            title={booking ? `Booked: ${booking.title}` : 'Available'}
                           >
                             <div className="text-sm font-medium">{time}</div>
                             <div className="mt-1 text-xs">
                               {isBooked ? (
                                 <div>
-                                  <div className="font-medium">Đã đặt</div>
+                                  <div className="font-medium">Booked</div>
                                   {booking && (
                                     <div className="truncate" title={booking.title}>
                                       {booking.title}
@@ -239,7 +239,7 @@ const CalendarView = () => {
                                   )}
                                 </div>
                               ) : (
-                                'Trống'
+                                'Available'
                               )}
                             </div>
                           </div>
@@ -247,10 +247,10 @@ const CalendarView = () => {
                       })}
                     </div>
 
-                    {/* Hiển thị thông tin booking chi tiết */}
+                    {/* Display detailed booking information */}
                     {getRoomBookings(room.name).length > 0 && (
                       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h5 className="font-medium text-blue-800 mb-2">📋 Booking trong ngày:</h5>
+                        <h5 className="font-medium text-blue-800 mb-2">📋 Today's Bookings:</h5>
                         <div className="space-y-2">
                           {getRoomBookings(room.name).map(booking => (
                             <div key={booking.id} className="text-sm text-blue-700">
@@ -260,7 +260,7 @@ const CalendarView = () => {
                               </div>
                               {booking.organizerName && (
                                 <div className="text-xs text-blue-600">
-                                  Người đặt: {booking.organizerName}
+                                  Organizer: {booking.organizerName}
                                 </div>
                               )}
                             </div>
