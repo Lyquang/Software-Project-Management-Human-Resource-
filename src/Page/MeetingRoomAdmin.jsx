@@ -9,9 +9,9 @@ const MeetingRoomAdmin = () => {
 
   const navigation = [
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'rooms', icon: '🚪', label: 'Quản lý Phòng' },
-    { id: 'calendar', icon: '📅', label: 'Lịch Phòng' },
-    { id: 'bookings', icon: '📋', label: 'Quản lý Booking' },
+    { id: 'rooms', icon: '🚪', label: 'Meeting Room Management' },
+    { id: 'calendar', icon: '📅', label: 'Calendar View' },
+    { id: 'bookings', icon: '📋', label: 'Booking Management' },
   ];
 
   const renderSection = () => {

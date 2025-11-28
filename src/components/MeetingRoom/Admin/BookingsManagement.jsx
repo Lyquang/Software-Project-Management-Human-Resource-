@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { X } from "lucide-react";
 import { getBookings, deleteBooking } from '../../../services/meetingRoomApi';
 
 const BookingsManagement = () => {
@@ -41,7 +42,7 @@ const BookingsManagement = () => {
       setBookings(response.result || []);
     } catch (error) {
       console.error('Error loading bookings:', error);
-      showToast('Lỗi khi tải danh sách booking', 'error');
+      showToast('Error loading booking list', 'error');
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,7 @@ const BookingsManagement = () => {
 
   const confirmCancelBooking = async () => {
     if (!cancelReason.trim()) {
-      showToast('Vui lòng nhập lý do hủy', 'error');
+      showToast('Please enter reason for cancellation', 'error');
       return;
     }
 
@@ -78,11 +79,11 @@ const BookingsManagement = () => {
       setShowCancelModal(false);
       setSelectedBooking(null);
       setCancelReason('');
-      showToast('Hủy booking thành công', 'success');
+      showToast('Cancellation of booking successfully', 'success');
       await loadBookings();
     } catch (error) {
       console.error('Error canceling booking:', error);
-      showToast(error.message || 'Lỗi khi hủy booking', 'error');
+      showToast(error.message || 'Error when canceling booking', 'error');
     }
   };
 
@@ -162,8 +163,8 @@ const BookingsManagement = () => {
       <Toast />
 
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Quản lý Booking</h1>
-        <p className="mt-2 text-gray-600">Quản lý tất cả booking trong hệ thống</p>
+        <h1 className="text-3xl font-bold text-gray-800">Booking Management</h1>
+        <p className="mt-2 text-gray-600">Manage all bookings in the system</p>
       </div>
 
       <div className="bg-white border border-gray-200 shadow-sm rounded-xl">
@@ -173,7 +174,7 @@ const BookingsManagement = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Tìm kiếm theo tiêu đề, phòng hoặc người đặt..."
+                  placeholder="Search by title, room or booker..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -185,13 +186,13 @@ const BookingsManagement = () => {
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-sm text-gray-600">
-                Tổng: {filteredBookings.length} booking
+                Total: {filteredBookings.length} booking
               </span>
               <button 
                 onClick={loadBookings}
-                className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 transition-all border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="flex items-center px-4 py-2 text-sm font-medium text-white transition-all border border-gray-300 rounded-lg bg-blue-600 hover:bg-gray-50"
               >
-                <span className="mr-2">🔄</span> Làm mới
+                Reset
               </button>
             </div>
           </div>
@@ -200,14 +201,14 @@ const BookingsManagement = () => {
         <div className="p-6">
           {filteredBookings.length === 0 ? (
             <div className="py-12 text-center text-gray-500">
-              <p className="text-lg">Không tìm thấy booking nào</p>
+              <p className="text-lg">No bookings found</p>
               {searchTerm && (
                 <p className="mt-2 text-sm">
-                  Thử tìm kiếm với từ khóa khác hoặc <button 
+                  Try searching with a different keyword or <button 
                     onClick={() => setSearchTerm('')} 
                     className="text-indigo-600 hover:text-indigo-800"
                   >
-                    xóa bộ lọc
+                    clear filter
                   </button>
                 </p>
               )}
@@ -218,13 +219,13 @@ const BookingsManagement = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Tiêu đề</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Phòng</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Người đặt</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Thời gian bắt đầu</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Thời gian kết thúc</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Người tham dự</th>
-                      <th className="py-3 text-sm font-medium text-left text-gray-600">Hành động</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Title</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Room</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Booked By</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Start Time</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">End Time</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Attendees</th>
+                      <th className="py-3 text-sm font-medium text-left text-gray-600">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -240,7 +241,7 @@ const BookingsManagement = () => {
                           {formatDisplayTime(booking.endTime)}
                         </td>
                         <td className="py-4 text-sm text-gray-600">
-                          {booking.attendeeNames?.length || 0} người
+                          {booking.attendeeNames?.length || 0} people
                         </td>
                         <td className="py-4">
                           <div className="flex space-x-3">
@@ -248,7 +249,8 @@ const BookingsManagement = () => {
                               onClick={() => handleCancelBooking(booking)}
                               className="flex items-center text-sm font-medium text-red-600 transition-all hover:text-red-800"
                             >
-                              <span className="mr-1">❌</span> Hủy
+                              <X size={18} />
+                              Cancel
                             </button>
                           </div>
                         </td>
@@ -301,20 +303,20 @@ const BookingsManagement = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md bg-white shadow-2xl rounded-xl">
             <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Hủy Booking</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Cancel Booking</h2>
               <p className="mt-1 text-sm text-gray-600">
-                Bạn đang hủy booking: <strong>"{selectedBooking.title}"</strong>
+                You are canceling your booking: <strong>"{selectedBooking.title}"</strong>
               </p>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Lý do hủy booking <span className="text-red-500">*</span>
+                  Reason for canceling booking <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Nhập lý do hủy booking..."
+                  placeholder="Enter reason for cancellation..."
                   rows="3"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
@@ -328,13 +330,13 @@ const BookingsManagement = () => {
                   }}
                   className="px-4 py-2 text-gray-700 transition-all border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Hủy bỏ
+                  Cancel
                 </button>
                 <button
                   onClick={confirmCancelBooking}
                   className="px-4 py-2 text-white transition-all bg-red-600 rounded-lg hover:bg-red-700"
                 >
-                  Xác nhận hủy
+                  Confirm cancellation
                 </button>
               </div>
             </div>
@@ -342,21 +344,6 @@ const BookingsManagement = () => {
         </div>
       )}
 
-      <style jsx>{`
-        @keyframes toast-in {
-          0% {
-            opacity: 0;
-            transform: translateY(-20px) scale(0.95);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .animate-toast-in {
-          animation: toast-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-      `}</style>
     </div>
   );
 };

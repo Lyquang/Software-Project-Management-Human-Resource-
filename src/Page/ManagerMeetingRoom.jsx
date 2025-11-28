@@ -13,7 +13,7 @@ const ManagerMeetingRoom = () => {
     { id: 'team-bookings', icon: '👥', label: 'Booking Team' },
     { id: 'my-bookings', icon: '📋', label: 'My Booking' },
     { id: 'book-room', icon: '➕', label: 'Đặt phòng' },
-    { id: 'rooms', icon: '🚪', label: 'Quản lý Phòng' },
+    { id: 'rooms', icon: '🚪', label: 'Meeting Room Management' },
   ];
 
   const renderSection = () => {
