@@ -29,7 +29,7 @@ const MyBookings = () => {
     setToast({ show: true, message, type });
   };
 
-  // Hàm chuyển đổi định dạng ngày từ API
+  // Function to parse date time from API
   const parseApiDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return null;
     
@@ -49,7 +49,7 @@ const MyBookings = () => {
     }
   };
 
-  // Kiểm tra xem booking có đang diễn ra không
+  // Check if booking is in progress
   const isBookingInProgress = (booking) => {
     const now = new Date();
     const startTime = parseApiDateTime(booking.startTime);
@@ -58,7 +58,7 @@ const MyBookings = () => {
     return startTime && endTime && startTime <= now && now <= endTime;
   };
 
-  // Kiểm tra xem booking có thể hủy được không
+  // Check if booking can be cancelled
   const canCancelBooking = (booking) => {
     if (booking.status === 'COMPLETED' || booking.status === 'CANCELLED') {
       return false;
@@ -74,7 +74,7 @@ const MyBookings = () => {
       setBookings(response.result || []);
     } catch (error) {
       console.error('Error loading my bookings:', error);
-      showToast('Lỗi khi tải danh sách booking', 'error');
+      showToast('Error while loading bookings list', 'error');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ const MyBookings = () => {
 
   const handleCancelBooking = (booking) => {
     if (!canCancelBooking(booking)) {
-      showToast('Booking này không thể hủy', 'error');
+      showToast('This booking cannot be cancelled', 'error');
       return;
     }
     
@@ -93,7 +93,7 @@ const MyBookings = () => {
 
   const confirmCancelBooking = async () => {
     if (!cancelReason.trim()) {
-      showToast('Vui lòng nhập lý do hủy', 'error');
+      showToast('Please enter a cancellation reason', 'error');
       return;
     }
 
@@ -102,27 +102,27 @@ const MyBookings = () => {
       setShowCancelModal(false);
       setSelectedBooking(null);
       setCancelReason('');
-      showToast('Hủy booking thành công', 'success');
+      showToast('Booking cancelled successfully', 'success');
       loadMyBookings();
     } catch (error) {
       console.error('Error canceling booking:', error);
-      const errorMessage = error.response?.data?.message || 'Lỗi khi hủy booking';
+      const errorMessage = error.response?.data?.message || 'Error while cancelling booking';
       showToast(errorMessage, 'error');
     }
   };
 
-  // Hàm lấy màu sắc cho trạng thái
+  // Get color for booking status
   const getStatusColor = (status) => {
     const statusMap = {
-      'PENDING': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Đang chờ' },
-      'CONFIRMED': { bg: 'bg-green-100', text: 'text-green-800', label: 'Đã xác nhận' },
-      'CANCELLED': { bg: 'bg-red-100', text: 'text-red-800', label: 'Đã hủy' },
-      'COMPLETED': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Đã hoàn thành' }
+      'PENDING': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending' },
+      'CONFIRMED': { bg: 'bg-green-100', text: 'text-green-800', label: 'Confirmed' },
+      'CANCELLED': { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' },
+      'COMPLETED': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Completed' }
     };
-    return statusMap[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status || 'Đã xác nhận' };
+    return statusMap[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status || 'Confirmed' };
   };
 
-  // Hàm kiểm tra trạng thái thời gian thực
+  // Get real-time status of booking
   const getRealTimeStatus = (booking) => {
     const now = new Date();
     const startTime = parseApiDateTime(booking.startTime);
@@ -145,7 +145,7 @@ const MyBookings = () => {
     }
   };
 
-  // Sắp xếp và phân loại booking
+  // Sort and classify bookings
   const upcomingBookings = bookings
     .filter(booking => {
       const status = getRealTimeStatus(booking);
@@ -160,7 +160,7 @@ const MyBookings = () => {
     })
     .sort((a, b) => new Date(parseApiDateTime(b.startTime)) - new Date(parseApiDateTime(a.startTime)));
 
-  // Chỉ lấy 5 booking đầu tiên cho mỗi phần
+  // Only take first 5 bookings for each section
   const displayedUpcomingBookings = showAllUpcoming ? upcomingBookings : upcomingBookings.slice(0, 5);
   const displayedPastBookings = showAllPast ? pastBookings : pastBookings.slice(0, 5);
 
@@ -170,11 +170,11 @@ const MyBookings = () => {
       if (!date) return { time: 'N/A', fullDate: 'N/A' };
 
       return {
-        time: date.toLocaleTimeString('vi-VN', { 
+        time: date.toLocaleTimeString('en-US', { 
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        fullDate: date.toLocaleDateString('vi-VN', {
+        fullDate: date.toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -184,7 +184,7 @@ const MyBookings = () => {
     };
 
     const { time, fullDate } = formatDateTime(booking.startTime);
-    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('vi-VN', { 
+    const endTime = parseApiDateTime(booking.endTime)?.toLocaleTimeString('en-US', { 
       hour: '2-digit', 
       minute: '2-digit' 
     }) || 'N/A';
@@ -194,9 +194,9 @@ const MyBookings = () => {
     const canCancel = canCancelBooking(booking);
 
     const displayStatus = realTimeStatus === 'IN_PROGRESS' 
-      ? { bg: 'bg-green-100', text: 'text-green-800', label: 'Đang diễn ra' }
+      ? { bg: 'bg-green-100', text: 'text-green-800', label: 'In progress' }
       : realTimeStatus === 'UPCOMING' 
-      ? { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Sắp diễn ra' }
+      ? { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Upcoming' }
       : statusInfo;
 
     return (
@@ -228,7 +228,7 @@ const MyBookings = () => {
               {booking.attendeeNames && booking.attendeeNames.length > 0 && (
                 <div className="flex items-center text-sm text-gray-600">
                   <Users className="w-4 h-4 mr-3" />
-                  <span>{booking.attendeeNames.length} người tham dự</span>
+                  <span>{booking.attendeeNames.length} attendee(s)</span>
                 </div>
               )}
             </div>
@@ -245,7 +245,7 @@ const MyBookings = () => {
                   onClick={() => handleCancelBooking(booking)}
                   className="px-4 py-2 text-sm font-medium text-red-600 transition-all rounded-lg bg-red-50 hover:bg-red-100"
                 >
-                  Hủy booking
+                  Cancel booking
                 </button>
               </div>
             )}
@@ -271,8 +271,8 @@ const MyBookings = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Quản Lý Booking Của Tôi</h1>
-          <p className="mt-2 text-gray-600">Xem và quản lý tất cả booking của bạn</p>
+          <h1 className="text-4xl font-bold text-gray-800">My Bookings</h1>
+          <p className="mt-2 text-gray-600">View and manage all your bookings</p>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -285,16 +285,16 @@ const MyBookings = () => {
                     <Calendar className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Booking sắp tới & đang diễn ra</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Upcoming & In-progress Bookings</h2>
                     <p className="text-sm text-gray-600 mt-1">
-                      {upcomingBookings.length} booking • Hiển thị {displayedUpcomingBookings.length} / {upcomingBookings.length}
+                      {upcomingBookings.length} booking(s) • Showing {displayedUpcomingBookings.length} / {upcomingBookings.length}
                     </p>
                   </div>
                 </div>
                 <span className={`px-3 py-1 text-sm font-medium rounded-full ${
                   upcomingBookings.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                 }`}>
-                  {upcomingBookings.length} booking
+                  {upcomingBookings.length} booking(s)
                 </span>
               </div>
             </div>
@@ -302,8 +302,8 @@ const MyBookings = () => {
               {upcomingBookings.length === 0 ? (
                 <div className="py-12 text-center text-gray-400">
                   <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg font-medium text-gray-500">Không có booking sắp tới</p>
-                  <p className="mt-1 text-sm text-gray-400">Tất cả booking của bạn sẽ hiển thị ở đây</p>
+                  <p className="text-lg font-medium text-gray-500">No upcoming bookings</p>
+                  <p className="mt-1 text-sm text-gray-400">All your upcoming bookings will appear here</p>
                 </div>
               ) : (
                 <>
@@ -313,7 +313,7 @@ const MyBookings = () => {
                     ))}
                   </div>
                   
-                  {/* Nút Xem tất cả / Thu gọn */}
+                  {/* View all / Collapse button */}
                   {upcomingBookings.length > 5 && (
                     <div className="mt-6 text-center">
                       <button
@@ -323,12 +323,12 @@ const MyBookings = () => {
                         {showAllUpcoming ? (
                           <>
                             <ChevronUp className="w-4 h-4" />
-                            Thu gọn
+                            Collapse
                           </>
                         ) : (
                           <>
                             <Eye className="w-4 h-4" />
-                            Xem tất cả ({upcomingBookings.length} booking)
+                            View all ({upcomingBookings.length} booking(s))
                           </>
                         )}
                       </button>
@@ -348,16 +348,16 @@ const MyBookings = () => {
                     <Clock className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Booking đã kết thúc & đã hủy</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Completed & Cancelled Bookings</h2>
                     <p className="text-sm text-gray-600 mt-1">
-                      {pastBookings.length} booking • Hiển thị {displayedPastBookings.length} / {pastBookings.length}
+                      {pastBookings.length} booking(s) • Showing {displayedPastBookings.length} / {pastBookings.length}
                     </p>
                   </div>
                 </div>
                 <span className={`px-3 py-1 text-sm font-medium rounded-full ${
                   pastBookings.length > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
                 }`}>
-                  {pastBookings.length} booking
+                  {pastBookings.length} booking(s)
                 </span>
               </div>
             </div>
@@ -365,8 +365,8 @@ const MyBookings = () => {
               {pastBookings.length === 0 ? (
                 <div className="py-12 text-center text-gray-400">
                   <Clock className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg font-medium text-gray-500">Không có booking đã kết thúc</p>
-                  <p className="mt-1 text-sm text-gray-400">Các booking cũ sẽ hiển thị ở đây</p>
+                  <p className="text-lg font-medium text-gray-500">No past bookings</p>
+                  <p className="mt-1 text-sm text-gray-400">Your past bookings will appear here</p>
                 </div>
               ) : (
                 <>
@@ -376,7 +376,7 @@ const MyBookings = () => {
                     ))}
                   </div>
                   
-                  {/* Nút Xem tất cả / Thu gọn */}
+                  {/* View all / Collapse button */}
                   {pastBookings.length > 5 && (
                     <div className="mt-6 text-center">
                       <button
@@ -386,12 +386,12 @@ const MyBookings = () => {
                         {showAllPast ? (
                           <>
                             <ChevronUp className="w-4 h-4" />
-                            Thu gọn
+                            Collapse
                           </>
                         ) : (
                           <>
                             <Eye className="w-4 h-4" />
-                            Xem tất cả ({pastBookings.length} booking)
+                            View all ({pastBookings.length} booking(s))
                           </>
                         )}
                       </button>
@@ -409,7 +409,7 @@ const MyBookings = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
           <div className="w-full max-w-md bg-white shadow-xl rounded-2xl">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Hủy Booking</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Cancel Booking</h2>
               <button
                 onClick={() => {
                   setShowCancelModal(false);
@@ -422,31 +422,31 @@ const MyBookings = () => {
               </button>
             </div>
             <div className="p-6 space-y-4">
-              {/* Cảnh báo đặc biệt khi booking đang diễn ra */}
+              {/* Special warning when booking is in progress */}
               {isBookingInProgress(selectedBooking) && (
                 <div className="p-4 border border-red-200 rounded-lg bg-red-50">
                   <div className="flex items-start">
                     <AlertCircle className="w-5 h-5 mr-3 text-red-600 mt-0.5" />
                     <div>
-                      <p className="font-medium text-red-800">Cảnh báo: Cuộc họp đang diễn ra!</p>
+                      <p className="font-medium text-red-800">Warning: The meeting is in progress!</p>
                       <p className="mt-1 text-sm text-red-700">
-                        Bạn đang hủy một cuộc họp đang diễn ra. Hành động này có thể ảnh hưởng đến người tham dự.
+                        You are cancelling a meeting that is currently in progress. This action may affect the attendees.
                       </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Thông tin booking */}
+              {/* Booking info */}
               <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
                 <div className="flex items-start">
                   <AlertCircle className="w-5 h-5 mr-3 text-yellow-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-yellow-800">Bạn sắp hủy booking:</p>
+                    <p className="font-medium text-yellow-800">You are about to cancel this booking:</p>
                     <p className="mt-1 text-sm text-yellow-700">{selectedBooking.title}</p>
                     <p className="text-sm text-yellow-600">{selectedBooking.roomName}</p>
                     <p className="text-sm text-yellow-500">
-                      {parseApiDateTime(selectedBooking.startTime)?.toLocaleString('vi-VN')}
+                      {parseApiDateTime(selectedBooking.startTime)?.toLocaleString('en-US')}
                     </p>
                   </div>
                 </div>
@@ -454,12 +454,12 @@ const MyBookings = () => {
               
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Lý do hủy booking <span className="text-red-500">*</span>
+                  Cancellation reason <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Nhập lý do hủy booking..."
+                  placeholder="Enter the reason for cancelling this booking..."
                   rows="4"
                   className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                 />
@@ -473,13 +473,13 @@ const MyBookings = () => {
                   }}
                   className="px-6 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200"
                 >
-                  Quay lại
+                  Go back
                 </button>
                 <button
                   onClick={confirmCancelBooking}
                   className="px-6 py-3 font-medium text-white transition-all bg-red-600 rounded-xl hover:bg-red-700"
                 >
-                  Xác nhận hủy
+                  Confirm cancellation
                 </button>
               </div>
             </div>

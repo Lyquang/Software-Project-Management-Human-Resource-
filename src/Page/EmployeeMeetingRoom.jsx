@@ -8,8 +8,8 @@ const EmployeeMeetingRoom = () => {
 
   const navigation = [
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-    { id: 'book-room', icon: '➕', label: 'Đặt Phòng' },
-    { id: 'my-bookings', icon: '📋', label: 'Booking Của Tôi' },
+    { id: 'book-room', icon: '➕', label: 'Book Room' },
+    { id: 'my-bookings', icon: '📋', label: 'My Booking' },
   ];
 
   const renderSection = () => {

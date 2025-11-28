@@ -25,11 +25,11 @@ const BookingModal = ({
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      alert('Vui lòng nhập tiêu đề cuộc họp');
+      alert('Please enter a meeting title');
       return;
     }
 
-    // Chuyển selectedEmployees thành attendeeCodes trước khi submit
+    // Convert selectedEmployees to attendeeCodes before submitting
     const attendeeCodes = selectedEmployees.map(emp => emp.code);
     const submitData = {
       ...formData,
@@ -50,10 +50,10 @@ const BookingModal = ({
     const isAlreadySelected = selectedEmployees.some(emp => emp.code === employee.code);
     
     if (isAlreadySelected) {
-      // Nếu đã chọn thì bỏ chọn
+      // If already selected, remove from list
       setSelectedEmployees(prev => prev.filter(emp => emp.code !== employee.code));
     } else {
-      // Nếu chưa chọn thì thêm vào
+      // If not selected, add to list
       setSelectedEmployees(prev => [...prev, employee]);
     }
   };
@@ -62,7 +62,7 @@ const BookingModal = ({
     setSelectedEmployees(prev => prev.filter(emp => emp.code !== employeeCode));
   };
 
-  // Lọc nhân viên theo từ khóa tìm kiếm
+  // Filter employees by search keyword
   const filteredEmployees = employees.filter(employee => 
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,7 +73,7 @@ const BookingModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="w-full max-w-2xl p-8 bg-white shadow-2xl rounded-3xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Xác nhận đặt phòng</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Confirm Room Booking</h2>
           <button 
             onClick={onClose}
             className="p-2 text-gray-500 transition-colors rounded-full hover:bg-gray-100 hover:text-gray-700"
@@ -92,11 +92,11 @@ const BookingModal = ({
             </div>
             <div className="flex items-center">
               <Users className="w-4 h-4 mr-2" />
-              {selectedRoom.capacity} người
+              {selectedRoom.capacity} people
             </div>
             <div className="flex items-center">
               <Calendar className="w-4 h-4 mr-2" />
-              {new Date(selectedDate).toLocaleDateString('vi-VN')}
+              {new Date(selectedDate).toLocaleDateString('en-US')}
             </div>
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-2" />
@@ -108,25 +108,25 @@ const BookingModal = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Tiêu đề cuộc họp <span className="text-red-500">*</span>
+              Meeting title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               required
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="Nhập tiêu đề cuộc họp..."
+              placeholder="Enter meeting title..."
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">Mô tả</label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Description</label>
             <textarea
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Mô tả chi tiết về cuộc họp..."
+              placeholder="Detailed description of the meeting..."
               rows="3"
               className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
@@ -134,16 +134,16 @@ const BookingModal = ({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700">Nhân viên tham dự</label>
+              <label className="text-sm font-medium text-gray-700">Attendees</label>
               <span className="text-sm text-gray-500">
-                Đã chọn: {selectedEmployees.length} người
+                Selected: {selectedEmployees.length} people
               </span>
             </div>
 
-            {/* Danh sách nhân viên đã chọn */}
+            {/* Selected employees list */}
             {selectedEmployees.length > 0 && (
               <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Nhân viên đã chọn:</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Selected employees:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedEmployees.map(employee => (
                     <div
@@ -165,23 +165,23 @@ const BookingModal = ({
               </div>
             )}
 
-            {/* Tìm kiếm nhân viên */}
+            {/* Employee search */}
             <div className="mb-3">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Tìm kiếm theo tên, mã nhân viên hoặc chức vụ..."
+                placeholder="Search by name, employee code or position..."
                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
             </div>
 
-            {/* Danh sách nhân viên để chọn */}
+            {/* Employee list for selection */}
             <div className="border border-gray-300 rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {filteredEmployees.length === 0 ? (
                   <div className="py-8 text-center text-gray-500">
-                    {employees.length === 0 ? 'Không có nhân viên nào trong phòng ban' : 'Không tìm thấy nhân viên phù hợp'}
+                    {employees.length === 0 ? 'No employees in this department' : 'No matching employees found'}
                   </div>
                 ) : (
                   filteredEmployees.map(employee => (
@@ -210,13 +210,13 @@ const BookingModal = ({
                           </span>
                           {employee.code === currentUser?.code && (
                             <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                              Bạn
+                              You
                             </span>
                           )}
                         </div>
                         <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
-                          <span>Mã: {employee.code}</span>
-                          <span>Chức vụ: {employee.position || 'Chưa có'}</span>
+                          <span>Code: {employee.code}</span>
+                          <span>Position: {employee.position} || 'Not set'</span>
                         </div>
                       </div>
                     </div>
@@ -225,7 +225,7 @@ const BookingModal = ({
               </div>
             </div>
             <p className="mt-2 text-sm text-gray-500">
-              Nhấp vào tên nhân viên để chọn/bỏ chọn tham dự cuộc họp
+              Click an employee name to select/unselect them as attendees
             </p>
           </div>
           
@@ -235,7 +235,7 @@ const BookingModal = ({
               onClick={onClose}
               className="flex-1 px-6 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
@@ -245,10 +245,10 @@ const BookingModal = ({
               {loading ? (
                 <div className="flex items-center justify-center">
                   <Loader className="w-5 h-5 mr-2 animate-spin" />
-                  Đang xử lý...
+                  Processing...
                 </div>
               ) : (
-                'Xác nhận đặt'
+                'Confirm booking'
               )}
             </button>
           </div>
@@ -296,24 +296,24 @@ const BookRoom = () => {
       setLoading(true);
       setLoadingUser(true);
       
-      // Lấy thông tin user trước để lấy departmentId
+      // Get user info first to retrieve departmentId
       const myInfoResponse = await getMyInfo();
       if (myInfoResponse && myInfoResponse.code === 200) {
         setCurrentUser(myInfoResponse.result);
         const departmentId = myInfoResponse.result.departmentId;
 
-        // Lấy danh sách nhân viên trong department
+        // Get employees in the same department
         const employeesResponse = await getDepartmentEmployees(departmentId);
         if (employeesResponse && employeesResponse.code === 200) {
-          // Kết hợp employees và manager thành một mảng
+          // Combine employees and manager into one array
           const allEmployees = [
             ...(employeesResponse.result.employees || []),
             employeesResponse.result.manager
-          ].filter(Boolean); // Loại bỏ null/undefined
+          ].filter(Boolean); // Remove null/undefined
           setEmployees(allEmployees);
         }
 
-        // Lấy danh sách phòng và bookings
+        // Get rooms and bookings
         const [roomsResponse, bookingsResponse] = await Promise.all([
           getRooms(),
           getBookings()
@@ -328,7 +328,7 @@ const BookRoom = () => {
       }
     } catch (error) {
       console.error('Error loading initial data:', error);
-      showToast('Lỗi khi tải dữ liệu', 'error');
+      showToast('Error loading data', 'error');
     } finally {
       setLoading(false);
       setLoadingUser(false);
@@ -359,7 +359,7 @@ const BookRoom = () => {
       setSearchLoading(true);
       
       if (!selectedDate || !startTime || !endTime) {
-        showToast('Vui lòng chọn đầy đủ thời gian', 'error');
+        showToast('Please select date, start time and end time', 'error');
         return;
       }
 
@@ -367,7 +367,7 @@ const BookRoom = () => {
       const endDateTime = new Date(`${selectedDate}T${endTime}`);
       
       if (startDateTime >= endDateTime) {
-        showToast('Thời gian kết thúc phải sau thời gian bắt đầu', 'error');
+        showToast('End time must be after start time', 'error');
         return;
       }
 
@@ -391,13 +391,13 @@ const BookRoom = () => {
       setAvailableRooms(available);
       
       if (available.length === 0) {
-        showToast('Không có phòng trống trong khoảng thời gian này', 'warning');
+        showToast('No rooms available in this time range', 'warning');
       } else {
-        showToast(`Tìm thấy ${available.length} phòng có sẵn`, 'success');
+        showToast(`Found ${available.length} available room(s)`, 'success');
       }
     } catch (error) {
       console.error('Error checking availability:', error);
-      showToast('Lỗi khi kiểm tra phòng trống', 'error');
+      showToast('Error while checking room availability', 'error');
     } finally {
       setSearchLoading(false);
     }
@@ -409,7 +409,7 @@ const BookRoom = () => {
 
   const handleSubmitBooking = async (formData) => {
     if (!formData.title.trim()) {
-      showToast('Vui lòng nhập tiêu đề cuộc họp', 'error');
+      showToast('Please enter a meeting title', 'error');
       return;
     }
 
@@ -417,11 +417,11 @@ const BookRoom = () => {
       setLoading(true);
 
       if (!currentUser || !currentUser.code) {
-        showToast('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.', 'error');
+        showToast('User info not found. Please sign in again.', 'error');
         return;
       }
 
-      // Tự động thêm organizer vào danh sách attendee nếu chưa có
+      // Automatically add organizer to attendee list if not already there
       const attendeeCodes = [...new Set([
         currentUser.code, 
         ...formData.attendeeCodes
@@ -446,15 +446,15 @@ const BookRoom = () => {
       const response = await createBooking(bookingData);
       
       if (response && response.code === 200) {
-        showToast('Đặt phòng thành công!', 'success');
+        showToast('Room booked successfully!', 'success');
         setSelectedRoom(null);
         loadInitialData();
       } else {
-        throw new Error(response?.message || 'Lỗi khi đặt phòng');
+        throw new Error(response?.message || 'Error while booking room');
       }
     } catch (error) {
       console.error('Error creating booking:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Lỗi khi đặt phòng. Vui lòng thử lại.';
+      const errorMessage = error.response?.data?.message || error.message || 'Error while booking room. Please try again.';
       showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
@@ -466,7 +466,7 @@ const BookRoom = () => {
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-xl font-bold text-gray-800">{room.name}</h3>
         <span className="px-3 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
-          ✅ Có sẵn
+          ✅ Available
         </span>
       </div>
       
@@ -477,7 +477,7 @@ const BookRoom = () => {
         </div>
         <div className="flex items-center text-gray-600">
           <Users className="w-4 h-4 mr-3 text-gray-400" />
-          <span className="text-sm">Sức chứa: {room.capacity} người</span>
+          <span className="text-sm">Capacity: {room.capacity} people</span>
         </div>
         {room.equipment && room.equipment !== 'string' && (
           <div className="flex items-start text-gray-600">
@@ -491,24 +491,24 @@ const BookRoom = () => {
         onClick={() => handleBookRoom(room)}
         className="w-full py-3 font-medium text-white transition-all bg-indigo-600 rounded-lg hover:bg-indigo-700 hover:shadow-md"
       >
-        Đặt phòng này
+        Book this room
       </button>
     </div>
   );
 
   return (
-    <div className="min-h-screen p-8 from-blue-50 via-white">
+    <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Đặt Phòng Họp</h1>
-          <p className="mt-2 text-gray-600">Tìm và đặt phòng họp phù hợp với nhu cầu của bạn</p>
+          <h1 className="text-3xl font-bold text-gray-800">Book Meeting Room</h1>
+          <p className="mt-2 text-gray-600">Find and book a meeting room that suits your needs</p>
         </div>
 
         <div className="p-8 mb-8 transition-all bg-white border border-gray-100 shadow-lg rounded-3xl hover:shadow-xl">
-          <h2 className="mb-6 text-2xl font-bold text-gray-800">🕐 Chọn thời gian</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-800">🕐 Choose time</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
             <div>
-              <label className="block mb-3 text-sm font-medium text-gray-700">Ngày</label>
+              <label className="block mb-3 text-sm font-medium text-gray-700">Date</label>
               <input
                 type="date"
                 value={selectedDate}
@@ -518,7 +518,7 @@ const BookRoom = () => {
               />
             </div>
             <div>
-              <label className="block mb-3 text-sm font-medium text-gray-700">Giờ bắt đầu</label>
+              <label className="block mb-3 text-sm font-medium text-gray-700">Start time</label>
               <input
                 type="time"
                 value={startTime}
@@ -527,7 +527,7 @@ const BookRoom = () => {
               />
             </div>
             <div>
-              <label className="block mb-3 text-sm font-medium text-gray-700">Giờ kết thúc</label>
+              <label className="block mb-3 text-sm font-medium text-gray-700">End time</label>
               <input
                 type="time"
                 value={endTime}
@@ -546,7 +546,7 @@ const BookRoom = () => {
                 ) : (
                   <>
                     <Search className="w-5 h-5 mr-2" />
-                    Tìm phòng
+                    Search rooms
                   </>
                 )}
               </button>
@@ -555,15 +555,15 @@ const BookRoom = () => {
         </div>
 
         <div className="transition-all bg-white border border-gray-100 shadow-lg rounded-3xl hover:shadow-xl">
-          <div className="p-8 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
+          <div className="p-8 border-b border-gray-100 bg-gray-50">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-800">
-                🏢 Phòng có sẵn 
+                🏢 Available rooms 
                 <span className="ml-3 text-green-600">({availableRooms.length})</span>
               </h2>
               <div className="text-sm text-gray-600">
                 {selectedDate && (
-                  <span>Ngày: {new Date(selectedDate).toLocaleDateString('vi-VN')}</span>
+                  <span>Date: {new Date(selectedDate).toLocaleDateString('en-US')}</span>
                 )}
               </div>
             </div>
@@ -574,7 +574,7 @@ const BookRoom = () => {
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <Loader className="w-12 h-12 mx-auto mb-4 text-indigo-600 animate-spin" />
-                  <p className="text-gray-600">Đang tải danh sách phòng...</p>
+                  <p className="text-gray-600">Loading rooms list...</p>
                 </div>
               </div>
             ) : availableRooms.length === 0 ? (
@@ -582,8 +582,8 @@ const BookRoom = () => {
                 <div className="flex items-center justify-center w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full">
                   <span className="text-4xl">😔</span>
                 </div>
-                <h3 className="mb-2 text-xl font-semibold text-gray-800">Không có phòng trống</h3>
-                <p className="mb-6 text-gray-600">Hãy thử chọn khoảng thời gian khác hoặc ngày khác</p>
+                <h3 className="mb-2 text-xl font-semibold text-gray-800">No available rooms</h3>
+                <p className="mb-6 text-gray-600">Try another time range or date</p>
                 <button
                   onClick={() => {
                     setSelectedDate(new Date().toISOString().split('T')[0]);
@@ -592,7 +592,7 @@ const BookRoom = () => {
                   }}
                   className="px-6 py-3 font-medium text-indigo-600 transition-all bg-indigo-50 rounded-xl hover:bg-indigo-100"
                 >
-                  Đặt lại thời gian
+                  Reset time
                 </button>
               </div>
             ) : (
@@ -644,6 +644,22 @@ const BookRoom = () => {
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes toast-in {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        .animate-toast-in {
+          animation: toast-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+      `}</style>
     </div>
   );
 };

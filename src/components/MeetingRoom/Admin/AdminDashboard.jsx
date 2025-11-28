@@ -110,7 +110,7 @@ const AdminDashboard = () => {
       setRecentBookings(bookings.slice(0, 5));
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      showToast('Lỗi khi tải dữ liệu dashboard', 'error');
+      showToast('Error loading dashboard data', 'error');
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
     const date = parseApiDateTime(dateTimeString);
     if (!date) return 'N/A';
     
-    return date.toLocaleString('vi-VN', {
+    return date.toLocaleString('en-US', {
       day: '2-digit',
       month: '2-digit',
       hour: '2-digit',
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
     const date = parseApiDateTime(dateTimeString);
     if (!date) return 'N/A';
     
-    return date.toLocaleString('vi-VN', {
+    return date.toLocaleString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
     try {
       const roomToUpdate = allRooms.find(room => room.id === roomId);
       if (!roomToUpdate) {
-        showToast('Không tìm thấy phòng', 'error');
+        showToast('Room not found', 'error');
         return;
       }
 
@@ -176,15 +176,15 @@ const AdminDashboard = () => {
         }));
         
         showToast(
-          `Đã ${!currentWorkingStatus ? 'kích hoạt' : 'chuyển sang bảo trì'} phòng "${roomToUpdate.name}" thành công`, 
+          `Room "${roomToUpdate.name}" ${!currentWorkingStatus ? 'activated' : 'put into maintenance'} successfully`, 
           'success'
         );
       } else {
-        throw new Error(response?.message || 'Lỗi khi cập nhật phòng');
+        throw new Error(response?.message || 'Error updating room');
       }
     } catch (error) {
       console.error('Error updating room maintenance status:', error);
-      showToast(error.message || 'Lỗi khi cập nhật trạng thái phòng', 'error');
+      showToast(error.message || 'Error updating room status', 'error');
     }
   };
 
@@ -197,27 +197,27 @@ const AdminDashboard = () => {
         setCurrentBookingDetail(response.result);
         setShowBookingDetailModal(true);
       } else {
-        throw new Error(response?.message || 'Không thể tải chi tiết booking');
+        throw new Error(response?.message || 'Cannot load booking details');
       }
     } catch (error) {
       console.error('Error fetching booking detail:', error);
-      showToast(error.message || 'Lỗi khi tải chi tiết booking', 'error');
+      showToast(error.message || 'Error loading booking details', 'error');
     } finally {
       setBookingDetailLoading(false);
     }
   };
 
   const handleDeleteBooking = async (id) => {
-    const reason = window.prompt('Lý do hủy booking:', '');
+    const reason = window.prompt('Reason for cancellation:', '');
     if (reason !== null) {
       try {
         await deleteBooking(id, reason);
         setShowBookingsModal(false);
         setCurrentPage(1);
         loadDashboardData();
-        showToast('Booking đã được hủy thành công', 'success');
+        showToast('Booking cancelled successfully', 'success');
       } catch (error) {
-        showToast(error.message || 'Không thể hủy booking', 'error');
+        showToast(error.message || 'Cannot cancel booking', 'error');
       }
     }
   };
@@ -264,17 +264,17 @@ const AdminDashboard = () => {
       const newErrors = {};
       
       if (!formData.name.trim()) {
-        newErrors.name = 'Tên phòng là bắt buộc';
+        newErrors.name = 'Room name is required';
       }
       
       if (!formData.capacity) {
-        newErrors.capacity = 'Sức chứa là bắt buộc';
+        newErrors.capacity = 'Capacity is required';
       } else if (isNaN(formData.capacity) || parseInt(formData.capacity) <= 0) {
-        newErrors.capacity = 'Sức chứa phải là số lớn hơn 0';
+        newErrors.capacity = 'Capacity must be a number greater than 0';
       }
       
       if (!formData.location.trim()) {
-        newErrors.location = 'Vị trí là bắt buộc';
+        newErrors.location = 'Location is required';
       }
       
       setErrors(newErrors);
@@ -317,9 +317,9 @@ const AdminDashboard = () => {
         setErrors({});
         
         loadDashboardData();
-        showToast('Đã thêm phòng họp mới thành công', 'success');
+        showToast('Meeting room added successfully', 'success');
       } catch (error) {
-        showToast(error.message || 'Có lỗi xảy ra khi thêm phòng', 'error');
+        showToast(error.message || 'Error occurred while adding room', 'error');
       } finally {
         setIsSubmitting(false);
       }
@@ -328,11 +328,11 @@ const AdminDashboard = () => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div className="w-full max-w-md p-8 bg-white shadow-2xl rounded-3xl">
-          <h2 className="mb-6 text-2xl font-bold text-gray-800">Thêm phòng họp mới</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-800">Add New Meeting Room</h2>
           <div className="space-y-4">
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700">
-                Tên phòng <span className="text-red-500">*</span>
+                Room Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -341,7 +341,7 @@ const AdminDashboard = () => {
                 }`}
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="Nhập tên phòng"
+                placeholder="Enter room name"
               />
               {errors.name && (
                 <p className="flex items-center mt-1 text-sm text-red-600">
@@ -352,7 +352,7 @@ const AdminDashboard = () => {
 
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700">
-                Sức chứa <span className="text-red-500">*</span>
+                Capacity <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -362,7 +362,7 @@ const AdminDashboard = () => {
                 }`}
                 value={formData.capacity}
                 onChange={(e) => handleInputChange('capacity', e.target.value)}
-                placeholder="Nhập sức chứa"
+                placeholder="Enter capacity"
               />
               {errors.capacity && (
                 <p className="flex items-center mt-1 text-sm text-red-600">
@@ -373,7 +373,7 @@ const AdminDashboard = () => {
 
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700">
-                Vị trí <span className="text-red-500">*</span>
+                Location <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -382,7 +382,7 @@ const AdminDashboard = () => {
                 }`}
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
-                placeholder="Nhập vị trí phòng"
+                placeholder="Enter room location"
               />
               {errors.location && (
                 <p className="flex items-center mt-1 text-sm text-red-600">
@@ -393,14 +393,14 @@ const AdminDashboard = () => {
 
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-700">
-                Thiết bị <span className="text-gray-400">(Tùy chọn)</span>
+                Equipment <span className="text-gray-400">(Optional)</span>
               </label>
               <textarea
                 className="w-full px-4 py-3 transition-all border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 rows="3"
                 value={formData.equipment}
                 onChange={(e) => setFormData({...formData, equipment: e.target.value})}
-                placeholder="Mô tả thiết bị có sẵn trong phòng..."
+                placeholder="Describe available equipment in the room..."
               />
             </div>
 
@@ -413,10 +413,10 @@ const AdminDashboard = () => {
                 {isSubmitting ? (
                   <div className="flex items-center justify-center">
                     <div className="w-5 h-5 mr-2 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                    Đang thêm...
+                    Adding...
                   </div>
                 ) : (
-                  'Thêm phòng'
+                  'Add Room'
                 )}
               </button>
               <button
@@ -427,7 +427,7 @@ const AdminDashboard = () => {
                 disabled={isSubmitting}
                 className="flex-1 px-6 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200 disabled:opacity-50"
               >
-                Hủy
+                Cancel
               </button>
             </div>
           </div>
@@ -463,7 +463,7 @@ const AdminDashboard = () => {
             disabled={currentPage === 1}
             className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
-            ← Trước
+            ← Previous
           </button>
           
           {startPage > 1 && (
@@ -509,7 +509,7 @@ const AdminDashboard = () => {
             disabled={currentPage === totalPages}
             className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
           >
-            Sau →
+            Next →
           </button>
         </div>
       );
@@ -518,7 +518,6 @@ const AdminDashboard = () => {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
         <div className="w-full max-w-6xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          {/* Header đã sửa - không còn gradient */}
           <div className="sticky top-0 z-10 px-8 py-6 bg-white border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-gray-800">
@@ -526,26 +525,26 @@ const AdminDashboard = () => {
                   <div className="p-3 rounded-xl bg-indigo-100">
                     <Building className="w-6 h-6 text-indigo-600" />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-800">Quản lý Phòng Họp</h2>
+                  <h2 className="text-3xl font-bold text-gray-800">Meeting Room Management</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-gray-600">
                   <span className="font-medium">
-                    Tổng cộng: <span className="px-2 py-0.5 bg-gray-100 rounded-md">{allRooms.length} phòng</span>
+                    Total: <span className="px-2 py-0.5 bg-gray-100 rounded-md">{allRooms.length} rooms</span>
                   </span>
                   <span className="w-px h-4 bg-gray-300"></span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span className="font-medium">{allRooms.filter(r => r.working && r.isAvailable).length} khả dụng</span>
+                    <span className="font-medium">{allRooms.filter(r => r.working && r.isAvailable).length} available</span>
                   </span>
                   <span className="w-px h-4 bg-gray-300"></span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                    <span className="font-medium">{allRooms.filter(r => r.working && !r.isAvailable).length} đã đặt</span>
+                    <span className="font-medium">{allRooms.filter(r => r.working && !r.isAvailable).length} booked</span>
                   </span>
                   <span className="w-px h-4 bg-gray-300"></span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    <span className="font-medium">{allRooms.filter(r => !r.working).length} bảo trì</span>
+                    <span className="font-medium">{allRooms.filter(r => !r.working).length} maintenance</span>
                   </span>
                 </div>
               </div>
@@ -563,7 +562,6 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          {/* Content area với scroll */}
           <div className="flex-1 p-8 overflow-y-auto">
             <div className="space-y-4">
               {currentRooms.length === 0 ? (
@@ -571,8 +569,8 @@ const AdminDashboard = () => {
                   <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
-                  <p className="text-xl font-medium">Chưa có phòng nào</p>
-                  <p className="mt-2 text-sm">Hãy thêm phòng họp đầu tiên</p>
+                  <p className="text-xl font-medium">No rooms yet</p>
+                  <p className="mt-2 text-sm">Add your first meeting room</p>
                 </div>
               ) : (
                 currentRooms.map((room) => (
@@ -605,7 +603,7 @@ const AdminDashboard = () => {
                                   : 'bg-red-100 text-red-800 ring-1 ring-red-200'
                               }`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${room.working ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                                {room.working ? 'Đang hoạt động' : 'Đang bảo trì'}
+                                {room.working ? 'Active' : 'Under Maintenance'}
                               </span>
                               
                               {room.working && (
@@ -615,7 +613,7 @@ const AdminDashboard = () => {
                                     : 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-200'
                                 }`}>
                                   <span className={`w-1.5 h-1.5 rounded-full ${room.isAvailable ? 'bg-blue-500' : 'bg-yellow-500'}`}></span>
-                                  {room.isAvailable ? 'Có thể đặt' : 'Đã được đặt'}
+                                  {room.isAvailable ? 'Available' : 'Booked'}
                                 </span>
                               )}
                             </div>
@@ -627,8 +625,8 @@ const AdminDashboard = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                               </svg>
                               <div>
-                                <span className="text-xs text-gray-500">Sức chứa</span>
-                                <p className="font-semibold">{room.capacity} người</p>
+                                <span className="text-xs text-gray-500">Capacity</span>
+                                <p className="font-semibold">{room.capacity} people</p>
                               </div>
                             </div>
                             
@@ -638,7 +636,7 @@ const AdminDashboard = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
                               <div>
-                                <span className="text-xs text-gray-500">Vị trí</span>
+                                <span className="text-xs text-gray-500">Location</span>
                                 <p className="font-semibold">{room.location}</p>
                               </div>
                             </div>
@@ -649,8 +647,8 @@ const AdminDashboard = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
                               <div>
-                                <span className="text-xs text-gray-500">Thiết bị</span>
-                                <p className="font-semibold">{room.equipment || 'Không có'}</p>
+                                <span className="text-xs text-gray-500">Equipment</span>
+                                <p className="font-semibold">{room.equipment || 'None'}</p>
                               </div>
                             </div>
                           </div>
@@ -668,12 +666,12 @@ const AdminDashboard = () => {
                             {room.working ? (
                               <>
                                 <Wrench className="w-4 h-4" />
-                                <span>Bảo trì</span>
+                                <span>Maintenance</span>
                               </>
                             ) : (
                               <>
                                 <CheckCircle className="w-4 h-4" />
-                                <span>Kích hoạt</span>
+                                <span>Activate</span>
                               </>
                             )}
                           </button>
@@ -701,190 +699,192 @@ const AdminDashboard = () => {
   };
 
   const BookingsModal = () => {
-  const totalPages = Math.ceil(allBookings.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentBookings = allBookings.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(allBookings.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentBookings = allBookings.slice(startIndex, endIndex);
 
-  const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-    const pages = [];
-    const maxVisible = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-    
-    if (endPage - startPage < maxVisible - 1) {
-      startPage = Math.max(1, endPage - maxVisible + 1);
-    }
+    const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+      const pages = [];
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
 
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      return (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            ← Previous
+          </button>
+          
+          {startPage > 1 && (
+            <>
+              <button
+                onClick={() => onPageChange(1)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                1
+              </button>
+              {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
+            </>
+          )}
+          
+          {pages.map(page => (
+            <button
+              key={page}
+              onClick={() => onPageChange(page)}
+              className={`px-4 py-2 text-sm font-medium transition-all rounded-lg ${
+                currentPage === page
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          
+          {endPage < totalPages && (
+            <>
+              {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
+              <button
+                onClick={() => onPageChange(totalPages)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
+          
+          <button
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            Next →
+          </button>
+        </div>
+      );
+    };
 
     return (
-      <div className="flex items-center justify-center gap-2 mt-6">
-        <button
-          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          ← Trước
-        </button>
-        
-        {startPage > 1 && (
-          <>
-            <button
-              onClick={() => onPageChange(1)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="w-full max-w-5xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-blue-600 border-b border-gray-200">
+            <div className="text-white">
+              <h2 className="text-3xl font-bold text-white">All Bookings</h2>
+              <p className="mt-2 text-sm text-white">
+                Total: <span className="font-semibold">{allBookings.length}</span> bookings
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setShowBookingsModal(false);
+                setCurrentPage(1);
+              }} 
+              className="p-2 text-white transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
             >
-              1
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
-            {startPage > 2 && <span className="px-2 text-gray-500">...</span>}
-          </>
-        )}
-        
-        {pages.map(page => (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`px-4 py-2 text-sm font-medium transition-all rounded-lg ${
-              currentPage === page
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-        
-        {endPage < totalPages && (
-          <>
-            {endPage < totalPages - 1 && <span className="px-2 text-gray-500">...</span>}
-            <button
-              onClick={() => onPageChange(totalPages)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              {totalPages}
-            </button>
-          </>
-        )}
-        
-        <button
-          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 text-sm font-medium text-gray-700 transition-all bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          Sau →
-        </button>
+          </div>
+          
+          <div className="flex-1 p-8 overflow-y-auto">
+            <div className="space-y-4">
+              {currentBookings.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                  <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-xl font-medium">No bookings yet</p>
+                  <p className="mt-2 text-sm">Create your first booking</p>
+                </div>
+              ) : (
+                currentBookings.map((booking) => (
+                  <div 
+                    key={booking.id} 
+                    className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1"
+                  >
+                    <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50 to-purple-50 group-hover:opacity-100"></div>
+                    
+                    <div className="relative flex items-center justify-between p-6">
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
+                          {booking.title}
+                        </h3>
+                        
+                        <div className="flex flex-wrap gap-4 text-sm">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-indigo-500">📍</span>
+                            <span className="font-medium">{booking.roomName}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-purple-500">🕐</span>
+                            <span className="font-medium">
+                              {formatDisplayTime(booking.startTime)} - {formatDisplayTime(booking.endTime)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 ml-6">
+                        <button 
+                          onClick={() => handleViewBookingDetail(booking.id)}
+                          disabled={bookingDetailLoading && currentBookingDetail?.id === booking.id}
+                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg 
+                                    bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:scale-105
+                                    disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
+                        >
+                          {bookingDetailLoading && currentBookingDetail?.id === booking.id ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+                              <span>Loading...</span>
+                            </div>
+                          ) : (
+                            'Details'
+                          )}
+                        </button>
+                        
+                        <button 
+                          onClick={() => handleDeleteBooking(booking.id)}
+                          className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg 
+                                    bg-red-600 hover:bg-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination 
+                  currentPage={currentPage} 
+                  totalPages={totalPages} 
+                  onPageChange={setCurrentPage} 
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-5xl bg-white shadow-2xl rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-8 py-6 bg-white border-b border-gray-200">
-          <div className="text-gray-800">
-            <h2 className="text-3xl font-bold text-gray-800">Tất cả Booking</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Tổng cộng: <span className="font-semibold">{allBookings.length}</span> booking
-            </p>
-          </div>
-          <button 
-            onClick={() => {
-              setShowBookingsModal(false);
-              setCurrentPage(1);
-            }} 
-            className="p-2 text-gray-500 transition-all duration-300 rounded-full hover:bg-gray-100 hover:rotate-90"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        <div className="flex-1 p-8 overflow-y-auto">
-          <div className="space-y-4">
-            {currentBookings.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-xl font-medium">Chưa có booking nào</p>
-                <p className="mt-2 text-sm">Hãy tạo booking đầu tiên của bạn</p>
-              </div>
-            ) : (
-              currentBookings.map((booking) => (
-                <div 
-                  key={booking.id} 
-                  className="relative overflow-hidden transition-all duration-300 border border-gray-200 group rounded-xl hover:shadow-lg hover:border-indigo-300 hover:-translate-y-1"
-                >
-                  <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-50 to-purple-50 group-hover:opacity-100"></div>
-                  
-                  <div className="relative flex items-center justify-between p-6">
-                    <div className="flex-1 min-w-0 space-y-3">
-                      <h3 className="text-xl font-bold text-gray-800 transition-colors group-hover:text-indigo-600">
-                        {booking.title}
-                      </h3>
-                      
-                      <div className="flex flex-wrap gap-4 text-sm">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-indigo-500">📍</span>
-                          <span className="font-medium">{booking.roomName}</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <span className="text-purple-500">🕐</span>
-                          <span className="font-medium">
-                            {formatDisplayTime(booking.startTime)} - {formatDisplayTime(booking.endTime)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3 ml-6">
-                      <button 
-                        onClick={() => handleViewBookingDetail(booking.id)}
-                        disabled={bookingDetailLoading && currentBookingDetail?.id === booking.id}
-                        className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-lg hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
-                      >
-                        {bookingDetailLoading && currentBookingDetail?.id === booking.id ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
-                            <span>Đang tải...</span>
-                          </div>
-                        ) : (
-                          'Chi tiết'
-                        )}
-                      </button>
-                      
-                      <button 
-                        onClick={() => handleDeleteBooking(booking.id)}
-                        className="px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 whitespace-nowrap"
-                      >
-                        Hủy
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          
-          {totalPages > 1 && (
-            <div className="mt-8">
-              <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onPageChange={setCurrentPage} 
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
 
   const BookingDetailModal = () => {
     if (!currentBookingDetail) return null;
@@ -899,9 +899,9 @@ const AdminDashboard = () => {
       const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
       
       if (durationHours > 0) {
-        return `${durationHours} giờ ${durationMinutes} phút`;
+        return `${durationHours} hours ${durationMinutes} minutes`;
       }
-      return `${durationMinutes} phút`;
+      return `${durationMinutes} minutes`;
     };
 
     const getBookingStatus = () => {
@@ -912,11 +912,11 @@ const AdminDashboard = () => {
       if (!startTime || !endTime) return 'UNKNOWN';
       
       if (now < startTime) {
-        return { status: 'UPCOMING', text: 'Sắp diễn ra', color: 'bg-blue-100 text-blue-800' };
+        return { status: 'UPCOMING', text: 'Upcoming', color: 'bg-blue-100 text-blue-800' };
       } else if (now >= startTime && now <= endTime) {
-        return { status: 'ONGOING', text: 'Đang diễn ra', color: 'bg-green-100 text-green-800' };
+        return { status: 'ONGOING', text: 'Ongoing', color: 'bg-green-100 text-green-800' };
       } else {
-        return { status: 'COMPLETED', text: 'Đã kết thúc', color: 'bg-gray-100 text-gray-800' };
+        return { status: 'COMPLETED', text: 'Completed', color: 'bg-gray-100 text-gray-800' };
       }
     };
 
@@ -927,8 +927,8 @@ const AdminDashboard = () => {
         <div className="w-full max-w-2xl p-8 bg-white shadow-2xl rounded-3xl max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Chi tiết Booking</h2>
-              <p className="mt-1 text-sm text-gray-600">Thông tin đầy đủ về booking</p>
+              <h2 className="text-2xl font-bold text-gray-800">Booking Details</h2>
+              <p className="mt-1 text-sm text-gray-600">Complete booking information</p>
             </div>
             <button 
               onClick={() => {
@@ -945,7 +945,7 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-center py-12">
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 border-2 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
-                <p className="text-gray-600">Đang tải chi tiết...</p>
+                <p className="text-gray-600">Loading details...</p>
               </div>
             </div>
           ) : (
@@ -961,7 +961,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-600">Mã booking</p>
+                    <p className="text-sm text-gray-600">Booking ID</p>
                     <p className="font-mono font-bold text-gray-800">#{currentBookingDetail.id}</p>
                   </div>
                 </div>
@@ -973,23 +973,23 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <Calendar className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Thời gian</h4>
+                    <h4 className="font-semibold text-gray-800">Time</h4>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
-                      <span>Bắt đầu:</span>
+                      <span>Start:</span>
                       <span className="font-medium text-right text-gray-800">
                         {formatDetailedTime(currentBookingDetail.startTime)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Kết thúc:</span>
+                      <span>End:</span>
                       <span className="font-medium text-right text-gray-800">
                         {formatDetailedTime(currentBookingDetail.endTime)}
                       </span>
                     </div>
                     <div className="flex justify-between pt-2 border-t border-gray-100">
-                      <span>Thời lượng:</span>
+                      <span>Duration:</span>
                       <span className="font-medium text-blue-600">
                         {getTimeDuration(currentBookingDetail.startTime, currentBookingDetail.endTime)}
                       </span>
@@ -1002,11 +1002,11 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-green-100 rounded-lg">
                       <MapPin className="w-5 h-5 text-green-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Phòng họp</h4>
+                    <h4 className="font-semibold text-gray-800">Meeting Room</h4>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
-                      <span>Tên phòng:</span>
+                      <span>Room Name:</span>
                       <span className="font-medium text-gray-800">{currentBookingDetail.roomName}</span>
                     </div>
                     {(() => {
@@ -1014,13 +1014,13 @@ const AdminDashboard = () => {
                       return (
                         <>
                           <div className="flex justify-between">
-                            <span>Sức chứa:</span>
+                            <span>Capacity:</span>
                             <span className="font-medium text-gray-800">
-                              {roomInfo ? `${roomInfo.capacity} người` : 'N/A'}
+                              {roomInfo ? `${roomInfo.capacity} people` : 'N/A'}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span>Vị trí:</span>
+                            <span>Location:</span>
                             <span className="font-medium text-gray-800">
                               {roomInfo?.location || 'N/A'}
                             </span>
@@ -1036,11 +1036,11 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-purple-100 rounded-lg">
                       <Users className="w-5 h-5 text-purple-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Người đặt</h4>
+                    <h4 className="font-semibold text-gray-800">Organizer</h4>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
-                      <span>Họ tên:</span>
+                      <span>Full Name:</span>
                       <span className="font-medium text-gray-800">{currentBookingDetail.organizerName}</span>
                     </div>
                   </div>
@@ -1051,17 +1051,17 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-orange-100 rounded-lg">
                       <FileText className="w-5 h-5 text-orange-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Thông tin khác</h4>
+                    <h4 className="font-semibold text-gray-800">Other Information</h4>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
-                      <span>Số người tham dự:</span>
+                      <span>Attendees:</span>
                       <span className="font-medium text-gray-800">
-                        {currentBookingDetail.attendeeNames?.length || 0} người
+                        {currentBookingDetail.attendeeNames?.length || 0} people
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Ngày tạo:</span>
+                      <span>Created Date:</span>
                       <span className="font-medium text-gray-800">
                         {currentBookingDetail.createdAt ? formatDetailedTime(currentBookingDetail.createdAt) : 'N/A'}
                       </span>
@@ -1076,7 +1076,7 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-gray-100 rounded-lg">
                       <FileText className="w-5 h-5 text-gray-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Mô tả</h4>
+                    <h4 className="font-semibold text-gray-800">Description</h4>
                   </div>
                   <p className="text-sm text-gray-600 whitespace-pre-wrap">
                     {currentBookingDetail.description}
@@ -1092,7 +1092,7 @@ const AdminDashboard = () => {
                     <div className="p-2 bg-teal-100 rounded-lg">
                       <Users className="w-5 h-5 text-teal-600" />
                     </div>
-                    <h4 className="font-semibold text-gray-800">Người tham dự</h4>
+                    <h4 className="font-semibold text-gray-800">Attendees</h4>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {currentBookingDetail.attendeeNames
@@ -1104,7 +1104,7 @@ const AdminDashboard = () => {
                       ))
                     }
                     {currentBookingDetail.attendeeNames.filter(attendee => attendee !== currentBookingDetail.organizerName).length === 0 && (
-                      <p className="text-sm text-gray-500">Chỉ có người đặt tham dự</p>
+                      <p className="text-sm text-gray-500">Only the organizer is attending</p>
                     )}
                   </div>
                 </div>
@@ -1118,7 +1118,7 @@ const AdminDashboard = () => {
                   }}
                   className="flex-1 px-4 py-3 font-medium text-gray-700 transition-all bg-gray-100 rounded-xl hover:bg-gray-200"
                 >
-                  Đóng
+                  Close
                 </button>
                 {(statusInfo.status === 'UPCOMING' || statusInfo.status === 'ONGOING') && (
                   <button
@@ -1128,7 +1128,7 @@ const AdminDashboard = () => {
                     }}
                     className="flex-1 px-4 py-3 font-medium text-white transition-all bg-red-600 rounded-xl hover:bg-red-700"
                   >
-                    Hủy Booking
+                    Cancel Booking
                   </button>
                 )}
               </div>
@@ -1156,14 +1156,14 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="mt-2 text-gray-600">Quản lý phòng họp & booking</p>
+          <p className="mt-2 text-gray-600">Meeting Room & Booking Management</p>
         </div>
         <button
           onClick={loadDashboardData}
           className="flex items-center gap-2 px-6 py-3 font-medium text-white transition-all bg-indigo-600 shadow-lg rounded-xl hover:bg-indigo-700 hover:shadow-xl"
         >
           <RefreshCw className="w-5 h-5" />
-          Làm mới
+          Refresh
         </button>
       </div>
 
@@ -1172,38 +1172,37 @@ const AdminDashboard = () => {
         <StatCard 
           icon="🏢" 
           value={stats.totalRooms} 
-          label="Tổng số phòng" 
-          color="from-blue-400 to-blue-600"
+          label="Total Rooms" 
+          color="bg-blue-500"
           trend={stats.trend.rooms}
         />
         <StatCard 
           icon="✅" 
           value={stats.availableRooms} 
-          label="Phòng khả dụng" 
-          color="from-green-400 to-green-600"
+          label="Available Rooms" 
+          color="bg-green-500"
         />
         <StatCard 
           icon="📅" 
           value={stats.todayBookings} 
-          label="Booking hôm nay" 
-          color="from-purple-400 to-purple-600"
+          label="Today's Bookings" 
+          color="bg-purple-500"
           trend={stats.trend.bookings}
         />
         <StatCard 
           icon="🔴" 
           value={stats.activeBookings} 
-          label="Đang diễn ra" 
-          color="from-orange-400 to-red-500"
+          label="Active Now" 
+          color="bg-orange-500"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Recent Bookings - ĐÃ SỬA HEADER */}
+        {/* Recent Bookings */}
         <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-lg rounded-2xl hover:shadow-2xl group">
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 group-hover:opacity-100"></div>
           
           <div className="relative">
-            {/* Header đã sửa - không còn gradient */}
             <div className="p-6 bg-white border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 text-gray-800">
@@ -1212,13 +1211,13 @@ const AdminDashboard = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800">Booking gần đây</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">Recent Bookings</h2>
                 </div>
                 <button
                   onClick={() => setShowBookingsModal(true)}
                   className="flex items-center gap-1 px-4 py-2 text-sm font-semibold text-indigo-600 transition-all duration-300 rounded-lg bg-indigo-50 hover:bg-indigo-100 hover:scale-105"
                 >
-                  <span>Xem tất cả</span>
+                  <span>View All</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -1232,8 +1231,8 @@ const AdminDashboard = () => {
                   <svg className="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
-                  <p className="text-lg font-medium">Chưa có booking nào</p>
-                  <p className="mt-1 text-sm">Các booking sẽ hiển thị tại đây</p>
+                  <p className="text-lg font-medium">No bookings yet</p>
+                  <p className="mt-1 text-sm">Bookings will appear here</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -1261,18 +1260,13 @@ const AdminDashboard = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span className="font-medium">
-                              {new Date(booking.startTime).toLocaleString('vi-VN', { 
-                                day: '2-digit', 
-                                month: '2-digit', 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
+                              {formatDisplayTime(booking.startTime)}
                             </span>
                           </div>
                         </div>
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 ml-3 text-xs font-semibold text-green-700 bg-green-100 rounded-full ring-1 ring-green-200 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                          Xác nhận
+                          Confirmed
                         </span>
                       </div>
                     </div>
@@ -1283,12 +1277,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions - ĐÃ SỬA HEADER */}
+        {/* Quick Actions */}
         <div className="relative overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-lg rounded-2xl hover:shadow-2xl group">
           <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 group-hover:opacity-100"></div>
           
           <div className="relative">
-            {/* Header đã sửa - không còn gradient */}
             <div className="p-6 bg-white border-b border-gray-200">
               <div className="flex items-center gap-3 text-gray-800">
                 <div className="p-2 rounded-lg bg-purple-100">
@@ -1296,7 +1289,7 @@ const AdminDashboard = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800">Thao tác nhanh</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Quick Actions</h2>
               </div>
             </div>
 
@@ -1310,15 +1303,13 @@ const AdminDashboard = () => {
                   
                   <div className="relative flex items-center flex-1">
                     <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 group-hover/action:scale-110 group-hover/action:rotate-6">
-                      <div className="flex items-center justify-center w-12 h-12 mr-4 transition-all duration-300 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 group-hover/action:scale-110 group-hover/action:rotate-6">
-                        <Plus className="w-6 h-6 text-purple-500" />
-                      </div>
+                      <Plus className="w-6 h-6 text-purple-600" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-indigo-600">
-                        Thêm phòng mới
+                        Add New Room
                       </h3>
-                      <p className="mt-0.5 text-sm text-gray-600">Tạo phòng họp trong hệ thống</p>
+                      <p className="mt-0.5 text-sm text-gray-600">Create meeting room in the system</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-gray-400 transition-all duration-300 group-hover/action:text-indigo-600 group-hover/action:translate-x-1" />
                   </div>
@@ -1336,9 +1327,9 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-blue-600">
-                        Quản lý phòng
+                        Manage Rooms
                       </h3>
-                      <p className="mt-0.5 text-sm text-gray-600">Xem & quản lý trạng thái phòng</p>
+                      <p className="mt-0.5 text-sm text-gray-600">View & manage room status</p>
                     </div>
                     <svg className="w-5 h-5 text-gray-400 transition-all duration-300 group-hover/action:text-blue-600 group-hover/action:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1358,9 +1349,9 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-gray-800 transition-colors group-hover/action:text-green-600">
-                        Quản lý booking
+                        Manage Bookings
                       </h3>
-                      <p className="mt-0.5 text-sm text-gray-600">Xem & quản lý tất cả booking</p>
+                      <p className="mt-0.5 text-sm text-gray-600">View & manage all bookings</p>
                     </div>
                     <svg className="w-5 h-5 text-gray-400 transition-all duration-300 group-hover/action:text-green-600 group-hover/action:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
