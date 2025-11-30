@@ -5,6 +5,10 @@ const BASE_URL = "https://ems-toq5.onrender.com/ems";
 // link render trên web
 
 export const API_ROUTES = {
+  ACCOUNTS: {
+    UPDATE: (accountId) => `${BASE_URL}/accounts/${encodeURIComponent(accountId)}`,
+  },
+
   PERSONNELS: {
     LOGIN: `${BASE_URL}/auth/login`,
     BASE: `${BASE_URL}/personnels`,
