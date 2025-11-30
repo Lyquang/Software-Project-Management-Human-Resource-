@@ -114,11 +114,12 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
                   />
                 ))}
             </div>
-            <div className="days-left fw-bold">
-              <i className="bi bi-clock-fill me-1 text-muted"></i>{" "}
-              {/* Nếu dùng Bootstrap Icons */}
-              {project.daysLeft} days left
-            </div>
+            {project.daysLeft > 0 && (
+              <div className="days-left fw-bold">
+                <i className="bi bi-clock-fill me-1 text-muted"></i>{" "}
+                {project.daysLeft} days left
+              </div>
+            )}
           </div>
         </div>
       </div>
