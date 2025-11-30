@@ -34,6 +34,7 @@ import "./index.css";
 import TaskManagementPage from "./components/Project/Employee/TaskManagementPage";
 import TaskDetail from "./components/Project/Employee/TaskDetail";
 import TaskEdit from "./components/Project/Employee/TaskEdit";
+import ChatPage from "./components/Chat/ChatPage";
 import { AppProvider } from "./context/AppContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider } from "./context/NotificationContext";
@@ -83,10 +84,11 @@ root.render(
           <Route path="task" element={<TaskManagementPage />} />
           <Route path="task/:id" element={<TaskDetail />} />
           <Route path="task/:id/edit" element={<TaskEdit />} />
+          <Route path="chat" element={<ChatPage />} />
         </Route>
 
         <Route path="/login/manager" element={<MainPage />}>
-          <Route index element={<MainManagerDashBoard/>}></Route>
+          <Route index element={<MainManagerDashBoard />}></Route>
           <Route path="infor" element={<PersonelInfor />} />
           <Route path="attendance" element={<EmployeeAttendance />} />
           <Route path="department" element={<DepartmentPage />} />
@@ -98,6 +100,7 @@ root.render(
           />
           <Route path="project/:projectId/tasks/create" element={<ProjectTaskCreate />} />
           <Route path="notification" element={<EmployeeNotification />} />
+          <Route path="chat" element={<ChatPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

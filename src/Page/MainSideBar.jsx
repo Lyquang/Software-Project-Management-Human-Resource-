@@ -61,11 +61,11 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard" },
+          { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard", end: true },
           {
-            to: "/login/employee/message",
+            to: "/login/employee/chat",
             icon: <BiChat />,
-            text: "Message",
+            text: "Chat",
           },
           {
             to: "/login/employee/notification",
@@ -88,11 +88,11 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard" },
+          { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard", end: true },
           {
-            to: "/login/manager/message",
+            to: "/login/manager/chat",
             icon: <BiChat />,
-            text: "Message",
+            text: "Chat",
           },
           {
             to: "/login/manager/notification",
@@ -114,7 +114,7 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard" },
+          { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard", end: true },
           {
             to: "/login/admin/notification",
             icon: <IoMdNotificationsOutline />,
@@ -152,9 +152,8 @@ const MainSideBar = () => {
   return (
     /* parent relative để nút toggle absolute hoạt động đúng */
     <div
-      className={`relative h-screen bg-white shadow-lg flex flex-col justify-between transition-all duration-300 ${
-        expanded ? "w-64" : "w-20"
-      }`}
+      className={`relative h-screen bg-white shadow-lg flex flex-col justify-between transition-all duration-300 ${expanded ? "w-64" : "w-20"
+        }`}
     >
       {/* Header */}
       <div>
@@ -193,18 +192,17 @@ const MainSideBar = () => {
                 </p>
               )}
               <div className="flex flex-col gap-1">
-                {section.items.map(({ to, icon, text, onClick }, i) => (
+                {section.items.map(({ to, icon, text, onClick, end }, i) => (
                   <NavLink
                     key={i}
                     to={to}
+                    end={end}
                     onClick={onClick}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 ${
-                        expanded ? "px-4" : "px-2 justify-center"
-                      } py-2 rounded-md transition-all ${
-                        isActive
-                          ? "text-[#1d3b84] font-medium bg-blue-50"
-                          : "text-gray-600 hover:bg-blue-50 hover:text-[#1d3b84]"
+                      `flex items-center gap-3 ${expanded ? "px-4" : "px-2 justify-center"
+                      } py-2 rounded-md transition-all ${isActive
+                        ? "text-[#1d3b84] font-medium bg-blue-50"
+                        : "text-gray-600 hover:bg-blue-50 hover:text-[#1d3b84]"
                       }`
                     }
                   >
@@ -243,9 +241,8 @@ const MainSideBar = () => {
       <div className="px-3 py-4 border-t border-gray-200">
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${
-            expanded ? "px-4 py-2" : "px-2 justify-center py-2"
-          }`}
+          className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${expanded ? "px-4 py-2" : "px-2 justify-center py-2"
+            }`}
         >
           <BiLogOut className="text-lg" />
           {expanded && <span className="text-sm font-medium">Logout</span>}

@@ -129,4 +129,9 @@ export const API_ROUTES = {
     GET_FILES: (taskId) => `${BASE_URL}/tasks/files/${encodeURIComponent(taskId)}`,
     GET_GUIDE: (taskId) => `${BASE_URL}/tasks/${encodeURIComponent(taskId)}/guide`,
   },
+
+  CHAT: {
+    ASK: `${BASE_URL}/personnels/ask`,
+    GET_MESSAGES: `${BASE_URL}/personnels/chat/messages`,
+  },
 };
