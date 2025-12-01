@@ -71,6 +71,7 @@ export const API_ROUTES = {
 
   EMPLOYEES: {
     CREATE: `${BASE_URL}/employee/create`,
+    GET_BY_CODE: (code) => `${BASE_URL}/employees/code?code=${encodeURIComponent(code)}`,
   },
 
   MANAGERS: {

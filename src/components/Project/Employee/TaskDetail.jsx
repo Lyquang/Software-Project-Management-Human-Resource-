@@ -187,10 +187,31 @@ const TaskDetailsPage = () => {
       const nextStatusValue = allowedStatuses.includes(normalizedStatus)
         ? normalizedStatus
         : allowedStatuses[allowedStatuses.length - 1];
+      
+      // Fetch assignee info from assigneeCode
+      let assigneeName = r.assigneeCode || '—';
+      if (r.assigneeCode) {
+        try {
+          const assigneeRes = await fetch(API_ROUTES.EMPLOYEES.GET_BY_CODE(r.assigneeCode), {
+            headers: {
+              Accept: 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          });
+          const assigneeData = await assigneeRes.json().catch(() => ({}));
+          if (assigneeRes.ok && (assigneeData?.code === 200 || assigneeData?.code === 0) && assigneeData?.result) {
+            assigneeName = assigneeData.result.employee_name || assigneeData.result.employee_code || r.assigneeCode;
+          }
+        } catch (e) {
+          console.error('Failed to fetch assignee:', e);
+        }
+      }
+
       setTask({
         id: r.id,
         estimatedHours: mockTaskData.estimatedHours ?? '—',
-        assignee: r.assignee_code || '—',
+        assignee: assigneeName,
+        assigneeCode: r.assigneeCode,
         reporter: mockTaskData.reporter ?? '—',
         type: mockTaskData.type ?? '—',
         priority: mockTaskData.priority ?? '—',
@@ -510,22 +531,6 @@ const TaskDetailsPage = () => {
               </div>
             )}
 
-            {/* Tài liệu tham khảo */}
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Reference</h4>
-              <ul className="divide-y divide-gray-200 border-t border-gray-200">
-                {(task?.references || []).map(ref => (
-                  <ReferenceItem
-                    key={ref.id}
-                    number={ref.id}
-                    title={ref.title}
-                    subtitle={ref.subtitle}
-                    source={ref.source}
-                  />
-                ))}
-              </ul>
-            </div>
-
             {/* File Attachments Upload */}
             <div className="mt-8">
               <h4 className="text-sm font-medium text-gray-700 mb-3">Attachments</h4>
@@ -595,35 +600,6 @@ const TaskDetailsPage = () => {
         )}
       </div>
       
-      {/* Khu vực Bình luận */}
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Comments & Reviews
-        </h3>
-        
-        {/* Danh sách bình luận */}
-        <div className="space-y-4 mb-6">
-          {(task?.comments || mockTaskData.comments).map(comment => (
-            <CommentCard key={comment.id} comment={comment} />
-          ))}
-        </div>
-        
-        {/* Form thêm bình luận */}
-        <div>
-          <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150"
-            rows="4"
-            placeholder="Add a comment..."
-          ></textarea>
-          <button className="mt-3 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-200">
-            Add comment
-          </button>
-        </div>
-      </div>
-      
-      {/* Nút hành động */}
-      <ActionButtons />
-
       <AIReviewModal
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}

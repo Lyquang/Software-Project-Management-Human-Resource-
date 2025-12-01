@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TaskModal from "./TaskModal";
 import MemberModal from "./EditMemberModal";
 import EditProject from "./EditProject";
@@ -15,7 +15,7 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [currentProjectId, setCurrentProjectId] = useState(null);
   const [currentProjectDetails, setCurrentProjectDetails] = useState(null);
-  const [tasks, setTasks] = useState([]);
+  const [taskCount, setTaskCount] = useState(0);
   const progress = 50;
 
   const fetchProjectDetails = async (code) => {
@@ -35,16 +35,36 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
     }
   };
 
-  const handleMemberClick = (project) => {
-    if (project?.id) {
-      fetchProjectDetails(project.id);
+  const fetchTaskCount = async (projectId) => {
+    try {
+      const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+      const response = await fetch(`${API_ROUTES.TASK.BY_PROJECT}?projectId=${projectId}`, {
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && (data?.code === 200 || data?.code === 0) && data?.result) {
+        setTaskCount(Array.isArray(data.result) ? data.result.length : 0);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
     }
-    setIsMemberModalOpen(true);
   };
 
-  const handleSaveMembers = () => {
-    // Implement logic to save members if needed
-    setIsMemberModalOpen(false);
+  const handleMemberClick = async (project) => {
+    if (project?.id) {
+      const details = await fetchProjectDetails(project.id);
+      if (details) {
+        setCurrentProjectDetails({
+          ...details,
+          id: project.id,
+          name: project.name || details.name
+        });
+      }
+    }
+    setIsMemberModalOpen(true);
   };
 
   const openTasksForProject = async (projId) => {
@@ -52,6 +72,12 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
     await fetchProjectDetails(projId);
     navigate(`/project/${projId}/tasks`);
   };
+
+  useEffect(() => {
+    if (project?.id) {
+      fetchTaskCount(project.id);
+    }
+  }, [project?.id]);
 
   return (
     <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6">
@@ -76,7 +102,7 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
               style={{ cursor: 'pointer' }}
             >
               <span style={{fontSize:'1.5rem'}}><IoIosAttach /></span>
-              <span className="info fw-bold">{project.tasks} Tasks</span>
+              <span className="info fw-bold">{taskCount} Tasks</span>
             </div>
 
             <div
@@ -132,10 +158,9 @@ export const ProjectCard = ({ index, projects, project, setProjects }) => {
         />
       )}
 
-      {isMemberModalOpen && (
+      {isMemberModalOpen && currentProjectDetails && (
         <MemberModal
           onClose={() => setIsMemberModalOpen(false)}
-          onSave={handleSaveMembers}
           projectDetails={currentProjectDetails}
         />
       )}
