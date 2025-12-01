@@ -1,145 +1,49 @@
 import React, { useState, useEffect } from "react";
 import "./EditMemberModal.scss";
-// import { getAllPersonel, getAllProjects } from "../../services/apiService";
-import axios from "axios";
+import { API_ROUTES } from "../../../api/apiRoutes";
 import Loading from "../../Loading/Loading";
 
 const EditMemberModal = ({ onClose, onSave, projectDetails }) => {
-    const [employees, setEmployees] = useState([]);
-    const [projects, setProjects] = useState([]);
     const [currentMembers, setCurrentMembers] = useState([]);
     const [message, setMessage] = useState("");
-    const [newMemberId, setNewMemberId] = useState("");
-    const [isLoading, setIsLoading] = useState(true); // Quản lý trạng thái loading
+    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchProjects = async () => {
-        try {
-            const response = await getAllProjects();
-            if (response && response.data.code === 1000) {
-                setProjects(response.data.result);
-            } else {
-                setMessage("Failed to fetch projects: " + response.data.message);
-            }
-        } catch (err) {
-            setMessage("Error fetching projects: " + err.message);
-            console.error("Error fetching projects:", err);
+    const fetchProjectEmployees = async () => {
+        if (!projectDetails?.id) {
+            setMessage("Project ID not provided.");
+            setIsLoading(false);
+            return;
         }
-    };
 
-    const fetchEmployees = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/ems/employee/all");
-            if (response && response.data.code === 1000) {
-                setEmployees(response.data.result);
+            const token = sessionStorage.getItem('accessToken') || sessionStorage.getItem('token');
+            const response = await fetch(API_ROUTES.PROJECT.EMPLOYEES(projectDetails.id), {
+                headers: {
+                    Accept: 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+            });
+            const data = await response.json().catch(() => ({}));
+            
+            if (response.ok && (data?.code === 200 || data?.code === 0) && data?.result) {
+                setCurrentMembers(Array.isArray(data.result) ? data.result : []);
+                setMessage("");
             } else {
-                setMessage("Failed to fetch employees: " + response.data.message);
+                setMessage("Failed to fetch employees: " + (data?.message || "Unknown error"));
+                setCurrentMembers([]);
             }
         } catch (err) {
             setMessage("Error fetching employees: " + err.message);
             console.error("Error fetching employees:", err);
+            setCurrentMembers([]);
+        } finally {
+            setIsLoading(false);
         }
-    };
-
-    const handleAddMember = async () => {
-        const newMember = employees.find((emp) => emp.personelCode === parseInt(newMemberId));
-
-        if (newMember) {
-            if (currentMembers.some((member) => member.personelCode === newMember.personelCode)) {
-                setMessage("Member already exists.");
-                return;
-            } else {
-                try {
-                    const response = await axios.post("http://localhost:8080/ems/projects/assign", {
-                        employeeId: newMember.personelCode,
-                        projectId: projectDetails.projectId,
-                    });
-
-                    if (response.data.code === 1000) {
-                        setCurrentMembers((prevMembers) => {
-                            const updatedMembers = [...prevMembers, newMember];
-                            return updatedMembers.filter(
-                                (value, index, self) =>
-                                    index === self.findIndex((t) => t.personelCode === value.personelCode)
-                            );
-                        });
-                        setMessage("Member added successfully!");
-                    } else {
-                        setMessage("Failed to add member: " + response.data.message);
-                    }
-                } catch (error) {
-                    console.error("Error adding member:", error);
-                    setMessage("Failed to add member.");
-                }
-            }
-        } else {
-            setMessage("Member not found.");
-        }
-        setNewMemberId("");
-    };
-
-    const handleRemoveMember = async (employeeId) => {
-        try {
-            const response = await axios.post("http://localhost:8080/ems/projects/remove", {
-                employeeId,
-                projectId: projectDetails.projectId,
-            });
-
-            if (response.data.code === 1000) {
-                setCurrentMembers((prevMembers) =>
-                    prevMembers.filter((member) => member.personelCode !== employeeId)
-                );
-                setMessage("Xóa thành viên thành công!");
-
-                if (projectDetails.participants > 0) {
-                    projectDetails.participants -= 1;
-                }
-            } else {
-                setMessage("Không thể xóa thành viên: " + response.data.message);
-            }
-        } catch (error) {
-            console.error("Lỗi khi xóa thành viên:", error);
-            setMessage("Không thể xóa thành viên.");
-        }
-    };
-
-    const filterEmployeesByProject = () => {
-        if (!projectDetails || !projectDetails.projectName) {
-            setMessage("Project name not provided.");
-            return;
-        }
-
-        const filteredEmployees = employees.filter((employee) =>
-            employee.projectList.includes(projectDetails.projectName)
-        );
-
-        setCurrentMembers(filteredEmployees);
-
-        if (filteredEmployees.length === 0) {
-            setMessage("No employees found for this project.");
-        } else {
-            setMessage("");
-        }
-    };
-
-    const handleSave = () => {
-        onSave(currentMembers);
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true); // Bắt đầu loading
-            await Promise.all([fetchEmployees(), fetchProjects()]);
-            setIsLoading(false); // Kết thúc loading
-        };
-
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        if (employees.length > 0) {
-            filterEmployeesByProject();
-        }
-    }, [employees, projectDetails]);
+        fetchProjectEmployees();
+    }, [projectDetails?.id]);
 
     return (
         <>
@@ -152,54 +56,68 @@ const EditMemberModal = ({ onClose, onSave, projectDetails }) => {
                         </div>
                     ) : (
                         <>
-                            <h5>List of Employee in Project: {projectDetails?.projectName}</h5>
-                            <button className="close-btn btn-primary" onClick={onClose}>
-                                x
-                            </button>
+                            <div className="modal-header d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 className="mb-1">Project Members</h5>
+                                    <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>
+                                        {projectDetails?.name || 'Project'} - {currentMembers.length} {currentMembers.length === 1 ? 'member' : 'members'}
+                                    </p>
+                                </div>
+                                <button className="close-btn btn-danger" onClick={onClose}>
+                                    ×
+                                </button>
+                            </div>
 
-                            <ul className="member-list">
+                            <ul className="member-list list-unstyled">
                                 {currentMembers.length > 0 ? (
-                                    currentMembers.map((member) => (
+                                    currentMembers.map((member, index) => (
                                         <li
-                                            key={member.personelCode}
-                                            className="member-item d-flex justify-content-between align-items-center"
+                                            key={member.code || index}
+                                            className="member-item p-3 mb-2 border rounded d-flex align-items-center"
+                                            style={{ backgroundColor: '#f8f9fa' }}
                                         >
-                                            <div className="member-info">
-                                                <span className="member-code">{member.personelCode}</span>{" "}
-                                                - {member.firstName} {member.lastName} - {member.position}
+                                            <div className="member-avatar me-3">
+                                                {member.avatar ? (
+                                                    <img 
+                                                        src={member.avatar} 
+                                                        alt={member.name}
+                                                        className="rounded-circle"
+                                                        style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                                                    />
+                                                ) : (
+                                                    <div 
+                                                        className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                                        style={{ width: '40px', height: '40px', fontWeight: 'bold' }}
+                                                    >
+                                                        {member.name ? member.name.charAt(0).toUpperCase() : '?'}
+                                                    </div>
+                                                )}
                                             </div>
-                                            <button
-                                                className="remove-member-btn btn-danger ms-3"
-                                                onClick={() => handleRemoveMember(member.personelCode)}
-                                            >
-                                                Delete
-                                            </button>
+                                            <div className="member-info flex-grow-1">
+                                                <div className="fw-bold">{member.name || 'Unknown'}</div>
+                                                <div className="text-muted" style={{ fontSize: '0.85rem' }}>
+                                                    <span className="me-3">📧 {member.email || 'N/A'}</span>
+                                                    <span className="me-3">📱 {member.phone || 'N/A'}</span>
+                                                </div>
+                                                <div style={{ fontSize: '0.85rem' }}>
+                                                    <span className="badge bg-secondary me-2">{member.code}</span>
+                                                    <span className="badge bg-info">{member.position || 'N/A'}</span>
+                                                </div>
+                                            </div>
                                         </li>
                                     ))
                                 ) : (
-                                    <p>Not have employees in this project.</p>
+                                    <li className="text-center text-muted py-4">
+                                        <p>No employees in this project.</p>
+                                    </li>
                                 )}
                             </ul>
 
-                            <div className="add-member-section">
-                                <input
-                                    type="text"
-                                    value={newMemberId}
-                                    onChange={(e) => setNewMemberId(e.target.value)}
-                                    placeholder="Nhập ID của nhân viên"
-                                    className="add-member-input"
-                                />
-                                <button onClick={handleAddMember} className="add-member-btn btn-primary">
-                                    Add Member
-                                </button>
-                            </div>
-
-                            {message && <p className="message">{message}</p>}
-                            <div className="modal-footer">
-                                <button onClick={handleSave} className="save-btn btn-primary">
-                                    Save
-                                </button>
-                            </div>
+                            {message && (
+                                <div className="alert alert-danger mt-3" role="alert">
+                                    {message}
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

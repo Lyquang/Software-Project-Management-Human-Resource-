@@ -68,11 +68,12 @@ const ManagerProject = () => {
 
   return (
     <div className="manager-projects bg-light">
-      <div className="header d-flex align-items-center justify-content-between">
-        <h2>Quản lý dự án {deptInfo.name ? `— ${deptInfo.name}` : ""}</h2>
+      <div className="header d-flex align-items-center justify-content-between mb-3">
+        <h2 className="mb-0">Quản lý dự án {deptInfo.name ? `— ${deptInfo.name}` : ""}</h2>
         <div className="d-flex align-items-center gap-2">
-          <button onClick={fetchProjects} className="btn btn-outline-secondary">Refresh</button>
-          {/* CreateProjectBtn kept; you said stop creating projects but we leave button for potential future use */}
+          <button onClick={fetchProjects} className="btn btn-outline-secondary d-flex align-items-center">
+            Refresh
+          </button>
           <CreateProjectBtn setProjects={setProjects} />
         </div>
       </div>
