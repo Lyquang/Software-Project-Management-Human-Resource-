@@ -6,7 +6,7 @@ import {
   FaHome,
   FaArrowRight,
   FaArrowLeft,
-  FaCalendarAlt
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { MdMeetingRoom } from "react-icons/md";
 import { PiNotePencilDuotone } from "react-icons/pi";
@@ -61,7 +61,12 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/employee", icon: <MdDashboard />, text: "Dashboard", end: true },
+          {
+            to: "/login/employee",
+            icon: <MdDashboard />,
+            text: "Dashboard",
+            end: true,
+          },
           {
             to: "/login/employee/chat",
             icon: <BiChat />,
@@ -77,10 +82,26 @@ const MainSideBar = () => {
       {
         group: "EMPLOYEES",
         items: [
-          { to: "/login/employee/infor", icon: <FaRegUser />, text: "My information" },
-          { to: "/login/employee/attendance", icon: <FaRegUser />, text: "My attendance" },
-          { to: "/login/employee/task", icon: <MdOutlineTaskAlt />, text: "Task" },
-          { to: "/login/employee/payroll", icon: <PiNotePencilDuotone />, text: "My Payroll" },
+          {
+            to: "/login/employee/infor",
+            icon: <FaRegUser />,
+            text: "My information",
+          },
+          {
+            to: "/login/employee/attendance",
+            icon: <FaRegUser />,
+            text: "My attendance",
+          },
+          {
+            to: "/login/employee/task",
+            icon: <MdOutlineTaskAlt />,
+            text: "Task",
+          },
+          {
+            to: "meeting-rooms",
+            icon: <MdMeetingRoom />,
+            text: "Meeting Rooms",
+          },
         ],
       },
     ],
@@ -88,7 +109,12 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/manager", icon: <MdDashboard />, text: "Dashboard", end: true },
+          {
+            to: "/login/manager",
+            icon: <MdDashboard />,
+            text: "Dashboard",
+            end: true,
+          },
           {
             to: "/login/manager/chat",
             icon: <BiChat />,
@@ -104,9 +130,26 @@ const MainSideBar = () => {
       {
         group: "MANAGER",
         items: [
-          { to: "/login/manager/infor", icon: <FaRegUser />, text: "My information" },
-          { to: "/login/manager/attendance", icon: <FaRegUser />, text: "My attendance" },
-          { to: "/login/manager/project", icon: <FaProjectDiagram />, text: "Projects" },
+          {
+            to: "/login/manager/infor",
+            icon: <FaRegUser />,
+            text: "My information",
+          },
+          {
+            to: "/login/manager/attendance",
+            icon: <FaRegUser />,
+            text: "My attendance",
+          },
+          {
+            to: "/login/manager/project",
+            icon: <FaProjectDiagram />,
+            text: "Projects",
+          },
+          {
+            to: "meeting-rooms",
+            icon: <MdMeetingRoom />,
+            text: "Meeting Rooms",
+          },
         ],
       },
     ],
@@ -114,7 +157,12 @@ const MainSideBar = () => {
       {
         group: "MAIN MENU",
         items: [
-          { to: "/login/admin", icon: <MdDashboard />, text: "Dashboard", end: true },
+          {
+            to: "/login/admin",
+            icon: <MdDashboard />,
+            text: "Dashboard",
+            end: true,
+          },
           {
             to: "/login/admin/notification",
             icon: <IoMdNotificationsOutline />,
@@ -125,7 +173,11 @@ const MainSideBar = () => {
       {
         group: "ADMIN",
         items: [
-          { to: "/login/admin/employee", icon: <FaRegUser />, text: "All Employees" },
+          {
+            to: "/login/admin/employee",
+            icon: <FaRegUser />,
+            text: "All Employees",
+          },
           {
             to: "/login/admin/department",
             icon: <PiNotePencilDuotone />,
@@ -141,7 +193,11 @@ const MainSideBar = () => {
             icon: <MdOutlineAttachMoney />,
             text: "Salary & Benefits",
           },
-          { to: "meeting-rooms", icon: <MdMeetingRoom />, text: "Meeting Rooms" },
+          {
+            to: "meeting-rooms",
+            icon: <MdMeetingRoom />,
+            text: "Meeting Rooms",
+          },
         ],
       },
     ],
@@ -152,8 +208,9 @@ const MainSideBar = () => {
   return (
     /* parent relative để nút toggle absolute hoạt động đúng */
     <div
-      className={`relative h-screen bg-white shadow-lg flex flex-col justify-between transition-all duration-300 ${expanded ? "w-64" : "w-20"
-        }`}
+      className={`relative h-screen bg-white shadow-lg flex flex-col justify-between transition-all duration-300 ${
+        expanded ? "w-64" : "w-20"
+      }`}
     >
       {/* Header */}
       <div>
@@ -199,10 +256,12 @@ const MainSideBar = () => {
                     end={end}
                     onClick={onClick}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 ${expanded ? "px-4" : "px-2 justify-center"
-                      } py-2 rounded-md transition-all ${isActive
-                        ? "text-[#1d3b84] font-medium bg-blue-50"
-                        : "text-gray-600 hover:bg-blue-50 hover:text-[#1d3b84]"
+                      `flex items-center gap-3 ${
+                        expanded ? "px-4" : "px-2 justify-center"
+                      } py-2 rounded-md transition-all ${
+                        isActive
+                          ? "text-[#1d3b84] font-medium bg-blue-50"
+                          : "text-gray-600 hover:bg-blue-50 hover:text-[#1d3b84]"
                       }`
                     }
                   >
@@ -241,8 +300,9 @@ const MainSideBar = () => {
       <div className="px-3 py-4 border-t border-gray-200">
         <button
           onClick={handleLogout}
-          className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${expanded ? "px-4 py-2" : "px-2 justify-center py-2"
-            }`}
+          className={`flex items-center gap-3 text-gray-600 hover:text-[#1d3b84] hover:bg-blue-50 w-full rounded-md transition-all ${
+            expanded ? "px-4 py-2" : "px-2 justify-center py-2"
+          }`}
         >
           <BiLogOut className="text-lg" />
           {expanded && <span className="text-sm font-medium">Logout</span>}

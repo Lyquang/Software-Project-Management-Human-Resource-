@@ -103,7 +103,7 @@ const DepartmentCard = ({ department }) => {
           <AssignPersonel empCode={manager.code} role={"MANAGER"} />
           <DeleteDepartmentBtn departmentId={department.departmentId}>
             <MdDelete
-              title="Delete this Department"
+              title="Delete this Department"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
               size={20}
               className="text-red-500 hover:text-red-700 cursor-pointer transition ml-1"
             />

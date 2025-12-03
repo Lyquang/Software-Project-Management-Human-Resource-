@@ -72,21 +72,6 @@ export const AddPersonel = ({ children }) => {
     // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (name === "dob") {
-      const birthday = new Date(value);
-      const today = new Date();
-
-      const age = today.getFullYear() - birthday.getFullYear();
-      const monthDiff = today.getMonth() - birthday.getMonth();
-      const dayDiff = today.getDate() - birthday.getDate();
-
-      const isUnder18 =
-        age < 18 ||
-        (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
-
-      setDobError(isUnder18 ? "Bạn phải đủ 18 tuổi!" : "");
-    }
-
     if (!formData.username.trim()) {
       newError.username = "UserName must be require";
     } else if (!userNameRegex.test(formData.username.trim())) {
@@ -144,7 +129,7 @@ export const AddPersonel = ({ children }) => {
         });
       } else {
         // Nếu server trả lỗi trong res
-        console.log("vao else", res);
+        // console.log("vao else", res);
         const message =
           res.data?.message || res.message || "Error creating personnel.";
         toast.error(message);
