@@ -126,10 +126,6 @@ const CommentCard = ({ comment }) => {
 // Component cho các nút hành động cuối trang
 const ActionButtons = () => (
   <div className="flex items-center gap-4 mt-8">
-    <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-lg text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200 shadow-sm">
-      <BsCheck2Circle className="w-4 h-4" />
-      Review
-    </button>
     <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors duration-200 shadow-sm">
       <BsPencil className="w-4 h-4" />
       Edit
