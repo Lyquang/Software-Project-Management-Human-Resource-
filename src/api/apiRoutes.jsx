@@ -29,7 +29,7 @@ export const API_ROUTES = {
       }
 
       if (department && department !== "All") {
-        url += `&department=${encodeURIComponent(department)}`;
+        url += `&departmentName=${encodeURIComponent(department)}`;
       }
 
       return url;
